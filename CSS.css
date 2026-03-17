@@ -167,7 +167,7 @@ nav ul li:not(:last-child):not(:nth-last-child(2)):not(.nav-icon) a:after {
     background:
         linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)),
         /* Gradiente oscuro */
-        url('MEDIA/background.jpg');
+        url('MEDIA/Background.jpg');
     /* Imagen de fondo */
 
     background-size: cover;
