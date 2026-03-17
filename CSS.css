@@ -167,7 +167,7 @@ nav ul li:not(:last-child):not(:nth-last-child(2)):not(.nav-icon) a:after {
     background:
         linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)),
         /* Gradiente oscuro */
-        url('MEDIA/Background.jpg');
+        url('MEDIA/background.jpg');
     /* Imagen de fondo */
 
     background-size: cover;
@@ -1110,26 +1110,46 @@ footer {
     text-align: left;
 }
 
-/* --- AJUSTE DE ANCHO PARA TABLA --- */
+/* --- AJUSTE 50/50 SIMÉTRICO --- */
 .schedule-flex-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: stretch;
     gap: 30px;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 40px;
 }
 
+
 .schedule-card-container {
-    flex: 1;
-    max-width: 50%;
+    flex: 2; /* Aumentamos a 2 para que sea mucho más ancha que la foto */
+    /* Eliminamos el max-width: 50% para que pueda expandirse */
 }
 
-.image-cta-container {
-    flex: 0.8;
-    min-width: 320px;
+
+/* FUSIÓN DE FOTO CON IMAGE CARD */
+
+.cta-image-card {
+    width: 100%;            /* Ocupa todo su 50% disponible */
+    max-width: 500px;       /* Límite para que no se vea "gigante" en pantallas muy anchas */
+    height: 100%;
+    min-height: 480px;      /* Altura mínima para que luzca imponente */
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    background: #000;
 }
+.cta-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cambiado de contain a cover para que llene todo el recuadro sin dejar espacios blancos */
+    display: block;
+}
+
+
+/* ALTO Y ANCHO DE LA IMAGEN */
 
 .img-frame {
     height: 100%;
@@ -1137,6 +1157,7 @@ footer {
     max-height: 500px;
 }
 
+/* es para asegurar que la imagen no se vuelva demasiado grande o pequeña */
 .schedule-card {
     width: 100%;
     background: #f8f8f8;
@@ -1145,6 +1166,7 @@ footer {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+/* confi tabla */
 .schedule-row {
     display: flex;
     /* Flex */
@@ -1155,6 +1177,8 @@ footer {
     border-bottom: 1px solid #eee;
     /* Borde abajo */
 }
+
+/* Estilos para LA TABLA filas específicas */
 
 .schedule-row.header {
     background: #f0f0f0;
@@ -1181,6 +1205,8 @@ footer {
     /* Padding, tamaño, gris */
 }
 
+/* CONFI DE LA IMAGEN "reseva tu clase"*/
+
 .cta-image-card {
     width: 100%;
     height: 100%;
@@ -1192,8 +1218,8 @@ footer {
 .cta-image-card img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    object-position: center;
+    object-fit: cover;
+    object-position: top;
 }
 
 .cta-overlay {
