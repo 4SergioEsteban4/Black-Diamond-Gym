@@ -539,11 +539,91 @@ nav ul li:not(:last-child):not(:nth-last-child(2)):not(.nav-icon) a:after {
     .form-overlay { padding: 25px 20px; }
 }
 /* =========================================
-   10. RESPONSIVE DESIGN (Móvil)
+   10. AJUSTES PARA MÓVIL (SÚPER LIMPIO)
 ========================================= */
-@media (max-width: 992px) {
-    .nosotros-content, .schedule-flex-wrapper { flex-direction: column; text-align: center; }
-    #inicio h1 { font-size: 4rem; }
-    .video-grid { grid-template-columns: 1fr; }
-    .price-card.featured { transform: scale(1); margin: 20px 0; }
+@media (max-width: 768px) {
+    /* Ajuste de Secciones */
+    section {
+        padding: 60px 5%;
+    }
+
+    /* Header y Navegación */
+    header {
+        padding: 5px 2%;
+    }
+    
+    nav ul {
+        gap: 10px;
+    }
+    
+    nav ul li a {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+    }
+
+    .btn-join {
+        display: none; /* Ocultamos el botón grande en móvil para ganar espacio */
+    }
+
+    /* Hero (Inicio) */
+    #inicio h1 {
+        font-size: 3rem;
+        text-align: center;
+    }
+    
+    #inicio p {
+        font-size: 1.2rem;
+    }
+
+    /* Nosotros y Horarios (De horizontal a vertical) */
+    .nosotros-content, 
+    .schedule-flex-wrapper {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .nosotros-visual, .nosotros-text {
+        max-width: 100%;
+    }
+
+    /* Servicios y Planes (Rejillas) */
+    .servicios-grid,
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Galería de Vídeos */
+    .video-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Mapa y Formulario */
+    .map-container {
+        gap: 30px;
+    }
+
+    .google-map-placeholder {
+        height: 300px; /* Mapa más pequeño en móvil */
+    }
+
+    .form-overlay {
+        padding: 25px 20px;
+        width: 100%;
+    }
+
+    .form-overlay h3 {
+        font-size: 1.6rem;
+    }
+
+    .btn-red-form {
+        font-size: 1.3rem;
+        padding: 15px;
+    }
+
+    /* Títulos de secciones */
+    h2 {
+        font-size: 2.5rem !important;
+    }
 }
