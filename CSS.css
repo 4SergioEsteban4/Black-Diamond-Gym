@@ -1,1116 +1,286 @@
 /* =========================================
-   1. RESET Y BASE
+   1. CONFIGURACIÓN GLOBAL Y RESET
 ========================================= */
-
 * {
     margin: 0;
-    /* Resetea todos los márgenes a cero */
     padding: 0;
-    /* Resetea todos los paddings a cero */
     box-sizing: border-box;
-    /* Hace que el ancho incluya padding y border */
 }
 
 body {
     background: #000;
-    /* Fondo negro para el cuerpo de la página */
     color: #fff;
-    /* Color de texto blanco */
     font-family: 'Montserrat', sans-serif;
-    /* Fuente principal Montserrat */
     line-height: 1.6;
-    /* Altura de línea para mejor legibilidad */
-    padding-top: 80px;
-    /* Espacio superior para el header fijo */
+    padding-top: 80px; /* Espacio para el header fijo */
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
     font-family: 'Bebas Neue', sans-serif;
-    /* Fuente para títulos */
     letter-spacing: 2px;
-    /* Espaciado entre letras */
     text-transform: uppercase;
-    /* Convierte texto a mayúsculas */
-}
-
-/* =========================================
-   2. HEADER / NAVEGACIÓN
-========================================= */
-
-header {
-    background: #000;
-    /* Fondo negro para el header */
-    padding: 10px 5%;
-    /* Padding interno */
-    position: fixed;
-    /* Posición fija en la parte superior */
-    width: 100%;
-    /* Ancho completo */
-    top: 0;
-    /* Pegado arriba */
-    z-index: 1000;
-    /* Z-index alto para estar encima */
-    border-bottom: 1px solid #222;
-    /* Borde inferior gris oscuro */
-}
-
-nav ul {
-    display: flex;
-    /* Display flex para alinear elementos */
-    justify-content: center;
-    /* Centra horizontalmente */
-    align-items: center;
-    /* Centra verticalmente */
-    list-style: none;
-    /* Quita viñetas de lista */
-    gap: 20px;
-    /* Espacio entre elementos */
-}
-
-.nav-icon {
-    margin-right: 25px;
-    /* Margen derecho para el ícono */
-}
-
-nav ul li {
-    position: relative;
-    /* Posición relativa para pseudo-elementos */
-}
-
-nav ul li a {
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente Montserrat */
-    color: #fff;
-    /* Color blanco */
-    text-decoration: none;
-    /* Quita subrayado */
-    font-size: 1rem;
-    /* Tamaño de fuente */
-    letter-spacing: 0px;
-    /* Espaciado de letras */
-    padding: 10px 18px;
-    /* Padding interno */
-    transition: color .3s;
-    /* Transición suave para el color */
-}
-
-nav ul li a:hover {
-    color: red;
-    /* Color rojo al pasar el mouse */
-}
-
-/* Separadores */
-
-nav ul li:not(:last-child):not(:nth-last-child(2)):not(.nav-icon) a:after {
-    content: "|";
-    /* Agrega separador | */
-    position: absolute;
-    /* Posición absoluta */
-    right: -2px;
-    /* Posición a la derecha */
-    color: #444;
-    /* Color gris */
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente */
-}
-
-/* BOTÓN ÚNETE */
-
-.btn-join {
-    border: 2px solid #fff;
-    /* Borde blanco */
-    padding: 7px 35px;
-    /* Padding */
-    border-radius: 50px;
-    /* Bordes redondeados */
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.4rem;
-    /* Tamaño de fuente */
-    letter-spacing: 1px;
-    /* Espaciado de letras */
-    transition: .3s;
-    /* Transición */
-}
-
-.btn-join:hover {
-    background: #fff;
-    /* Fondo blanco al hover */
-    color: #000;
-    /* Texto negro */
-}
-
-/* =========================================
-   3. HERO SECTION
-========================================= */
-
-#inicio {
-    position: relative;
-    /* Posición relativa */
-    height: 93vh;
-    /* Altura 93% del viewport */
-
-    display: flex;
-    /* Flexbox */
-    flex-direction: column;
-    /* Dirección columna */
-    justify-content: center;
-    /* Centra verticalmente */
-    align-items: center;
-    /* Centra horizontalmente */
-
-    text-align: center;
-    /* Texto centrado */
-
-    background:
-        linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)),
-        /* Gradiente oscuro */
-        url('MEDIA/Background.jpg');
-    /* Imagen de fondo */
-
-    background-size: cover;
-    /* Cubre todo */
-    background-position: center;
-    /* Centrada */
-}
-
-#inicio h1 {
-    font-size: 6rem;
-    /* Tamaño grande */
-    line-height: 1;
-    /* Línea ajustada */
-    margin-bottom: 20px;
-    /* Margen inferior */
-    margin-top: -50px;
-    /* Margen superior negativo */
-}
-
-#inicio p {
-    font-size: 1.7rem;
-    /* Tamaño mediano */
-    margin-bottom: 40px;
-    /* Margen inferior */
-    letter-spacing: 3px;
-    /* Espaciado de letras */
-    text-transform: uppercase;
-    /* Mayúsculas */
-    color: #ccc;
-    /* Color gris claro */
-}
-
-/* BOTONES HERO */
-
-.hero-btns a {
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    display: inline-block;
-    /* Bloque en línea */
-    padding: 10px 60px;
-    /* Padding */
-    margin: 10px;
-    /* Margen */
-    border-radius: 50px;
-    /* Bordes redondeados */
-    font-size: 1.6rem;
-    /* Tamaño */
-    text-decoration: none;
-    /* Sin subrayado */
-    transition: all .3s ease;
-    /* Transición suave */
-}
-
-/* BOTÓN COMIENZA HOY */
-
-.btn-primary {
-    background: #fff;
-    /* Fondo blanco */
-    color: #000;
-    /* Texto negro */
-}
-
-.btn-primary:hover {
-    background: #fff;
-    /* Mantiene blanco */
-    color: #000;
-    /* Mantiene negro */
-    transform: scale(1.1);
-    /* Escala al hover */
-    box-shadow: 0 0 20px rgba(255, 255, 255, .5);
-    /* Sombra blanca */
-}
-
-/* BOTÓN VER HORARIOS */
-
-.btn-secondary {
-    background: transparent;
-    /* Fondo transparente */
-    border: 2px solid #fff;
-    /* Borde blanco */
-    color: #fff;
-    /* Texto blanco */
-}
-
-.btn-secondary:hover {
-    background: #fff;
-    /* Fondo blanco */
-    color: #000;
-    /* Texto negro */
-    transform: scale(1.1);
-    /* Escala */
-}
-
-/* =========================================
-   4. SECCIONES GENERALES
-========================================= */
-
-/* =========================================
-   REDISEÑO SECCIÓN #NOSOTROS (Hacia Blanco)
-========================================= */
-
-#nosotros {
-    background-color: #ffffff;
-    /* Fondo blanco */
-    color: #1a1a1a;
-    /* Texto oscuro para contraste */
-    padding: 120px 5%;
-    /* Padding amplio */
-    text-align: left;
-    /* Texto alineado a la izquierda */
-}
-
-/* Contenedor Flex Principal */
-.nosotros-content {
-    max-width: 1200px;
-    /* Ancho máximo */
-    margin: 0 auto;
-    /* Centrado */
-    display: flex;
-    /* Flexbox */
-    justify-content: space-between;
-    /* Espacio entre elementos */
-    align-items: center;
-    /* Alineados al centro */
-    gap: 60px;
-    /* Espacio entre */
-}
-
-/* --- LADO IZQUIERDO (Visual) --- */
-.nosotros-visual {
-    flex: 1;
-    /* Ocupa 1 parte */
-    position: relative;
-    /* Para posicionar badge */
-    max-width: 500px;
-    /* Ancho máximo */
-}
-
-.boxer-image {
-    width: 100%;
-    /* Ancho completo */
-    height: auto;
-    /* Altura automática */
-    display: block;
-    /* Bloque */
-    border-radius: 10px;
-    /* Bordes redondeados */
-}
-
-/* Badge "EST. 2020" */
-.est-badge {
-    position: absolute;
-    /* Absoluta */
-    top: 30px;
-    /* Desde arriba */
-    left: 20px;
-    /* Desde izquierda */
-    background: rgba(0, 0, 0, 0.8);
-    /* Fondo negro transparente */
-    color: #fff;
-    /* Texto blanco */
-    padding: 10px 15px;
-    /* Padding */
-    border-radius: 5px;
-    /* Bordes */
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    text-align: center;
-    /* Centrado */
-    line-height: 1;
-    /* Línea */
-}
-
-.est-badge .ano {
-    font-size: 1.8rem;
-    /* Tamaño */
-    display: block;
-    /* Bloque */
-    margin-top: 5px;
-    /* Margen */
-}
-
-/* --- LADO DERECHO (Texto) --- */
-.nosotros-text {
-    flex: 1;
-    /* Ocupa 1 parte */
-    display: flex;
-    /* Flex */
-    flex-direction: column;
-    /* Columna */
-    justify-content: center;
-    /* Centrado */
-}
-
-/* Nuevo estilo para separar el punto del texto */
-#nosotros .subtitulo-historia {
-    color: #1a1a1a;
-    /* Texto oscuro */
-    font-size: 1.3rem;
-    /* Tamaño */
-    letter-spacing: 0.7px;
-    /* Espaciado */
-    font-weight: 700;
-    /* Peso */
-    margin-bottom: 10px;
-    /* Margen */
-    text-transform: uppercase;
-    /* Mayúsculas */
-}
-
-#nosotros .punto-rojo {
-    color: red;
-    /* Color rojo */
-    font-weight: 900;
-    /* Peso */
-    font-size: 2rem;
-    /* Tamaño */
-}
-
-#nosotros h2 {
-    color: #000;
-    /* Negro */
-    font-size: 3.5rem;
-    /* Tamaño */
-    margin-bottom: 25px;
-    /* Margen */
-    margin-top: 0;
-    /* Sin margen arriba */
-}
-
-#nosotros p {
-    font-size: 1.1rem;
-    /* Tamaño */
-    color: #555;
-    /* Gris */
-    margin-bottom: 20px;
-    /* Margen */
-    text-transform: none;
-    /* Sin transformación */
-    letter-spacing: normal;
-    /* Normal */
-}
-
-/* Clase para que el botón no ocupe todo el ancho */
-.no-stretch {
-    align-self: flex-start;
-    /* Alineado al inicio */
-    width: auto;
-    /* Ancho automático */
-}
-
-.nosotros-text a.btn-primary.no-stretch {
-    display: inline-block;
-    /* Bloque en línea */
-    background-color: #1a1a1a;
-    /* Fondo oscuro */
-    color: #ffffff;
-    /* Texto blanco */
-    padding: 15px 30px;
-    /* Padding */
-    border-radius: 30px;
-    /* Bordes */
-    text-decoration: none;
-    /* Sin subrayado */
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente */
-    font-weight: bold;
-    /* Negrita */
-    font-size: 1rem;
-    /* Tamaño */
-    transition: background-color 0.3s ease;
-    /* Transición */
-    border: none;
-    /* Sin borde */
-    cursor: pointer;
-    /* Cursor mano */
-}
-
-.nosotros-text a.btn-primary.no-stretch:hover {
-    background-color: #333333;
-    /* Fondo más claro al hover */
-}
-
-/* --- GRID DE ESTADÍSTICAS --- */
-.stats-grid {
-    display: grid;
-    /* Grid */
-    grid-template-columns: 1fr 1fr;
-    /* 2 columnas */
-    gap: 30px;
-    /* Espacio */
-    margin-top: 50px;
-    /* Margen arriba */
-    max-width: 400px;
-    /* Ancho máximo */
-}
-
-.stat-item {
-    display: flex;
-    /* Flex */
-    flex-direction: column;
-    /* Columna */
-}
-
-.stat-item .number {
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 6rem;
-    /* Tamaño grande */
-    color: #000;
-    /* Negro */
-    line-height: 1;
-    /* Línea */
-    font-weight: 900;
-    /* Peso */
-}
-
-.stat-item .label {
-    font-size: 1.1rem;
-    /* Tamaño */
-    color: #888;
-    /* Gris */
-    margin-top: 5px;
-    /* Margen */
-}
-
-/* --- RESPONSIVE PARA ESTA SECCIÓN --- */
-@media (max-width: 992px) {
-    .nosotros-content {
-        flex-direction: column;
-        /* Columna en móvil */
-        text-align: center;
-        /* Centrado */
-    }
-
-    .nosotros-visual {
-        margin-bottom: 40px;
-        /* Margen abajo */
-    }
-
-    .no-stretch {
-        align-self: center;
-        /* Centrado */
-    }
-
-    .stats-grid {
-        margin: 50px auto 0;
-        /* Centrado */
-    }
-
-    #nosotros h2 {
-        font-size: 2.8rem;
-        /* Tamaño más pequeño */
-    }
 }
 
 section {
     padding: 100px 10%;
-    /* Padding estándar */
     text-align: center;
-    /* Centrado */
-}
-
-h2 {
-    font-size: 3rem;
-    /* Tamaño */
-    margin-bottom: 30px;
-    /* Margen */
 }
 
 /* =========================================
-   REDISEÑO SECCIÓN SERVICIOS (TARJETAS)
+   2. HEADER Y NAVEGACIÓN
 ========================================= */
-
-#servicios {
-    background-color: #000;
-    /* Fondo negro */
-    padding: 100px 5%;
-    /* Padding */
+header {
+    background: #000;
+    padding: 10px 5%;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #222;
 }
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-icon { margin-right: 25px; }
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 18px;
+    transition: color .3s;
+}
+
+nav ul li a:hover { color: red; }
+
+/* Separadores entre links */
+nav ul li:not(:last-child):not(:nth-last-child(2)):not(.nav-icon) a:after {
+    content: "|";
+    position: absolute;
+    right: -2px;
+    color: #444;
+}
+
+.btn-join {
+    border: 2px solid #fff;
+    padding: 7px 35px;
+    border-radius: 50px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    transition: .3s;
+}
+
+.btn-join:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* =========================================
+   3. SECCIÓN: INICIO (HERO)
+========================================= */
+#inicio {
+    height: 93vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url('MEDIA/Background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#inicio h1 {
+    font-size: 6rem;
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+#inicio p {
+    font-size: 1.7rem;
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
+.hero-btns a {
+    font-family: 'Bebas Neue', sans-serif;
+    padding: 10px 60px;
+    margin: 10px;
+    border-radius: 50px;
+    font-size: 1.6rem;
+    text-decoration: none;
+    transition: all .3s ease;
+}
+
+.btn-primary { background: #fff; color: #000; }
+.btn-primary:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 255, 255, .5); }
+
+.btn-secondary { background: transparent; border: 2px solid #fff; color: #fff; }
+.btn-secondary:hover { background: #fff; color: #000; transform: scale(1.1); }
+
+.scroll-down {
+    position: absolute;
+    bottom: 30px;
+    font-size: 60px;
+    animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-8px); }
+}
+
+/* =========================================
+   4. SECCIÓN: NOSOTROS
+========================================= */
+#nosotros {
+    background-color: #ffffff;
+    color: #1a1a1a;
+    text-align: left;
+}
+
+.nosotros-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.nosotros-visual { flex: 1; max-width: 500px; }
+.boxer-image { width: 100%; border-radius: 10px; }
+
+.nosotros-text { flex: 1; }
+.subtitulo-historia { font-weight: 700; text-transform: uppercase; }
+.punto-rojo { color: red; font-size: 2rem; }
+
+#nosotros h2 { font-size: 3.5rem; color: #000; margin-bottom: 25px; }
+#nosotros p { color: #555; margin-bottom: 20px; text-transform: none; }
+
+.no-stretch {
+    display: inline-block;
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.stat-item .number { font-family: 'Bebas Neue', sans-serif; font-size: 6rem; color: #000; line-height: 1; }
+.stat-item .label { color: #888; font-size: 1.1rem; }
+
+/* =========================================
+   5. SECCIÓN: SERVICIOS
+========================================= */
+#servicios { background-color: #000; }
 
 .servicios-grid {
     display: grid;
-    /* Grid */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    /* Columnas responsivas */
     gap: 25px;
-    /* Espacio */
-    margin-top: 50px;
-    /* Margen arriba */
     max-width: 1200px;
-    /* Ancho máximo */
-    margin-left: auto;
-    /* Centrado */
-    margin-right: auto;
-    /* Centrado */
+    margin: 50px auto 0;
 }
 
 .servicio-card {
     background: #111;
-    /* Gris oscuro */
     padding: 40px 30px;
-    /* Padding */
     border-radius: 10px;
-    /* Bordes */
     text-align: left;
-    /* Izquierda */
-    transition: transform 0.3s ease, background 0.3s ease;
-    /* Transiciones */
     border-bottom: 4px solid #333;
-    /* Borde abajo */
-    display: flex;
-    /* Flex */
-    flex-direction: column;
-    /* Columna */
-    gap: 15px;
-    /* Espacio */
+    transition: 0.3s;
 }
 
-/* El efecto de la línea roja inferior */
-.servicio-card:hover,
-.servicio-card.active {
+.servicio-card:hover, .servicio-card.active {
     border-bottom: 4px solid red;
-    /* Borde rojo al hover */
     background: #161616;
-    /* Fondo más claro */
 }
 
-/* Colores específicos para cada tarjeta */
-.servicio-card:nth-child(1) {
-    border-bottom: 4px solid red;
-    /* Rojo */
-}
+.servicio-imagen { width: 70px; height: 60px; object-fit: contain; margin-bottom: 15px; }
+.servicio-card h3 { font-size: 1.8rem; margin-bottom: 10px; }
+.servicio-card p { color: #bbb; font-size: 0.95rem; text-transform: none; }
 
-.servicio-card:nth-child(2) {
-    border-bottom: 4px solid #fff;
-    /* Blanco */
-}
+/* =========================================
+   6. SECCIÓN: FOTOS Y VIDEOS (GALERÍA)
+========================================= */
+.gallery-section { background-color: #000; padding: 60px 20px; }
 
-.servicio-card:nth-child(3) {
-    border-bottom: 4px solid red;
-    /* Rojo */
-}
+.section-header .subtitle { color: #e31c25; letter-spacing: 2px; font-size: 14px; }
 
-.servicio-icon {
-    font-size: 2.5rem;
-    /* Tamaño */
-    margin-bottom: 10px;
-    /* Margen */
-}
-
-.servicio-imagen {
-    width: 70px;
-    /* Ancho */
-    height: 60px;
-    /* Alto */
-    object-fit: contain;
-    /* Ajuste */
-    border-radius: 8px;
-    /* Bordes */
-    margin-bottom: 15px;
-    /* Margen */
-    margin-right: auto;
-    /* Derecha auto */
-}
-
-.servicio-card h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.8rem;
-    /* Tamaño */
-    color: #fff;
-    /* Blanco */
-    letter-spacing: 1px;
-    /* Espaciado */
-}
-
-.servicio-card p {
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente */
-    font-size: 0.95rem;
-    /* Tamaño */
-    color: #bbb;
-    /* Gris */
-    line-height: 1.6;
-    /* Línea */
-    text-transform: none;
-    /* Sin transformación */
-}
-
-/* Responsive para tablets/móvil */
-@media (max-width: 768px) {
-    .servicios-grid {
-        grid-template-columns: 1fr;
-        /* Una columna */
-    }
-}
-
-/* GALERÍA */
-
-/* Configuración General de la Sección */
-.gallery-section {
-    background-color: #000;
-    /* Fondo negro */
-    color: #fff;
-    /* Texto blanco */
-    padding: 60px 20px;
-    /* Padding */
-    text-align: center;
-    /* Centrado */
-}
-
-.section-header .subtitle {
-    color: #e31c25;
-    /* Rojo */
-    font-size: 14px;
-    /* Tamaño */
-    letter-spacing: 2px;
-    /* Espaciado */
-}
-
-.section-header h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 3rem;
-    /* Tamaño */
-    margin: 10px 0;
-    /* Margen */
-}
-
-.section-header p {
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente */
-    color: #aaa;
-    /* Gris */
-    margin-bottom: 40px;
-    /* Margen */
-}
-
-/* Cuadrícula de Fotos */
 .photo-grid {
     display: grid;
-    /* Grid */
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    /* Columnas */
     gap: 20px;
-    /* Espacio */
-    margin-bottom: 50px;
-    /* Margen */
+    margin-top: 40px;
 }
 
 .photo-card {
     position: relative;
-    /* Relativa */
-    border-radius: 12px;
-    /* Bordes */
-    overflow: hidden;
-    /* Oculta desbordes */
     height: 250px;
-    /* Alto */
-    cursor: pointer;
-    /* Cursor */
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-.photo-card img {
-    width: 100%;
-    /* Ancho */
-    height: 100%;
-    /* Alto */
-    object-fit: cover;
-    /* Cubre */
-    transition: transform 0.3s ease;
-    /* Transición */
-    filter: grayscale(40%);
-    /* Escala de grises */
-}
-
-.photo-card:hover img {
-    transform: scale(1.1);
-    /* Escala al hover */
-    filter: grayscale(0%);
-    /* Sin grises */
-}
+.photo-card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(40%); transition: 0.3s; }
+.photo-card:hover img { filter: grayscale(0); transform: scale(1.1); }
 
 .photo-card .overlay {
     position: absolute;
-    /* Absoluta */
-    bottom: 0;
-    /* Abajo */
-    width: 100%;
-    /* Ancho */
+    bottom: 0; width: 100%;
     padding: 15px;
-    /* Padding */
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    /* Gradiente */
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.2rem;
-    /* Tamaño */
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
     text-align: left;
-    /* Izquierda */
 }
 
-/* Sección de Videos */
-.videos-header {
-    text-align: left;
-    /* Izquierda */
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.5rem;
-    /* Tamaño */
-    margin-bottom: 20px;
-    /* Margen */
-}
+/* Videos */
+.videos-header { text-align: left; margin: 40px 0 20px; font-family: 'Bebas Neue'; font-size: 1.5rem; }
+.video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 
-.videos-header .dot {
-    color: #e31c25;
-    /* Rojo */
-}
-
-.video-grid {
-    display: grid;
-    /* Grid */
-    grid-template-columns: 1fr 1fr;
-    /* 2 columnas */
-    gap: 25px;
-    /* Espacio */
-}
-
-.video-card {
-    position: relative;
-    /* Relativa */
-    border-radius: 15px;
-    /* Bordes */
-    overflow: hidden;
-    /* Oculta */
-    background: #111;
-    /* Fondo */
-    height: 300px;
-    /* Alto */
-}
-
-.video-card img {
-    width: 100%;
-    /* Ancho */
-    height: 100%;
-    /* Alto */
-    object-fit: cover;
-    /* Cubre */
-    opacity: 0.6;
-    /* Opacidad */
-}
+.video-card { position: relative; height: 300px; border-radius: 15px; overflow: hidden; background: #111; }
+.video-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
 
 .play-btn {
     position: absolute;
-    /* Absoluta */
-    top: 50%;
-    /* Centro vertical */
-    left: 50%;
-    /* Centro horizontal */
-    transform: translate(-50%, -50%);
-    /* Centra */
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: #e31c25;
-    /* Rojo */
-    width: 60px;
-    /* Ancho */
-    height: 60px;
-    /* Alto */
-    border-radius: 50%;
-    /* Circular */
-    display: flex;
-    /* Flex */
-    align-items: center;
-    /* Centra */
-    justify-content: center;
-    /* Centra */
-    font-size: 20px;
-    /* Tamaño */
+    width: 60px; height: 60px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
     transition: 0.3s;
-    /* Transición */
 }
 
-.video-card:hover .play-btn {
-    transform: translate(-50%, -50%) scale(1.2);
-    /* Escala al hover */
-    box-shadow: 0 0 20px rgba(227, 28, 37, 0.6);
-    /* Sombra */
-}
-
-.video-info {
-    position: absolute;
-    /* Absoluta */
-    bottom: 20px;
-    /* Abajo */
-    left: 20px;
-    /* Izquierda */
-    text-align: left;
-    /* Izquierda */
-}
-
-.video-info h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1rem;
-    margin: 0;
-    /* Fuente, tamaño, margen */
-}
-
-.video-info span {
-    color: #888;
-    font-size: 0.8rem;
-    /* Gris, tamaño */
-}
-
-/* Botón YouTube */
-.btn-container {
-    margin-top: 40px;
-    /* Margen */
-}
+.video-card:hover .play-btn { transform: translate(-50%, -50%) scale(1.2); }
 
 .btn-youtube {
     display: inline-block;
-    /* Bloque en línea */
+    margin-top: 40px;
     padding: 12px 30px;
-    /* Padding */
     border: 2px solid #fff;
-    /* Borde blanco */
     border-radius: 50px;
-    /* Bordes */
     color: #fff;
-    /* Blanco */
     text-decoration: none;
-    /* Sin subrayado */
-    font-family: 'Montserrat', sans-serif;
-    /* Fuente */
-    font-weight: bold;
-    /* Negrita */
     font-size: 12px;
-    /* Tamaño */
-    transition: 0.3s;
-    /* Transición */
-}
-
-.btn-youtube:hover {
-    background: #fff;
-    /* Blanco */
-    color: #000;
-    /* Negro */
+    font-weight: bold;
 }
 
 /* =========================================
-   5. PLANES
+   7. SECCIÓN: HORARIOS
 ========================================= */
+.schedule-section { background: #fff; color: #000; padding: 80px 5%; }
 
-.planes-container {
-    display: flex;
-    /* Flex */
-    justify-content: center;
-    /* Centra */
-    gap: 20px;
-    /* Espacio */
-    flex-wrap: wrap;
-    /* Envuelve */
-}
-
-.plan-card {
-    background: #111;
-    /* Gris oscuro */
-    padding: 40px;
-    /* Padding */
-    width: 300px;
-    /* Ancho */
-    border-radius: 15px;
-    /* Bordes */
-    border: 1px solid #222;
-    /* Borde */
-}
-
-.plan-card.popular {
-    border: 2px solid red;
-    /* Borde rojo */
-    transform: scale(1.05);
-    /* Escala */
-}
-
-.plan-card h3 {
-    font-size: 2rem;
-    /* Tamaño */
-}
-
-.plan-card .price {
-    font-size: 3rem;
-    /* Tamaño grande */
-    color: red;
-    /* Rojo */
-    margin: 15px 0;
-    /* Margen */
-}
-
-/* =========================================
-   6. TABLAS
-========================================= */
-
-table {
-    width: 100%;
-    /* Ancho completo */
-    border-collapse: collapse;
-    /* Colapsa bordes */
-}
-
-table th {
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.5rem;
-    /* Tamaño */
-    color: red;
-    /* Rojo */
-}
-
-/* =========================================
-   7. CONTACTO
-========================================= */
-
-form {
-    max-width: 600px;
-    /* Ancho máximo */
-    margin: 0 auto;
-    /* Centrado */
-}
-
-form input,
-form textarea {
-    width: 100%;
-    /* Ancho completo */
-    padding: 15px;
-    /* Padding */
-    margin-bottom: 15px;
-    /* Margen */
-    background: #111;
-    /* Fondo */
-    border: 1px solid #333;
-    /* Borde */
-    color: #fff;
-    /* Texto blanco */
-}
-
-form button {
-    width: 100%;
-    /* Ancho completo */
-    padding: 15px;
-    /* Padding */
-    background: red;
-    /* Rojo */
-    color: #fff;
-    /* Blanco */
-    border: none;
-    /* Sin borde */
-    font-family: 'Bebas Neue', sans-serif;
-    /* Fuente */
-    font-size: 1.5rem;
-    /* Tamaño */
-    cursor: pointer;
-    /* Cursor */
-}
-
-/* =========================================
-   8. FOOTER
-========================================= */
-
-footer {
-    padding: 40px;
-    /* Padding */
-    text-align: center;
-    /* Centrado */
-    background: #000;
-    /* Negro */
-    border-top: 1px solid #222;
-    /* Borde arriba */
-    font-size: .8rem;
-    /* Tamaño pequeño */
-}
-
-/* =========================================
-   9. ELEMENTOS FLOTANTES
-========================================= */
-
-/* Flecha rebote */
-
-.scroll-down {
-    position: absolute;
-    /* Absoluta */
-    bottom: 30px;
-    /* Abajo */
-    left: 50%;
-    /* Centro */
-    transform: translateX(-50%);
-    /* Centra */
-    font-size: 60px;
-    /* Tamaño grande */
-    animation: bounce 1.5s infinite;
-    /* Animación */
-}
-
-@keyframes bounce {
-
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
-        transform: translate(-50%, 0);
-        /* Posición original */
-    }
-
-    40% {
-        transform: translate(-50%, -15px);
-        /* Arriba */
-    }
-
-    60% {
-        transform: translate(-50%, -8px);
-        /* Un poco arriba */
-    }
-
-}
-
-/* --- ESTILOS HORARIOS --- */
-.schedule-section {
-    padding: 80px 5%;
-    background: #fff;
-    color: #000;
-    position: relative;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
-
-.main-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3rem;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-/* --- AJUSTE 50/50 SIMÉTRICO --- */
 .schedule-flex-wrapper {
     display: flex;
     justify-content: center;
@@ -1121,15 +291,27 @@ footer {
     padding: 0 40px;
 }
 
+.schedule-card-container { flex: 2; text-align: left; }
+.main-title { font-size: 3rem; margin-bottom: 20px; }
 
-.schedule-card-container {
-    flex: 2; /* Aumentamos a 2 para que sea mucho más ancha que la foto */
-    /* Eliminamos el max-width: 50% para que pueda expandirse */
+.schedule-card {
+    background: #f8f8f8;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 30px;
+    border-bottom: 1px solid #eee;
+}
 
-/* FUSIÓN DE FOTO CON IMAGE CARD */
+.schedule-row.header { background: #f0f0f0; font-weight: bold; }
+.schedule-row.black { background: #000; color: #fff; }
 
+/* Imagen de Reserva */
 .cta-image-card {
     width: 100%;            /* Ocupa todo su 50% disponible */
     max-width: 500px;       /* Límite para que no se vea "gigante" en pantallas muy anchas */
@@ -1141,304 +323,119 @@ footer {
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
     background: #000;
 }
+
 .cta-image-card img {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Cambiado de contain a cover para que llene todo el recuadro sin dejar espacios blancos */
     display: block;
 }
-
-
 /* ALTO Y ANCHO DE LA IMAGEN */
 
 .img-frame {
     height: 100%;
     min-height: 300px;
-    max-height: 500px;
-}
-
-/* es para asegurar que la imagen no se vuelva demasiado grande o pequeña */
-.schedule-card {
-    width: 100%;
-    background: #f8f8f8;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-/* confi tabla */
-.schedule-row {
-    display: flex;
-    /* Flex */
-    justify-content: space-between;
-    /* Espacio entre */
-    padding: 20px 30px;
-    /* Padding */
-    border-bottom: 1px solid #eee;
-    /* Borde abajo */
-}
-
-/* Estilos para LA TABLA filas específicas */
-
-.schedule-row.header {
-    background: #f0f0f0;
-    font-weight: bold;
-    font-size: 0.9rem;
-    /* Fondo, negrita, tamaño */
-}
-
-.schedule-row.gray {
-    background: #fdfdfd;
-    /* Gris muy claro */
-}
-
-.schedule-row.black {
-    background: #000;
-    color: #fff;
-    /* Negro, texto blanco */
-}
-
-.schedule-footer {
-    padding: 20px 30px;
-    font-size: 0.85rem;
-    color: #777;
-    /* Padding, tamaño, gris */
-}
-
-/* CONFI DE LA IMAGEN "reseva tu clase"*/
-
-.cta-image-card {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    border-radius: 15px;
-    overflow: visible;
-}
-
-.cta-image-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top;
+    max-height: 550px;
 }
 
 .cta-overlay {
     position: absolute;
-    /* Absoluta */
-    bottom: 30px;
-    /* Abajo */
-    right: 30px;
-    /* Derecha */
-    background: rgba(0, 0, 0, 0.9);
-    /* Negro transparente */
-    padding: 30px;
-    /* Padding */
+    bottom: 30px; right: 30px;
+    background: rgba(0,0,0,0.9);
+    padding: 20px;
     border-radius: 10px;
-    /* Bordes */
     text-align: center;
-    /* Centrado */
-}
-
-.cta-overlay h3 {
-    font-family: 'Montserrat', sans-serif;
-    color: #fff;
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    /* Fuente, blanco, tamaño, margen */
 }
 
 .btn-contact {
     display: inline-block;
-    /* Bloque en línea */
-    background: #fff;
-    /* Blanco */
-    color: #000;
-    /* Negro */
+    background: #fff; color: #000;
     padding: 10px 25px;
-    /* Padding */
     border-radius: 50px;
-    /* Bordes */
     text-decoration: none;
-    /* Sin subrayado */
     font-weight: bold;
-    /* Negrita */
-    font-size: 0.9rem;
-    /* Tamaño */
 }
 
-/* --- ESTILOS PLANES --- */
-.pricing-section {
-    padding: 80px 0;
-    background: #fff;
-    color: #000;
-    text-align: center;
-    /* Padding, blanco, negro, centrado */
-}
+/* =========================================
+   8. SECCIÓN: PLANES Y PRECIOS
+========================================= */
+.pricing-section { background: #fff; color: #000; padding: 80px 0; }
 
 .pricing-grid {
     display: grid;
-    /* Grid */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    /* Columnas */
-    gap: 30px;
-    /* Espacio */
-    margin-top: 50px;
-    /* Margen */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 350px));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 50px auto;
+    justify-content: center;
 }
 
 .price-card {
+    background: #fff;
     border: 1px solid #eee;
-    /* Borde gris */
     padding: 40px 30px;
-    /* Padding */
-    border-radius: 15px;
-    /* Bordes */
-    transition: 0.3s;
-    /* Transición */
+    border-radius: 12px;
+    text-align: center;
     position: relative;
-    /* Relativa */
 }
 
 .price-card.featured {
     background: #000;
-    /* Negro */
     color: #fff;
-    /* Blanco */
     transform: scale(1.05);
-    /* Escala */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    /* Sombra */
-    border: none;
-    /* Sin borde */
+    z-index: 2;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
 
 .popular-tag {
     position: absolute;
-    /* Absoluta */
-    top: -15px;
-    /* Arriba */
-    left: 50%;
-    /* Centro */
-    transform: translateX(-50%);
-    /* Centra */
-    background: #e31c25;
-    /* Rojo */
-    color: #fff;
-    /* Blanco */
-    padding: 5px 20px;
-    /* Padding */
-    border-radius: 20px;
-    /* Bordes */
-    font-size: 0.8rem;
-    /* Tamaño */
-    font-weight: bold;
-    /* Negrita */
+    top: -15px; left: 50%; transform: translateX(-50%);
+    background: #e31c25; color: #fff;
+    padding: 5px 20px; border-radius: 20px; font-weight: bold;
 }
 
-.plan-label {
-    font-size: 0.8rem;
-    color: #888;
-    letter-spacing: 2px;
-    /* Tamaño, gris, espaciado */
+.price { font-family: 'Bebas Neue'; font-size: 5rem; line-height: 1; margin: 20px 0; }
+.price span { font-size: 1.2rem; color: #888; font-family: 'Montserrat'; }
+
+.features { list-style: none; margin: 30px 0; text-align: left; }
+.features li { margin-bottom: 12px; font-size: 0.9rem; }
+.features li.check::before { content: '✔ '; color: #2ecc71; margin-right: 10px; }
+.features li.x { color: #bbb; opacity: 0.6; }
+.features li.x::before { content: '✘ '; margin-right: 10px; }
+
+.btn-red { background: #e31c25; color: #fff; border: none; width: 100%; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+.btn-outline { background: transparent; border: 1px solid #000; width: 100%; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+
+/* =========================================
+   9. SECCIÓN: CONTACTO Y FOOTER
+========================================= */
+#contacto { background: #000; }
+
+form { max-width: 600px; margin: 0 auto; }
+form input, form textarea {
+    width: 100%; padding: 15px; margin-bottom: 15px;
+    background: #111; border: 1px solid #333; color: #fff;
 }
 
-.price-card h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
-    margin: 10px 0;
-    /* Fuente, tamaño, margen */
+form button {
+    width: 100%; padding: 15px; background: red; color: #fff;
+    border: none; font-family: 'Bebas Neue'; font-size: 1.5rem; cursor: pointer;
 }
 
-.plan-desc {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 20px;
-    /* Tamaño, gris, margen */
-}
-
-.price {
-    font-size: 3.5rem;
-    font-weight: 800;
-    font-family: 'Bebas Neue', sans-serif;
-    /* Tamaño, peso, fuente */
-}
-
-.price span {
-    font-size: 1rem;
-    color: #888;
-    /* Tamaño, gris */
-}
-
-.features {
-    list-style: none;
-    padding: 0;
-    margin: 30px 0;
-    text-align: left;
-    /* Sin viñetas, padding, margen, izquierda */
-}
-
-.features li {
-    margin-bottom: 12px;
-    font-size: 0.95rem;
-    /* Margen, tamaño */
-}
-
-.features li.check::before {
-    content: '✔';
-    color: #2ecc71;
-    margin-right: 10px;
-    /* Check verde */
-}
-
-.features li.x {
-    color: #ccc;
-    /* Gris */
-}
-
-.features li.x::before {
-    content: '✘';
-    margin-right: 10px;
-    /* X */
-}
-
-.btn-outline,
-.btn-red {
-    width: 100%;
-    /* Ancho completo */
-    padding: 15px;
-    /* Padding */
-    border-radius: 50px;
-    /* Bordes */
-    font-weight: bold;
-    /* Negrita */
-    cursor: pointer;
-    /* Cursor */
-    transition: 0.3s;
-    /* Transición */
-}
-
-.btn-outline {
-    background: transparent;
-    border: 1px solid #000;
-    /* Transparente, borde negro */
-}
-
-.btn-red {
-    background: #e31c25;
-    border: none;
-    color: #fff;
-    /* Rojo, sin borde, blanco */
-}
-
-.btn-outline:hover {
+footer {
+    padding: 40px;
+    text-align: center;
     background: #000;
-    color: #fff;
-    /* Negro, blanco */
+    border-top: 1px solid #222;
+    font-size: .8rem;
 }
 
-.pricing-footer {
-    margin-top: 40px;
-    color: #999;
-    font-size: 0.8rem;
-    /* Margen, gris, tamaño */
+/* =========================================
+   10. RESPONSIVE DESIGN (Móvil)
+========================================= */
+@media (max-width: 992px) {
+    .nosotros-content, .schedule-flex-wrapper { flex-direction: column; text-align: center; }
+    #inicio h1 { font-size: 4rem; }
+    .video-grid { grid-template-columns: 1fr; }
+    .price-card.featured { transform: scale(1); margin: 20px 0; }
 }
