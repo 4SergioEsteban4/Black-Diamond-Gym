@@ -23,7 +23,7 @@
                 <li><a href="#inicio">INICIO</a></li>
                 <li><a href="#nosotros">NOSOTROS</a></li>
                 <li><a href="#servicios">SERVICIOS</a></li>
-                <li><a href="#galeria">FOTOS Y VIDEOS</a></li>
+                <li><a href="#fotos-videos">FOTOS Y VIDEOS</a></li>
                 <li><a href="#horarios">HORARIOS</a></li>
                 <li><a href="#contacto">CONTACTO</a></li>
                 <li><a href="#contacto" class="btn-join">ÚNETE AHORA</a></li>
@@ -109,7 +109,7 @@
     </div>
 </section>
 
-<section class="gallery-section">
+<section class="gallery-section" id="fotos-videos">
     <div class="container">
         <div class="section-header">
             <span class="subtitle">● GALERÍA ●</span>
@@ -168,7 +168,7 @@
     </div>
 </section>
 
-      <section class="schedule-section">
+      <section class="schedule-section" id="horarios">
     <div class="container">
         <div class="schedule-flex-wrapper">
             <div class="schedule-card-container">
@@ -217,7 +217,7 @@
 <section class="pricing-section">
     <div class="container">
         <div class="section-header">
-            <span class="subtitle">● MEMBRESÍAS ●</span>
+            <span class="subtitle"><span class="dot-red">●</span> <span class="subtitle-text">MEMBRESÍAS</span> <span class="dot-red">●</span></span>
             <h2>PLANES Y PRECIOS</h2>
             <p>Elige el plan que mejor se adapte a tus objetivos</p>
         </div>
@@ -273,15 +273,51 @@
     </div>
 </section>
 
-        <section id="contacto">
-            <h2>CONTÁCTANOS</h2>
-            <form>
-                <input type="text" name="nombre" placeholder="Nombre Completo" required>
-                <input type="email" name="email" placeholder="Correo Electrónico" required>
-                <textarea placeholder="¿En qué podemos ayudarte?"></textarea>
-                <button type="submit">ENVIAR MENSAJE</button>
-            </form>
-        </section>
+<section id="contacto">
+    <div class="contacto-header">
+        <h2>CONTÁCTANOS</h2>
+        <p>Estamos aquí para ayudarte a comenzar tu transformación</p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-icon">📍</div>
+            <h3>UBICACIÓN</h3>
+            <p>Av. Principal 123<br>Centro, Ciudad<br>CP 12345</p>
+        </div>
+        <div class="info-item">
+            <div class="info-icon">📞</div>
+            <h3>TELÉFONO</h3>
+            <p>+123 456 7890</p>
+        </div>
+        <div class="info-item">
+            <div class="info-icon">🔗</div>
+            <h3>REDES SOCIALES</h3>
+            <div class="social-icons">
+                <span>📸</span> <span>f</span> <span>d</span>
+            </div>
+        </div>
+    </div>
+
+<div class="map-container">
+    <div class="google-map-placeholder">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9537929844473!2d-74.19838872418671!3d4.602298142501059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9f752d66835f%3A0xed4ec2ebcb33c31f!2sBLACK%20DIAMOND%20GYM%20BOXING%20CENTER!5e0!3m2!1ses-419!2sco!4v1773768320987!5m2!1ses-419!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+    
+    <div class="form-overlay">
+        <h3>SOLICITA INFORMACIÓN</h3>
+        <form>
+            <input type="text" placeholder="Tu nombre completo" required>
+            <input type="email" placeholder="Tu correo electrónico" required>
+            <input type="tel" placeholder="Tu teléfono">
+            <textarea placeholder="¿En qué estás interesado?"></textarea>
+            <button type="submit" class="btn-red-form">ENVIAR MENSAJE</button>
+        </form>
+        <p class="promo-text">🔔 RECIBE NUESTRAS PROMOCIONES EXCLUSIVAS</p>
+    </div>
+</div>
+    </div>
+</section>
     </main>
 
     <footer>
