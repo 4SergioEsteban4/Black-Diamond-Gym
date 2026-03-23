@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Diamond Gym · Boxing Center · Bosa, Bogotá</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="CSS.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header id="site-header">
+        <nav>
+            <a href="#" class="nav-logo">
+                <img src="MEDIA/icono.jpg" alt="Black Diamond Gym" id="img-logo_icono">
+                <span class="nav-logo-text">BLACK<br><span class="nav-logo-sub">DIAMOND</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#inicio">INICIO</a></li>
+                <li><a href="#nosotros">NOSOTROS</a></li>
+                <li><a href="#servicios">SERVICIOS</a></li>
+                <li><a href="#categorias">CATEGORÍAS</a></li>
+                <li><a href="#fotos-videos">GALERÍA</a></li>
+                <li><a href="#horarios">HORARIOS</a></li>
+                <li><a href="#precios">PRECIOS</a></li>
+                <li><a href="#contacto">CONTACTO</a></li>
+                <li><a href="#noticias">NOTICIAS</a></li>
+                <li><a href="#catalogo">TIENDA</a></li>
+            </ul>
+            <a href="https://wa.me/573133737590" target="_blank" class="btn-whatsapp">
+                ÚNETE AHORA
+            </a>
+            <button class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-close" id="mobileClose">✕</button>
+        <ul>
+            <li><a href="#inicio" class="mob-link">INICIO</a></li>
+            <li><a href="#nosotros" class="mob-link">NOSOTROS</a></li>
+            <li><a href="#servicios" class="mob-link">SERVICIOS</a></li>
+            <li><a href="#categorias" class="mob-link">CATEGORÍAS</a></li>
+            <li><a href="#fotos-videos" class="mob-link">GALERÍA</a></li>
+            <li><a href="#horarios" class="mob-link">HORARIOS</a></li>
+            <li><a href="#precios" class="mob-link">PRECIOS</a></li>
+            <li><a href="#contacto" class="mob-link">CONTACTO</a></li>
+            <li><a href="https://wa.me/573133737590" target="_blank" class="mob-link mob-wa">WHATSAPP: 313 373 7590</a>
+            </li>
+        </ul>
+    </div>
+
+    <main>
+
+        <!-- HERO -->
+        <section id="inicio" class="hero-section">
+            <div class="hero-bg-overlay"></div>
+            <div class="hero-content">
+                <p class="hero-eyebrow"><span class="dot-pulse"></span> BOXING CENTER · BOSA · BOGOTÁ</p>
+                <h1>FORJA TU<br><span class="hero-accent">CAMPEÓN</span><br>INTERIOR</h1>
+                <p class="hero-sub">Entrena como campeón. Conviértete en campeón.<br>Boxeo · Musculación · Funcional ·
+                    Para todas las edades.</p>
+                <div class="hero-btns">
+                    <a href="https://wa.me/573133737590" target="_blank"
+                        class="btn-primary btn-primary-red">ESCRÍBENOS</a>
+                    <a href="#precios" class="btn-ghost">VER PLANES</a>
+                </div>
+            </div>
+            <div class="scroll-indicator" id="scrollIndicator">
+                <span class="scroll-text">SCROLL</span>
+                <!-- Mouse con rueda animada -->
+                <svg class="scroll-mouse" viewBox="0 0 28 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Cuerpo del mouse -->
+                    <rect x="1" y="1" width="26" height="42" rx="13" stroke="white" stroke-width="2" />
+                    <!-- Línea divisoria central del mouse -->
+                    <line x1="14" y1="1" x2="14" y2="22" stroke="white" stroke-width="1" opacity="0.3" />
+                    <!-- Rueda animada -->
+                    <rect class="mouse-wheel" x="12" y="8" width="4" height="8" rx="2" fill="#e31c25" />
+                </svg>
+                <!-- Tres chevrons en cascada -->
+                <div class="scroll-chevrons">
+                    <svg class="chev chev-1" viewBox="0 0 24 12" fill="none">
+                        <polyline points="2,2 12,10 22,2" stroke="#e31c25" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <svg class="chev chev-2" viewBox="0 0 24 12" fill="none">
+                        <polyline points="2,2 12,10 22,2" stroke="#e31c25" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" opacity="0.6" />
+                    </svg>
+                    <svg class="chev chev-3" viewBox="0 0 24 12" fill="none">
+                        <polyline points="2,2 12,10 22,2" stroke="#e31c25" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" opacity="0.35" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- ══════════════════════════════════════════════
+     ÚLTIMA NOTICIA DIARIA — datos desde API/MySQL
+     ══════════════════════════════════════════════ -->
+        <section id="noticias" class="ud-section">
+
+            <!-- Cabecera de sección -->
+            <div class="ud-topbar">
+                <div class="ud-live-dot"></div>
+                <span class="ud-eyebrow">ÚLTIMA NOTICIA DIARIA</span>
+                <span class="ud-fecha" id="udFecha"></span>
+            </div>
+
+            <!-- ── Estado: cargando ── -->
+            <div class="ud-loading" id="udLoading">
+                <div class="ud-spinner"></div>
+                <p>Cargando la noticia del día...</p>
+            </div>
+
+            <!-- ── Estado: contenido ── -->
+            <div class="ud-card" id="udCard" style="display:none">
+
+                <!-- Imagen opcional -->
+                <div class="ud-img-wrap" id="udImgWrap" style="display:none">
+                    <img id="udImg" src="" alt="Noticia del día" class="ud-img">
+                    <div class="ud-img-badge">🥊 HOY</div>
+                </div>
+
+                <!-- Texto -->
+                <div class="ud-body">
+                    <h2 class="ud-titulo" id="udTitulo"></h2>
+                    <p class="ud-texto" id="udTexto"></p>
+                    <div class="ud-meta">
+                        <span class="ud-author-tag" id="udAuthor"></span>
+                        <a href="https://wa.me/573133737590" target="_blank"
+                            class="ud-wa-btn ud-wa-btn-red">Pregúntanos</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Estado: error ── -->
+            <div class="ud-error" id="udError" style="display:none">
+                <span class="ud-error-icon">⚡</span>
+                <p>No se pudo cargar la noticia.</p>
+                <button class="ud-retry-btn" onclick="cargarNoticia()">Reintentar</button>
+            </div>
+
+        </section>
+
+        <!-- NOSOTROS -->
+        <section id="nosotros" class="nosotros-section">
+            <div class="nosotros-content">
+                <div class="nosotros-visual sr-target">
+                    <div class="img-wrapper">
+                        <img src="MEDIA/historia.jpg" alt="Boxeador" class="boxer-image" id="img-historia">
+                        <div class="img-badge">EST.<br><strong id="txt-est-año">2010</strong></div>
+                    </div>
+                </div>
+                <div class="nosotros-text sr-target">
+                    <p class="eyebrow-label"><span class="red-dot">●</span> NUESTRA HISTORIA</p>
+                    <h2>DONDE LA PASIÓN<br>COBRA FUERZA</h2>
+                    <p>Black Diamond Gym es más que un gimnasio — es el epicentro del boxeo en Bosa, Bogotá. Un espacio
+                        donde boxeadores y entusiastas del fitness convergen para alcanzar sus metas, sin importar la
+                        edad ni el nivel.</p>
+                    <p>Nuestra filosofía se basa en la disciplina, el trabajo duro y la superación constante. Cada
+                        entrenamiento está diseñado para llevar tu cuerpo y mente al siguiente nivel.</p>
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <span class="stat-num" data-target="15" id="stat-num-1">0</span><span class="stat-plus"
+                                id="stat-suf-1">+</span>
+                            <span class="stat-label" id="stat-label-1">Años de<br>experiencia</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num" data-target="3" id="stat-num-2">0</span><span class="stat-plus"
+                                id="stat-suf-2"></span>
+                            <span class="stat-label" id="stat-label-2">Tipos de<br>entrenamiento</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-num" data-target="3" id="stat-num-3">0</span><span class="stat-plus"
+                                id="stat-suf-3"></span>
+                            <span class="stat-label" id="stat-label-3">Categorías<br>de edad</span>
+                        </div>
+                    </div>
+                    <a href="#categorias" class="btn-dark">VER CATEGORÍAS →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICIOS -->
+        <section id="servicios" class="servicios-section">
+            <div class="section-label"><span class="red-dot">●</span> LO QUE HACEMOS</div>
+            <h2 class="section-title sr-target">NUESTROS SERVICIOS</h2>
+            <p class="section-sub sr-target">Programas diseñados para todos los niveles</p>
+            <div class="servicios-grid">
+                <div class="servicio-card sr-target">
+                    <div class="servicio-icon-wrap">
+                        <img src="MEDIA/boxeo.png" alt="Boxeo" class="servicio-imagen" id="img-servicio_boxeo">
+                    </div>
+                    <h3>CLASES DE BOXEO</h3>
+                    <p>Entrenamiento técnico y táctico con instructores certificados. Aprende desde cero o perfecciona
+                        tu estilo de combate.</p>
+                    <div class="card-tag">Funcional · Recreativo · Competitivo</div>
+                </div>
+                <div class="servicio-card sr-target" style="--delay:.1s">
+                    <div class="servicio-icon-wrap">
+                        <img src="MEDIA/fitness.png" alt="Fitness" class="servicio-imagen" id="img-servicio_fitness">
+                    </div>
+                    <h3>ACONDICIONAMIENTO FÍSICO</h3>
+                    <p>Musculación y entrenamiento funcional para mejorar tu resistencia, fuerza y agilidad. Para
+                        atletas y principiantes.</p>
+                    <div class="card-tag">Musculación · Funcional</div>
+                </div>
+                <div class="servicio-card sr-target" style="--delay:.2s">
+                    <div class="servicio-icon-wrap">
+                        <img src="MEDIA/sujeto.png" alt="Personal" class="servicio-imagen" id="img-servicio_personal">
+                    </div>
+                    <h3>ENTRENAMIENTO PERSONAL</h3>
+                    <p>Sesiones individuales con entrenadores expertos que diseñarán un programa según tus objetivos y
+                        disponibilidad.</p>
+                    <div class="card-tag">100% personalizado</div>
+                </div>
+            </div>
+            <div class="amenities-strip sr-target">
+                <div class="amenity"><span>🚿</span> Duchas</div>
+                <div class="amenity-sep">·</div>
+                <div class="amenity"><span>☕</span> Cafetería</div>
+                <div class="amenity-sep">·</div>
+                <div class="amenity"><span>🚲</span> Biciparqueadero</div>
+            </div>
+        </section>
+
+        <!-- CATEGORÍAS -->
+        <section id="categorias" class="categorias-section">
+            <div class="section-label"><span class="red-dot">●</span> PARA TODOS</div>
+            <h2 class="section-title sr-target">CATEGORÍAS Y MODALIDADES</h2>
+            <div class="cat-grid">
+                <div class="cat-card sr-target">
+                    <div class="cat-img-wrap" onclick="abrirZoom(this)">
+                        <img src="MEDIA/cat_edad.jpg" id="img-cat_edad" alt="Categorías por edad" class="cat-img"
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22%3E%3Crect fill=%22%230d0d0d%22 width=%22400%22 height=%22220%22/%3E%3Ctext x=%2250%25%22 y=%2248%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2260%22%3E👊%3C/text%3E%3Ctext x=%2250%25%22 y=%2278%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23555%22%3ESube una imagen desde el admin%3C/text%3E%3C/svg%3E'">
+                        <div class="cat-img-zoom-icon">🔍</div>
+                    </div>
+                    <h3>POR EDAD</h3>
+                    <ul class="cat-list">
+                        <li><span class="bullet-red">▶</span> Infantiles</li>
+                        <li><span class="bullet-red">▶</span> Juveniles</li>
+                        <li><span class="bullet-red">▶</span> Adultos</li>
+                    </ul>
+                    <p class="cat-note">El boxeo no tiene límite de edad. Tenemos programa para cada etapa de vida.</p>
+                </div>
+                <div class="cat-card cat-featured sr-target" style="--delay:.12s">
+                    <div class="cat-img-wrap" onclick="abrirZoom(this)">
+                        <img src="MEDIA/cat_modalidad.jpg" id="img-cat_modalidad" alt="Modalidades" class="cat-img"
+                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22%3E%3Crect fill=%22%230d0d0d%22 width=%22400%22 height=%22220%22/%3E%3Ctext x=%2250%25%22 y=%2248%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2260%22%3E🥊%3C/text%3E%3Ctext x=%2250%25%22 y=%2278%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2214%22 fill=%22%23555%22%3ESube una imagen desde el admin%3C/text%3E%3C/svg%3E'">
+                        <div class="cat-img-zoom-icon">🔍</div>
+                    </div>
+                    <h3>MODALIDADES</h3>
+                    <ul class="cat-list">
+                        <li><span class="bullet-red">▶</span> Funcional</li>
+                        <li><span class="bullet-red">▶</span> Recreativo</li>
+                        <li><span class="bullet-red">▶</span> Competitivo</li>
+                    </ul>
+                    <p class="cat-note">Desde quien quiere mantenerse activo hasta el que sueña con el ring.</p>
+                </div>
+                <div class="cat-card cat-cta sr-target" style="--delay:.24s">
+                    <div class="cat-icon">💬</div>
+                    <h3>¿NO SABES POR DÓNDE EMPEZAR?</h3>
+                    <p class="cat-note" style="margin-bottom:24px">Escríbenos y te orientamos sin costo. Encuéntrate con
+                        tu disciplina ideal.</p>
+                    <a href="https://wa.me/573133737590" target="_blank" class="btn-wa-big btn-red-style">WhatsApp: 313
+                        373 7590</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIGHTBOX ZOOM -->
+        <div id="zoomModal" class="zoom-modal-bg" style="display:none" onclick="cerrarZoom(event)">
+            <button class="zoom-close" onclick="cerrarZoom({target:document.querySelector('.zoom-close')})">✕</button>
+            <img id="zoomImg" class="zoom-img" src="" alt="">
+        </div>
+
+        <!-- GALERÍA -->
+        <section class="gallery-section" id="fotos-videos">
+            <div class="section-label"><span class="red-dot">●</span> GALERÍA</div>
+            <h2 class="section-title sr-target">FOTOS Y VIDEOS</h2>
+            <p class="section-sub sr-target">Vive la experiencia Black Diamond Gym</p>
+            <div class="photo-grid" id="photoGrid">
+                <!-- Cargado dinámicamente desde /api/galeria -->
+                <div class="photo-grid-loading" id="photoGridLoading">
+                    <div class="photo-card-skeleton"></div>
+                    <div class="photo-card-skeleton"></div>
+                    <div class="photo-card-skeleton"></div>
+                </div>
+            </div>
+            <div class="videos-header"><span class="red-dot">●</span> VIDEOS DESTACADOS</div>
+            <div class="video-grid" id="videoGrid">
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#333;font-size:.85rem">Cargando
+                    videos...</div>
+            </div>
+
+            <!-- Modal lightbox para ver videos en página -->
+            <div id="videoModal" class="video-modal-bg" style="display:none" onclick="cerrarVideoModal(event)">
+                <div class="video-modal-inner">
+                    <button class="video-modal-close" onclick="cerrarVideoModal()">✕</button>
+                    <div class="video-modal-content" id="videoModalContent"></div>
+                </div>
+            </div>
+            <div class="gallery-social-cta sr-target">
+                <p>Síguenos y entérate de todo lo que pasa en el gym</p>
+                <p class="social-name-gallery">The Black Diamond Gym - Boxing Center</p>
+                <div class="social-btns">
+                    <a href="https://www.facebook.com/share/1776HpW1aZ/" target="_blank" class="sbtn sbtn-fb">f
+                        Facebook</a>
+                    <a href="https://www.instagram.com/gym_blackdiamond_boxing_center?utm_source=qr&igsh=MXRocmVscjFscHIyMQ%3D%3D"
+                        target="_blank" class="sbtn sbtn-ig">📸 Instagram</a>
+                    <a href="https://vm.tiktok.com/ZS9RhpJYAFe6S-FrXdA/" target="_blank" class="sbtn sbtn-tk">♪
+                        TikTok</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- HORARIOS -->
+        <section class="schedule-section" id="horarios">
+            <div class="schedule-inner">
+                <div class="schedule-left sr-target">
+                    <p class="eyebrow-label"><span class="red-dot">●</span> HORARIOS DE ATENCIÓN</p>
+                    <h2>¿CUÁNDO<br>NOS VISITAS?</h2>
+                    <div class="schedule-card">
+                        <div class="schedule-row header-row">
+                            <span>DÍA</span><span>HORARIO</span>
+                        </div>
+                        <div class="schedule-row">
+                            <div class="day-info"><span class="day-dot lv"></span><strong>Lunes – Viernes</strong></div>
+                            <span class="time-chip">6:00 a.m. – 10:00 p.m.</span>
+                        </div>
+                        <div class="schedule-row alt">
+                            <div class="day-info"><span class="day-dot sa"></span><strong>Sábados</strong></div>
+                            <span class="time-chip">8:00 a.m. – 5:00 p.m.</span>
+                        </div>
+                        <div class="schedule-row">
+                            <div class="day-info"><span class="day-dot do"></span><strong>Domingos</strong></div>
+                            <span class="time-chip">8:00 a.m. – 1:00 p.m.</span>
+                        </div>
+                        <div class="schedule-row holiday">
+                            <div class="day-info"><span class="day-dot fe"></span><strong>Festivos</strong></div>
+                            <span class="time-chip">Consultar RRSS</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="schedule-right sr-target">
+                    <div class="cta-image-card">
+                        <img src="MEDIA/Mike.jpg" alt="Boxeo en el gym" id="img-mike">
+                        <div class="cta-overlay">
+                            <h3>RESERVA TU CLASE</h3>
+                            <p>Sin costo, sin compromiso</p>
+                            <a href="https://wa.me/573133737590" target="_blank"
+                                class="btn-wa-overlay btn-red-style">ESCRIBIR AHORA</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRECIOS -->
+        <section class="pricing-section" id="precios">
+            <div class="section-label"><span class="red-dot">●</span> MEMBRESÍAS</div>
+            <h2 class="section-title sr-target">PLANES Y PRECIOS</h2>
+            <p class="section-sub sr-target">Elige el plan que mejor se adapte a tus objetivos</p>
+            <div class="carousel-3d-scene">
+                <div class="carousel-3d-track" id="carousel3d">
+                    <div class="price-card-3d">
+                        <div class="popular-badge">MÁS POPULAR</div>
+                        <div class="card-top">
+                            <span class="plan-label">💪 MENSUALIDAD</span>
+                            <h3>BOXEO</h3>
+                            <p class="plan-desc">Boxeo + Musculación + Funcional</p>
+                        </div>
+                        <div class="price-tag">$120<span>.000<small>/mes</small></span></div>
+                        <ul class="features-3d">
+                            <li id="feat-boxeo-1">Clases de boxeo técnico</li>
+                            <li id="feat-boxeo-2">Musculación incluida</li>
+                            <li id="feat-boxeo-3">Entrenamiento funcional</li>
+                            <li id="feat-boxeo-4">Acceso completo al gym</li>
+                            <li id="feat-boxeo-5">Instructores certificados</li>
+                        </ul>
+                        <a href="https://wa.me/573133737590?text=Hola,%20me%20interesa%20el%20plan%20Boxeo"
+                            target="_blank" class="btn-plan red">QUIERO ESTE PLAN</a>
+                    </div>
+                    <div class="price-card-3d">
+                        <div class="card-top">
+                            <span class="plan-label">💪 MENSUALIDAD</span>
+                            <h3>GYM</h3>
+                            <p class="plan-desc">Musculación + Funcional</p>
+                        </div>
+                        <div class="price-tag">$75<span>.000<small>/mes</small></span></div>
+                        <ul class="features-3d">
+                            <li id="feat-gym-1">Entrenamiento de musculación</li>
+                            <li id="feat-gym-2">Funcional incluido</li>
+                            <li id="feat-gym-3">Acceso ilimitado al gym</li>
+                            <li id="feat-gym-4">Equipamiento completo</li>
+                            <li class="feat-no" id="feat-gym-5">Clases de boxeo</li>
+                        </ul>
+                        <a href="https://wa.me/573133737590?text=Hola,%20me%20interesa%20el%20plan%20Gym"
+                            target="_blank" class="btn-plan outline">QUIERO ESTE PLAN</a>
+                    </div>
+                    <div class="price-card-3d">
+                        <div class="card-top">
+                            <span class="plan-label">⏱ QUINCENA</span>
+                            <h3>VALERA</h3>
+                            <p class="plan-desc">Boxeo + Musculación · 15 días</p>
+                        </div>
+                        <div class="price-tag">$60<span>.000<small>/15 días</small></span></div>
+                        <ul class="features-3d">
+                            <li id="feat-valera-1">Válido por 15 días</li>
+                            <li id="feat-valera-2">Clases de boxeo</li>
+                            <li id="feat-valera-3">Musculación incluida</li>
+                            <li id="feat-valera-4">Ideal para comenzar</li>
+                            <li class="feat-no" id="feat-valera-5">Entrenamiento funcional</li>
+                        </ul>
+                        <a href="https://wa.me/573133737590?text=Hola,%20me%20interesa%20el%20plan%20Valera"
+                            target="_blank" class="btn-plan outline">QUIERO ESTE PLAN</a>
+                    </div>
+                    <div class="price-card-3d card-dia">
+                        <div class="card-top">
+                            <span class="plan-label">📅 PLAN DE DÍA</span>
+                            <h3>DÍA</h3>
+                            <p class="plan-desc">Entrena cuando quieras</p>
+                        </div>
+                        <ul class="features-3d dia-list">
+                            <li class="dia-item">
+                                <span class="dia-label">Dirigido Boxeo</span>
+                                <span class="dia-price">$20.000</span>
+                            </li>
+                            <li class="dia-item">
+                                <span class="dia-label">Libre Boxeo</span>
+                                <span class="dia-price">$15.000</span>
+                            </li>
+                            <li class="dia-item">
+                                <span class="dia-label">Dirigido Gym</span>
+                                <span class="dia-price">$15.000</span>
+                            </li>
+                            <li class="dia-item">
+                                <span class="dia-label">Libre Gym</span>
+                                <span class="dia-price">$10.000</span>
+                            </li>
+                        </ul>
+                        <a href="https://wa.me/573133737590?text=Hola,%20quiero%20info%20del%20plan%20día"
+                            target="_blank" class="btn-plan outline">CONSULTAR</a>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-3d-controls">
+                <button class="ctrl-btn" id="prevPlan">&#8592;</button>
+                <span class="plan-indicator" id="planName">BOXEO</span>
+                <button class="ctrl-btn" id="nextPlan">&#8594;</button>
+            </div>
+            <div class="carousel-3d-dots" id="dots3d"></div>
+            <p class="pricing-footer">ⓘ Todos los planes incluyen duchas. Precios en COP. Sujetos a cambios sin previo
+                aviso.</p>
+            <!-- CATÁLOGO DEPORTIVO -->
+            <section id="catalogo" class="catalogo-section">
+                <div class="section-label"><span class="red-dot">●</span> TIENDA</div>
+                <h2 class="section-title sr-target">CATÁLOGO DEPORTIVO</h2>
+                <p class="section-sub sr-target">Equipamiento y ropa oficial Black Diamond Gym</p>
+                <div class="catalogo-grid" id="catalogoGrid">
+                    <div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Cargando
+                        productos...</div>
+                </div>
+            </section>
+
+            <!-- CONTACTO -->
+            <section id="contacto" class="contacto-section">
+                <div class="section-label"><span class="red-dot">●</span> ENCUÉNTRANOS</div>
+                <h2 class="section-title sr-target">CONTÁCTANOS</h2>
+                <p class="section-sub sr-target">Estamos en Bosa, Bogotá. ¡Ven a conocernos!</p>
+                <div class="info-cards sr-target">
+                    <div class="info-card">
+                        <div class="info-icon">📍</div>
+                        <h4>UBICACIÓN</h4>
+                        <p>Calle 71C Sur # 77M-39<br><strong>Barrio Carbonel</strong><br>Localidad de Bosa · Bogotá</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">📲</div>
+                        <h4>WHATSAPP</h4>
+                        <a href="https://wa.me/573133737590" target="_blank" class="wa-link">313 373 7590</a>
+                        <p class="info-small">Escríbenos para más info</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">📱</div>
+                        <h4>REDES SOCIALES</h4>
+                        <p class="social-name-info">The Black Diamond Gym<br>Boxing Center</p>
+                        <div class="social-row">
+                            <a href="https://www.facebook.com/share/1776HpW1aZ/" target="_blank" class="si si-fb">f</a>
+                            <a href="https://www.instagram.com/gym_blackdiamond_boxing_center?utm_source=qr&igsh=MXRocmVscjFscHIyMQ%3D%3D"
+                                target="_blank" class="si si-ig">📸</a>
+                            <a href="https://vm.tiktok.com/ZS9RhpJYAFe6S-FrXdA/" target="_blank" class="si si-tk">♪</a>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">🕐</div>
+                        <h4>HORARIO HOY</h4>
+                        <div id="horario-hoy" class="horario-hoy-text">—</div>
+                    </div>
+                </div>
+                <div class="map-form-grid sr-target">
+                    <div class="map-wrap">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9537929844473!2d-74.19838872418671!3d4.602298142501059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9f752d66835f%3A0xed4ec2ebcb33c31f!2sBLACK%20DIAMOND%20GYM%20BOXING%20CENTER!5e0!3m2!1ses-419!2sco!4v1773768320987!5m2!1ses-419!2sco"
+                            allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <div class="form-card">
+                        <h3>SOLICITA INFORMACIÓN</h3>
+                        <p class="form-sub">Te respondemos por WhatsApp a la brevedad</p>
+                        <form id="contactForm" onsubmit="enviarSolicitud(event)" novalidate>
+                            <div class="form-group">
+                                <input type="text" id="cf-nombre" placeholder="Tu nombre completo *"
+                                    oninput="actualizarReqContacto()">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="cf-email" placeholder="Tu correo electrónico"
+                                    oninput="actualizarReqContacto()">
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" id="cf-whatsapp" placeholder="Tu WhatsApp (mín. 10 dígitos)"
+                                    oninput="this.value=this.value.replace(/[^0-9+\-\s]/g,''); actualizarReqContacto()">
+                            </div>
+                            <p id="cf-contacto-hint" class="cf-hint">⚡ Ingresa tu correo <strong>o</strong> tu WhatsApp
+                                (mín. 10 dígitos)</p>
+                            <div class="form-group">
+                                <select id="cf-plan">
+                                    <option value="" disabled selected>¿Qué plan te interesa?</option>
+                                    <option>Mensualidad Boxeo</option>
+                                    <option>Mensualidad Gym</option>
+                                    <option>Valera 15 días</option>
+                                    <option>Plan Día</option>
+                                    <option>Quiero más información</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="cf-mensaje" placeholder="¿Algo más que quieras contarnos?"></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit" id="cf-btn">QUIERO INFORMACIÓN</button>
+                        </form>
+                        <p class="promo-text">🔔 RECIBE NUESTRAS PROMOCIONES EXCLUSIVAS</p>
+                    </div>
+                </div>
+            </section>
+
+
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="MEDIA/icono.jpg" alt="Logo" class="footer-logo" id="img-logo_icono_footer">
+                <p class="footer-tagline">FORJA TU CAMPEÓN INTERIOR</p>
+                <p class="footer-address">📍 Cll 71C Sur # 77M-39 · Barrio Carbonel · Bosa · Bogotá</p>
+            </div>
+            <div class="footer-links-col">
+                <h5>NAVEGACIÓN</h5>
+                <a href="#inicio">Inicio</a>
+                <a href="#nosotros">Nosotros</a>
+                <a href="#servicios">Servicios</a>
+                <a href="#categorias">Categorías</a>
+                <a href="#horarios">Horarios</a>
+                <a href="#precios">Precios</a>
+                <a href="#contacto">Contacto</a>
+            </div>
+            <div class="footer-links-col">
+                <h5>CONTÁCTANOS</h5>
+                <a href="https://wa.me/573133737590" target="_blank" class="footer-wa-red">313 373 7590</a>
+                <br><br>
+                <h5>SÍGUENOS</h5>
+                <p style="color:#666;font-size:.85rem;margin-bottom:12px">The Black Diamond Gym<br>Boxing Center</p>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/share/1776HpW1aZ/" target="_blank" class="fs-btn">f</a>
+                    <a href="https://www.instagram.com/gym_blackdiamond_boxing_center?utm_source=qr&igsh=MXRocmVscjFscHIyMQ%3D%3D"
+                        target="_blank" class="fs-btn">📸</a>
+                    <a href="https://vm.tiktok.com/ZS9RhpJYAFe6S-FrXdA/" target="_blank" class="fs-btn">♪</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Black Diamond Gym · Boxing Center · Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- FLOATING WA -->
+    <a href="https://wa.me/573133737590" target="_blank" class="float-wa float-wa-red" aria-label="WhatsApp">💬</a>
+
+    <!-- Archivo JavaScript externo con toda la lógica del sitio -->
+    <script src="javascript.js"></script>
+</body>
+
+</html>

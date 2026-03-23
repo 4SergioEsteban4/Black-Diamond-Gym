@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin · Black Diamond Gym</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{--red:#e31c25;--red2:#b3161c;--dark:#0a0a0a;--dark2:#111;--dark3:#1a1a1a;--white:#fff;--gray:#888;--font-h:'Bebas Neue',sans-serif;--font-b:'Montserrat',sans-serif}
+        body{background:var(--dark);color:var(--white);font-family:var(--font-b);min-height:100vh}
+        h1,h2,h3,h4{font-family:var(--font-h);letter-spacing:1.5px;text-transform:uppercase;line-height:1.05}
+        a{color:inherit;text-decoration:none}
+
+        /* LOGIN */
+        .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+        .login-card{background:var(--dark2);border:1px solid #222;border-radius:18px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+        .login-logo{font-family:var(--font-h);font-size:2.2rem;letter-spacing:3px;color:var(--red);margin-bottom:4px}
+        .login-sub{font-size:.75rem;letter-spacing:2px;color:var(--gray);margin-bottom:36px;text-transform:uppercase}
+
+        /* NAV */
+        .panel{display:none}
+        .panel-nav{background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-bottom:1px solid #1a1a1a;padding:0 4%;position:sticky;top:0;z-index:200}
+        .panel-nav-inner{display:flex;align-items:center;height:60px;gap:16px}
+        .panel-nav-title{font-family:var(--font-h);font-size:1.3rem;letter-spacing:3px;color:var(--red)}
+        .panel-nav-user{margin-left:auto;font-size:.75rem;color:var(--gray)}
+
+        /* TABS */
+        .tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid #1a1a1a;padding:0 4%}
+        .tab-btn{background:none;border:none;color:#555;font-family:var(--font-b);font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:12px 18px;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;white-space:nowrap;flex-shrink:0}
+        .tab-btn.active{color:var(--white);border-bottom-color:var(--red)}
+        .tab-btn:hover{color:#bbb}
+        .tab-panel{display:none;padding:36px 4% 80px}
+        .tab-panel.active{display:block}
+        .panel-body{max-width:960px;margin:0 auto}
+
+        /* HEADINGS */
+        .sec-title{font-family:var(--font-h);font-size:1.8rem;letter-spacing:2px;margin-bottom:6px}
+        .sec-desc{font-size:.8rem;color:var(--gray);margin-bottom:28px;text-transform:none;line-height:1.6}
+
+        /* CARDS */
+        .card{background:var(--dark3);border:1px solid #222;border-radius:14px;padding:24px 28px;margin-bottom:20px}
+        .card-title{font-family:var(--font-h);font-size:1.1rem;letter-spacing:2px;margin-bottom:14px}
+        .card-meta{font-size:.68rem;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+
+        /* FORM */
+        .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+        label{font-size:.68rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase}
+        input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],textarea,select{
+            background:#0a0a0a;border:1.5px solid #2a2a2a;color:var(--white);border-radius:9px;
+            padding:11px 14px;font-family:var(--font-b);font-size:.85rem;transition:border-color .2s;
+            resize:vertical;text-transform:none;width:100%}
+        input:focus,textarea:focus,select:focus{outline:none;border-color:var(--red)}
+        textarea{min-height:90px}
+        select option{background:#111}
+        input[type=number]{-moz-appearance:textfield}
+
+        /* UPLOAD */
+        .img-upload-label{display:flex;align-items:center;gap:12px;cursor:pointer;background:#0a0a0a;border:1.5px dashed #2a2a2a;border-radius:9px;padding:15px 18px;transition:border-color .2s}
+        .img-upload-label:hover{border-color:var(--red)}
+        .img-upload-label input{display:none}
+        .upload-icon{font-size:1.3rem}
+        .upload-text{font-size:.76rem;color:var(--gray);text-transform:none}
+        .upload-text strong{display:block;color:var(--white);font-size:.82rem;margin-bottom:2px}
+        .img-preview{width:100%;max-height:140px;object-fit:cover;border-radius:8px;display:none;margin-top:8px}
+        .img-current{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px;border:1px solid #222}
+
+        /* BUTTONS */
+        .form-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+        .btn-submit{background:var(--red);color:var(--white);font-family:var(--font-h);font-size:.95rem;padding:11px 28px;border:none;border-radius:50px;cursor:pointer;letter-spacing:1px;transition:.2s}
+        .btn-submit:hover{background:var(--red2);transform:scale(1.02)}
+        .btn-submit:disabled{background:#333;cursor:not-allowed;transform:none}
+        .btn-secondary{background:transparent;color:var(--white);font-family:var(--font-b);font-size:.78rem;padding:11px 20px;border:1.5px solid #333;border-radius:50px;cursor:pointer;letter-spacing:1px;transition:.2s}
+        .btn-secondary:hover{border-color:var(--gray)}
+        .btn-danger{background:transparent;color:#e55;font-family:var(--font-b);font-size:.78rem;padding:11px 20px;border:1.5px solid #5a0000;border-radius:50px;cursor:pointer;letter-spacing:1px;transition:.2s}
+        .btn-danger:hover{background:#3a0000;border-color:var(--red)}
+        .btn-logout{background:none;border:1.5px solid #333;color:#666;padding:6px 16px;border-radius:30px;cursor:pointer;font-size:.72rem;letter-spacing:1px;font-family:var(--font-b);transition:.2s}
+        .btn-logout:hover{border-color:var(--red);color:var(--red)}
+        .btn-icon{background:none;border:1px solid #2a2a2a;color:#666;padding:4px 11px;border-radius:7px;cursor:pointer;font-size:.72rem;transition:.2s;font-family:var(--font-b)}
+        .btn-icon:hover{border-color:var(--red);color:var(--red)}
+        .btn-icon.danger{border-color:#3a0000;color:#884444}
+        .btn-icon.danger:hover{border-color:var(--red);color:#ff6666;background:#1a0000}
+
+        /* TABLE */
+        .data-table{width:100%;border-collapse:collapse;font-size:.78rem}
+        .data-table th{text-align:left;font-size:.62rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;padding:9px 12px;border-bottom:1px solid #1a1a1a;white-space:nowrap}
+        .data-table td{padding:11px 12px;border-bottom:1px solid #111;vertical-align:top;text-transform:none;color:#ccc}
+        .data-table tr:hover td{background:#0d0d0d}
+        .data-table td.actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+        .no-data{text-align:center;color:#333;padding:40px;font-size:.82rem}
+        .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #1a1a1a}
+
+        /* BADGES */
+        .badge{font-size:.58rem;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+        .badge-new{background:rgba(227,28,37,.2);color:var(--red)}
+        .badge-leido{background:#111;color:#333}
+        .badge-ig{background:rgba(225,48,108,.2);color:#e1306c}
+        .badge-tk{background:rgba(255,255,255,.1);color:#ccc}
+        .badge-fb{background:rgba(24,119,242,.2);color:#1877f2}
+
+        /* PLANES GRID */
+        .planes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .plan-card{background:var(--dark2);border:1px solid #222;border-radius:11px;padding:18px 20px}
+        .plan-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .plan-card-name{font-family:var(--font-h);font-size:1.1rem;letter-spacing:2px;color:var(--red)}
+        .plan-price-display{font-family:var(--font-h);font-size:1.6rem;color:var(--white)}
+
+        /* MODAL */
+        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+        .modal{background:var(--dark2);border:1px solid #333;border-radius:16px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+        .modal-title{font-family:var(--font-h);font-size:1.5rem;letter-spacing:2px;margin-bottom:20px}
+        .modal-close{float:right;background:none;border:none;color:#666;font-size:1.3rem;cursor:pointer;margin-top:-4px}
+        .modal-close:hover{color:var(--red)}
+
+        /* CURRENT NOTICIA */
+        .current-box{background:var(--dark2);border:1px solid #222;border-radius:12px;padding:20px 24px;margin-bottom:22px}
+        .current-label{font-size:.6rem;letter-spacing:3px;color:var(--gray);text-transform:uppercase;margin-bottom:8px}
+        .current-titulo{font-family:var(--font-h);font-size:1.4rem;color:var(--white);margin-bottom:5px}
+        .current-texto{font-size:.82rem;color:#999;line-height:1.7;text-transform:none;margin-bottom:8px}
+        .current-fecha{font-size:.65rem;color:#333;letter-spacing:2px;text-transform:uppercase}
+        .current-img{width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:10px}
+
+        /* VIDEO CARDS */
+        .video-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:24px}
+        .video-admin-card{background:var(--dark2);border:1px solid #222;border-radius:11px;padding:16px 18px}
+        .video-admin-plat{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+        .video-admin-title{font-family:var(--font-h);font-size:1.1rem;letter-spacing:1px;margin-bottom:6px}
+        .video-admin-url{font-size:.7rem;color:#444;word-break:break-all;margin-bottom:12px;text-transform:none}
+
+        /* CATALOGO ADMIN */
+        .catalogo-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+        .catalogo-admin-card{background:var(--dark2);border:1px solid #222;border-radius:11px;overflow:hidden}
+        .catalogo-admin-img{width:100%;height:120px;object-fit:cover;display:block;background:#111}
+        .catalogo-admin-body{padding:12px 14px}
+        .catalogo-admin-name{font-family:var(--font-h);font-size:1rem;margin-bottom:4px}
+        .catalogo-admin-price{color:var(--red);font-family:var(--font-h);font-size:1.2rem}
+        .catalogo-admin-cat{font-size:.62rem;color:#444;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:11px;font-size:.8rem;font-weight:600;letter-spacing:.5px;z-index:9999;transform:translateY(80px);opacity:0;transition:.3s cubic-bezier(.25,.46,.45,.94);pointer-events:none}
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast.ok{background:#1a3a1a;border:1px solid #25d366;color:#25d366}
+        .toast.err{background:#3a0a0a;border:1px solid var(--red);color:var(--red)}
+
+        /* SPINNER */
+        .btn-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* IMG GROUP LABEL */
+        .img-group-label{font-size:.62rem;letter-spacing:3px;color:var(--gray);text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #1a1a1a}
+        .img-group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+        /* GALERIA ADMIN */
+        .galeria-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:4px}
+        .galeria-admin-card{background:var(--dark2);border:1px solid #222;border-radius:11px;overflow:hidden;position:relative}
+        .galeria-admin-img{width:100%;height:140px;object-fit:cover;display:block;background:#111}
+        .galeria-admin-body{padding:10px 12px}
+        .galeria-admin-title{font-size:.78rem;color:#ccc;margin-bottom:4px;text-transform:none}
+        .galeria-admin-orden{font-size:.62rem;color:#444;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+        .galeria-admin-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.7);color:#888;font-size:.58rem;letter-spacing:1px;padding:3px 8px;border-radius:20px;text-transform:uppercase}
+
+        @media(max-width:640px){
+            .planes-grid,.form-row,.form-row-3,.img-group-grid{grid-template-columns:1fr}
+            .tab-panel{padding:24px 3% 60px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+    <div class="login-card">
+        <p class="login-logo">BLACK DIAMOND</p>
+        <p class="login-sub">Panel de administración</p>
+        <div class="form-group"><label>Correo electrónico</label>
+            <input type="text" id="loginEmail" placeholder="admin@blackdiamondgym.co"></div>
+        <div class="form-group"><label>Contraseña</label>
+            <input type="text" id="loginPass" placeholder="••••••••"></div>
+        <div class="form-actions">
+            <button class="btn-submit" id="btnLogin" onclick="hacerLogin()" style="width:100%">INGRESAR</button>
+        </div>
+        <p id="loginError" style="color:var(--red);font-size:.75rem;margin-top:12px;text-align:center;display:none"></p>
+    </div>
+</div>
+
+<!-- PANEL -->
+<div class="panel" id="panelWrap">
+    <nav class="panel-nav">
+        <div class="panel-nav-inner">
+            <span class="panel-nav-title">🥊 ADMIN</span>
+            <span class="panel-nav-user" id="navUser"></span>
+            <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="tab('noticias',this)">📰 Noticia</button>
+            <button class="tab-btn"        onclick="tab('imagenes',this)">🖼️ Imágenes</button>
+            <button class="tab-btn"        onclick="tab('galeria',this)">📷 Galería</button>
+            <button class="tab-btn"        onclick="tab('textos',this)">✏️ Textos</button>
+            <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
+            <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
+            <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
+            <button class="tab-btn"        onclick="tab('solicitudes',this)">📩 Solicitudes <span id="badge-nuevas" style="background:var(--red);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:20px;margin-left:3px;display:none">0</span></button>
+        </div>
+    </nav>
+
+    <!-- ══ NOTICIAS ══ -->
+    <div class="tab-panel active" id="tab-noticias">
+        <div class="panel-body">
+            <h1 class="sec-title">ÚLTIMA NOTICIA DIARIA</h1>
+            <p class="sec-desc">Lo que publiques aquí se muestra de inmediato en el sitio web.</p>
+            <div class="current-box" id="currentBox">
+                <p class="current-label">📰 Publicada actualmente</p>
+                <img id="curImg" class="current-img" src="" alt="" style="display:none">
+                <p class="current-titulo" id="curTitulo">Cargando...</p>
+                <p class="current-texto"  id="curTexto"></p>
+                <p class="current-fecha"  id="curFecha"></p>
+            </div>
+            <div class="card">
+                <h3 class="card-title">PUBLICAR NUEVA NOTICIA</h3>
+                <div class="form-group"><label>Título *</label>
+                    <input type="text" id="fTitulo" placeholder="Ej: ¡Sábado de sparring libre!"></div>
+                <div class="form-group"><label>Contenido *</label>
+                    <textarea id="fContenido" placeholder="Texto de la noticia..."></textarea></div>
+                <div class="form-group"><label>Imagen (opcional · JPG/PNG/WEBP · máx 8MB)</label>
+                    <label class="img-upload-label" for="fImagen">
+                        <span class="upload-icon">🖼️</span>
+                        <span class="upload-text"><strong>Clic para seleccionar</strong>Se mostrará junto al texto</span>
+                        <input type="file" id="fImagen" accept="image/*" onchange="prevImg(this,'prevNoticia')">
+                    </label>
+                    <img id="prevNoticia" class="img-preview" src="" alt=""></div>
+                <div class="form-actions">
+                    <button class="btn-submit" id="btnPublicar" onclick="publicarNoticia()">🥊 PUBLICAR</button>
+                    <button class="btn-secondary" onclick="limpiarNoticia()">Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ IMÁGENES ══ -->
+    <div class="tab-panel" id="tab-imagenes">
+        <div class="panel-body">
+            <h1 class="sec-title">IMÁGENES DEL SITIO</h1>
+            <p class="sec-desc">Cambia cualquier imagen del sitio. Sube una foto nueva y pulsa Guardar — el cambio es inmediato.</p>
+
+            <!-- Grupos visuales -->
+            <div class="img-group-label">⚙️ IDENTIDAD</div>
+            <div id="imgGrp-identidad"><p class="no-data">Cargando...</p></div>
+
+            <div class="img-group-label" style="margin-top:28px">🥊 SECCIONES PRINCIPALES</div>
+            <div id="imgGrp-secciones"><p class="no-data">Cargando...</p></div>
+
+            <div class="img-group-label" style="margin-top:28px">💪 ÍCONOS DE SERVICIOS</div>
+            <div id="imgGrp-servicios"><p class="no-data">Cargando...</p></div>
+
+            <div class="img-group-label" style="margin-top:28px">🏆 CATEGORÍAS Y MODALIDADES</div>
+            <div id="imgGrp-categorias"><p class="no-data">Cargando...</p></div>
+        </div>
+    </div>
+
+    <!-- ══ GALERÍA ══ -->
+    <div class="tab-panel" id="tab-galeria">
+        <div class="panel-body">
+            <h1 class="sec-title">GALERÍA DE FOTOS</h1>
+            <p class="sec-desc">Añade, edita o elimina fotos de la sección "Fotos y Videos" del sitio. Sin límite de fotos.</p>
+
+            <!-- Añadir foto -->
+            <div class="card">
+                <h3 class="card-title">➕ AÑADIR FOTO</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Título / descripción</label>
+                        <input type="text" id="gTitulo" placeholder="Ej: Sparring del viernes"></div>
+                    <div class="form-group"><label>Orden (número)</label>
+                        <input type="number" id="gOrden" value="0" min="0" placeholder="0"></div>
+                </div>
+                <div class="form-group"><label>Imagen *</label>
+                    <label class="img-upload-label" for="gImagen">
+                        <span class="upload-icon">📷</span>
+                        <span class="upload-text"><strong>Seleccionar foto</strong>JPG · PNG · WEBP · máx 8MB</span>
+                        <input type="file" id="gImagen" accept="image/*" onchange="prevImg(this,'gPrev')">
+                    </label>
+                    <img id="gPrev" class="img-preview" src="" alt="">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" id="btnAddFoto" onclick="agregarFotoGaleria()">📷 AÑADIR FOTO</button>
+                    <button class="btn-secondary" onclick="limpiarGaleria()">Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Grid de fotos existentes -->
+            <div id="galeriaAdminContainer"><p class="no-data">Cargando galería...</p></div>
+        </div>
+    </div>
+
+    <!-- ══ TEXTOS ══ -->
+    <div class="tab-panel" id="tab-textos">
+        <div class="panel-body">
+            <h1 class="sec-title">TEXTOS DEL SITIO</h1>
+            <p class="sec-desc">Edita los textos principales que aparecen en la página web. Guarda cada sección por separado.</p>
+
+            <!-- HERO -->
+            <div class="card">
+                <h3 class="card-title">🥊 SECCIÓN HERO (Portada)</h3>
+                <div class="form-group"><label>Título línea 1 (ej: FORJA TU)</label>
+                    <input type="text" id="txt-hero-linea1" placeholder="FORJA TU"></div>
+                <div class="form-group"><label>Palabra destacada en rojo (ej: CAMPEÓN)</label>
+                    <input type="text" id="txt-hero-acento" placeholder="CAMPEÓN"></div>
+                <div class="form-group"><label>Título línea 3 (ej: INTERIOR)</label>
+                    <input type="text" id="txt-hero-linea3" placeholder="INTERIOR"></div>
+                <div class="form-group"><label>Subtítulo</label>
+                    <textarea id="txt-hero-sub" placeholder="Entrena como campeón..."></textarea></div>
+                <div class="form-group"><label>Texto eyebrow (encima del título)</label>
+                    <input type="text" id="txt-hero-eyebrow" placeholder="BOXING CENTER · BOSA · BOGOTÁ"></div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('hero')">💾 GUARDAR HERO</button>
+                </div>
+            </div>
+
+            <!-- NOSOTROS -->
+            <div class="card">
+                <h3 class="card-title">📖 NUESTRA HISTORIA</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Título (ej: DONDE LA PASIÓN COBRA FUERZA)</label>
+                        <input type="text" id="txt-nos-titulo" placeholder="DONDE LA PASIÓN COBRA FUERZA"></div>
+                    <div class="form-group"><label>Año fundación (badge EST.)</label>
+                        <input type="text" id="txt-est-año" placeholder="2010" maxlength="4"></div>
+                </div>
+                <div class="form-group"><label>Párrafo 1</label>
+                    <textarea id="txt-nos-p1"></textarea></div>
+                <div class="form-group"><label>Párrafo 2</label>
+                    <textarea id="txt-nos-p2"></textarea></div>
+                <div style="border:1px solid #1a1a1a;border-radius:10px;padding:16px;margin-bottom:16px">
+                    <p style="font-size:.62rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:12px">ESTADÍSTICA 1</p>
+                    <div class="form-row-3">
+                        <div class="form-group"><label>Número</label>
+                            <input type="number" id="txt-nos-s1" placeholder="15"></div>
+                        <div class="form-group"><label>Sufijo (ej: +)</label>
+                            <input type="text" id="txt-nos-s1-suf" placeholder="+" maxlength="4"></div>
+                        <div class="form-group"><label>Etiqueta</label>
+                            <input type="text" id="txt-nos-s1-label" placeholder="Años de experiencia"></div>
+                    </div>
+                </div>
+                <div style="border:1px solid #1a1a1a;border-radius:10px;padding:16px;margin-bottom:16px">
+                    <p style="font-size:.62rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:12px">ESTADÍSTICA 2</p>
+                    <div class="form-row-3">
+                        <div class="form-group"><label>Número</label>
+                            <input type="number" id="txt-nos-s2" placeholder="7"></div>
+                        <div class="form-group"><label>Sufijo</label>
+                            <input type="text" id="txt-nos-s2-suf" placeholder="" maxlength="4"></div>
+                        <div class="form-group"><label>Etiqueta</label>
+                            <input type="text" id="txt-nos-s2-label" placeholder="Tipos de entrenamiento"></div>
+                    </div>
+                </div>
+                <div style="border:1px solid #1a1a1a;border-radius:10px;padding:16px;margin-bottom:16px">
+                    <p style="font-size:.62rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:12px">ESTADÍSTICA 3</p>
+                    <div class="form-row-3">
+                        <div class="form-group"><label>Número</label>
+                            <input type="number" id="txt-nos-s3" placeholder="3"></div>
+                        <div class="form-group"><label>Sufijo</label>
+                            <input type="text" id="txt-nos-s3-suf" placeholder="" maxlength="4"></div>
+                        <div class="form-group"><label>Etiqueta</label>
+                            <input type="text" id="txt-nos-s3-label" placeholder="Categorías de edad"></div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('nosotros')">💾 GUARDAR HISTORIA</button>
+                </div>
+            </div>
+
+            <!-- HORARIOS -->
+            <div class="card">
+                <h3 class="card-title">🕐 HORARIOS</h3>
+                <div class="form-group"><label>Título sección</label>
+                    <input type="text" id="txt-hor-titulo" placeholder="¿CUÁNDO NOS VISITAS?"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Lunes–Viernes horario</label>
+                        <input type="text" id="txt-hor-lv" placeholder="6:00 a.m. – 10:00 p.m."></div>
+                    <div class="form-group"><label>Sábados horario</label>
+                        <input type="text" id="txt-hor-sa" placeholder="8:00 a.m. – 5:00 p.m."></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Domingos horario</label>
+                        <input type="text" id="txt-hor-do" placeholder="8:00 a.m. – 1:00 p.m."></div>
+                    <div class="form-group"><label>Feriados horario</label>
+                        <input type="text" id="txt-hor-fe" placeholder="Consultar RRSS"></div>
+                </div>
+                <div class="form-group"><label>CTA — título de la tarjeta derecha</label>
+                    <input type="text" id="txt-hor-cta-title" placeholder="RESERVA TU CLASE"></div>
+                <div class="form-group"><label>CTA — subtítulo</label>
+                    <input type="text" id="txt-hor-cta-sub" placeholder="Sin costo, sin compromiso"></div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('horarios')">💾 GUARDAR HORARIOS</button>
+                </div>
+            </div>
+
+            <!-- CONTACTO -->
+            <div class="card">
+                <h3 class="card-title">📍 CONTACTO & PIE DE PÁGINA</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Dirección</label>
+                        <input type="text" id="txt-con-dir" placeholder="Bosa, Bogotá D.C."></div>
+                    <div class="form-group"><label>WhatsApp (solo números)</label>
+                        <input type="text" id="txt-con-wa" placeholder="573133737590"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Instagram URL</label>
+                        <input type="url" id="txt-con-ig" placeholder="https://www.instagram.com/..."></div>
+                    <div class="form-group"><label>TikTok URL</label>
+                        <input type="url" id="txt-con-tk" placeholder="https://www.tiktok.com/..."></div>
+                </div>
+                <div class="form-group"><label>Texto del footer / copyright</label>
+                    <input type="text" id="txt-con-footer" placeholder="© 2025 Black Diamond Gym..."></div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('contacto')">💾 GUARDAR CONTACTO</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-color:rgba(227,28,37,.2);background:rgba(227,28,37,.04)">
+                <p style="font-size:.75rem;color:#888;line-height:1.8;text-transform:none">
+                    ℹ️ <strong style="color:#ccc">Importante:</strong> Los cambios de texto se guardan en la base de datos y se aplican al recargar la página pública. 
+                    Los textos se cargan automáticamente al abrir esta pestaña.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ PRECIOS ══ -->
+    <div class="tab-panel" id="tab-precios">
+        <div class="panel-body">
+            <h1 class="sec-title">PLANES Y PRECIOS</h1>
+            <p class="sec-desc">Edita precio y descripción de cada plan. El valor en pesos colombianos sin puntos (ej: 120000).</p>
+            <div id="preciosContainer"><p class="no-data">Cargando planes...</p></div>
+
+            <!-- Features editables -->
+            <div class="card" style="margin-top:28px">
+                <h3 class="card-title">✅ CARACTERÍSTICAS DE LOS PLANES</h3>
+                <p class="sec-desc">Edita los textos de cada beneficio (✔) o exclusión (✘) que aparecen en las tarjetas de precios.</p>
+
+                <div class="card-meta">PLAN BOXEO</div>
+                <div class="planes-grid" style="margin-bottom:16px">
+                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-boxeo-1-val" placeholder="Clases de boxeo técnico"></div>
+                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-boxeo-2-val" placeholder="Musculación incluida"></div>
+                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-boxeo-3-val" placeholder="Entrenamiento funcional"></div>
+                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-boxeo-4-val" placeholder="Acceso completo al gym"></div>
+                    <div class="form-group"><label>Característica 5 ✔</label><input type="text" id="feat-boxeo-5-val" placeholder="Instructores certificados"></div>
+                </div>
+
+                <div class="card-meta">PLAN GYM</div>
+                <div class="planes-grid" style="margin-bottom:16px">
+                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-gym-1-val" placeholder="Entrenamiento de musculación"></div>
+                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-gym-2-val" placeholder="Funcional incluido"></div>
+                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-gym-3-val" placeholder="Acceso ilimitado al gym"></div>
+                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-gym-4-val" placeholder="Equipamiento completo"></div>
+                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-gym-5-val" placeholder="Clases de boxeo"></div>
+                </div>
+
+                <div class="card-meta">PLAN VALERA</div>
+                <div class="planes-grid" style="margin-bottom:16px">
+                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-valera-1-val" placeholder="Válido por 15 días"></div>
+                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-valera-2-val" placeholder="Clases de boxeo"></div>
+                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-valera-3-val" placeholder="Musculación incluida"></div>
+                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-valera-4-val" placeholder="Ideal para comenzar"></div>
+                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-valera-5-val" placeholder="Entrenamiento funcional"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarFeatures()">💾 GUARDAR CARACTERÍSTICAS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ VIDEOS ══ -->
+    <div class="tab-panel" id="tab-videos">
+        <div class="panel-body">
+            <h1 class="sec-title">VIDEOS DESTACADOS</h1>
+            <p class="sec-desc">Añade URLs de publicaciones de Instagram, TikTok o Facebook. Se mostrarán en la sección de galería.</p>
+            <div class="card">
+                <h3 class="card-title">AÑADIR VIDEO</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Título *</label>
+                        <input type="text" id="vTitulo" placeholder="Ej: Sparring del viernes"></div>
+                    <div class="form-group"><label>Orden (número)</label>
+                        <input type="number" id="vOrden" placeholder="1" min="0" value="0"></div>
+                </div>
+                <div class="form-group"><label>URL de la publicación *</label>
+                    <input type="url" id="vUrl" placeholder="https://www.instagram.com/p/... o https://vm.tiktok.com/..."></div>
+                <p style="font-size:.68rem;color:#333;margin-top:-8px;margin-bottom:14px;text-transform:none">La plataforma se detecta automáticamente según la URL.</p>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="agregarVideo()">▶ AÑADIR VIDEO</button>
+                </div>
+            </div>
+            <div id="videosContainer"><p class="no-data">Cargando videos...</p></div>
+        </div>
+    </div>
+
+    <!-- ══ CATÁLOGO ══ -->
+    <div class="tab-panel" id="tab-catalogo">
+        <div class="panel-body">
+            <h1 class="sec-title">CATÁLOGO DEPORTIVO</h1>
+            <p class="sec-desc">Gestiona los productos que vende el gimnasio. Se muestran en la sección "Tienda" del sitio.</p>
+            <div class="card">
+                <h3 class="card-title">AGREGAR PRODUCTO</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Nombre *</label>
+                        <input type="text" id="cNombre" placeholder="Ej: Guantes de Boxeo Pro"></div>
+                    <div class="form-group"><label>Categoría</label>
+                        <input type="text" id="cCategoria" placeholder="Guantes / Ropa / Accesorios"></div>
+                </div>
+                <div class="form-group"><label>Descripción</label>
+                    <textarea id="cDesc" placeholder="Detalle del producto..."></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Precio (COP sin puntos) *</label>
+                        <input type="number" id="cPrecio" placeholder="85000" min="0"></div>
+                    <div class="form-group"><label>Stock</label>
+                        <input type="number" id="cStock" placeholder="10" min="0" value="0"></div>
+                </div>
+                <div class="form-group"><label>Imagen (opcional)</label>
+                    <label class="img-upload-label" for="cImagen">
+                        <span class="upload-icon">📦</span>
+                        <span class="upload-text"><strong>Seleccionar foto del producto</strong>JPG · PNG · WEBP</span>
+                        <input type="file" id="cImagen" accept="image/*" onchange="prevImg(this,'prevCat')">
+                    </label>
+                    <img id="prevCat" class="img-preview" src="" alt=""></div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="agregarProducto()">🛍️ AGREGAR PRODUCTO</button>
+                    <button class="btn-secondary" onclick="limpiarCatalogo()">Limpiar</button>
+                </div>
+            </div>
+            <div id="catalogoContainer"><p class="no-data">Cargando productos...</p></div>
+        </div>
+    </div>
+
+    <!-- ══ SOLICITUDES ══ -->
+    <div class="tab-panel" id="tab-solicitudes">
+        <div class="panel-body">
+            <h1 class="sec-title">SOLICITUDES DE INFORMACIÓN</h1>
+            <p class="sec-desc">Mensajes del formulario del sitio. Puedes editar, marcar como leído o eliminar cada solicitud.</p>
+            <div id="solicitudesContainer"><p class="no-data">Cargando solicitudes...</p></div>
+        </div>
+    </div>
+
+</div><!-- /panel -->
+
+<!-- MODAL editar foto galería -->
+<div class="modal-bg" id="modalFoto" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalFoto').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR FOTO</h3>
+        <input type="hidden" id="mFotoId">
+        <div class="form-group"><label>Título / descripción</label>
+            <input type="text" id="mFotoTitulo" placeholder="Ej: Sparring del viernes"></div>
+        <div class="form-group"><label>Orden</label>
+            <input type="number" id="mFotoOrden" min="0" placeholder="0"></div>
+        <div class="form-group"><label>Reemplazar imagen (opcional)</label>
+            <label class="img-upload-label" for="mFotoImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Seleccionar nueva foto</strong>Dejar vacío para mantener la actual</span>
+                <input type="file" id="mFotoImg" accept="image/*" onchange="prevImg(this,'mFotoPrev')">
+            </label>
+            <img id="mFotoPrev" class="img-preview" src="" alt=""></div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarFoto()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalFoto').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL editar solicitud -->
+<div class="modal-bg" id="modalSol" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal()">✕</button>
+        <h3 class="modal-title">EDITAR SOLICITUD</h3>
+        <input type="hidden" id="mSolId">
+        <div class="form-group"><label>Nombre</label>
+            <input type="text" id="mSolNombre"></div>
+        <div class="form-row">
+            <div class="form-group"><label>WhatsApp</label>
+                <input type="text" id="mSolWa"></div>
+            <div class="form-group"><label>Email</label>
+                <input type="text" id="mSolEmail"></div>
+        </div>
+        <div class="form-group"><label>Plan de interés</label>
+            <input type="text" id="mSolPlan"></div>
+        <div class="form-group"><label>Mensaje</label>
+            <textarea id="mSolMsg"></textarea></div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarSolicitud()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL editar video -->
+<div class="modal-bg" id="modalVid" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalVid').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR VIDEO</h3>
+        <input type="hidden" id="mVidId">
+        <div class="form-group"><label>Título</label>
+            <input type="text" id="mVidTitulo"></div>
+        <div class="form-group"><label>URL</label>
+            <input type="url" id="mVidUrl"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Orden</label>
+                <input type="number" id="mVidOrden" min="0"></div>
+            <div class="form-group"><label>Estado</label>
+                <select id="mVidActivo"><option value="1">Activo</option><option value="0">Oculto</option></select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarVideo()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalVid').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL editar producto -->
+<div class="modal-bg" id="modalCat" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalCat').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR PRODUCTO</h3>
+        <input type="hidden" id="mCatId">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre</label>
+                <input type="text" id="mCatNombre"></div>
+            <div class="form-group"><label>Categoría</label>
+                <input type="text" id="mCatCat"></div>
+        </div>
+        <div class="form-group"><label>Descripción</label>
+            <textarea id="mCatDesc"></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Precio (COP)</label>
+                <input type="number" id="mCatPrecio" min="0"></div>
+            <div class="form-group"><label>Stock</label>
+                <input type="number" id="mCatStock" min="0"></div>
+        </div>
+        <div class="form-group"><label>Nueva imagen (opcional)</label>
+            <label class="img-upload-label" for="mCatImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Reemplazar imagen</strong>Dejar vacío para mantener la actual</span>
+                <input type="file" id="mCatImg" accept="image/*" onchange="prevImg(this,'mCatPrev')">
+            </label>
+            <img id="mCatPrev" class="img-preview" src="" alt=""></div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarProducto()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalCat').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000';
+let token = localStorage.getItem('bdg_token') || null;
+
+window.addEventListener('DOMContentLoaded', () => { if (token) mostrarPanel(); });
+
+/* ── LOGIN ── */
+async function hacerLogin() {
+    const e=document.getElementById('loginEmail').value.trim(), p=document.getElementById('loginPass').value;
+    const btn=document.getElementById('btnLogin'), err=document.getElementById('loginError');
+    err.style.display='none';
+    if(!e||!p){err.textContent='Completa todos los campos';err.style.display='block';return}
+    btn.innerHTML='<span class="btn-spinner"></span>INGRESANDO...'; btn.disabled=true;
+    try{
+        const res=await fetch(`${API}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
+        const d=await res.json();
+        if(!res.ok) throw new Error(d.error||'Error');
+        token=d.token; localStorage.setItem('bdg_token',token); localStorage.setItem('bdg_nombre',d.nombre);
+        mostrarPanel();
+    }catch(ex){err.textContent=ex.message;err.style.display='block';}
+    finally{btn.innerHTML='INGRESAR';btn.disabled=false;}
+}
+function mostrarPanel(){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('panelWrap').style.display='block';
+    document.getElementById('navUser').textContent=localStorage.getItem('bdg_nombre')||'Admin';
+    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarFeatures(); cargarVids(); cargarCat(); cargarSols(); cargarTextos();
+}
+function cerrarSesion(){
+    localStorage.removeItem('bdg_token'); localStorage.removeItem('bdg_nombre'); token=null;
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('panelWrap').style.display='none';
+}
+
+/* ── TABS ── */
+function tab(n,b){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.getElementById('tab-'+n).classList.add('active'); b.classList.add('active');
+}
+
+/* ── HELPERS ── */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmt(p){const s=String(p);return '$'+s.slice(0,-3)+'.'+s.slice(-3)}
+function prevImg(input,id){const r=new FileReader(),p=document.getElementById(id);if(!input.files[0])return;r.onload=e=>{p.src=e.target.result;p.style.display='block'};r.readAsDataURL(input.files[0])}
+function toast(m,t='ok'){const el=document.getElementById('toast');el.textContent=m;el.className=`toast ${t} show`;setTimeout(()=>el.classList.remove('show'),3500)}
+function authErr(e){
+    const m=String(e.message||'');
+    if(m.includes('401')||m.includes('403')||m.includes('Token')){toast('Sesión expirada','err');cerrarSesion();}
+    else toast(m||'Error','err');
+}
+
+/* ════════════ NOTICIAS ════════════ */
+async function cargarNot(){
+    try{const r=await fetch(`${API}/api/noticia`);if(!r.ok)return;const d=await r.json();
+        document.getElementById('curTitulo').textContent=d.titulo;
+        document.getElementById('curTexto').textContent=d.contenido;
+        if(d.fecha_publicacion) document.getElementById('curFecha').textContent='Publicada: '+new Date(d.fecha_publicacion).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        const img=document.getElementById('curImg');
+        if(d.imagen_url){img.src=d.imagen_url;img.style.display='block';}else img.style.display='none';
+    }catch(e){document.getElementById('curTitulo').textContent='Sin noticias aún.';}
+}
+async function publicarNoticia(){
+    const t=document.getElementById('fTitulo').value.trim(), c=document.getElementById('fContenido').value.trim(), img=document.getElementById('fImagen').files[0];
+    const btn=document.getElementById('btnPublicar');
+    if(!t||!c){toast('Título y contenido son obligatorios','err');return;}
+    btn.innerHTML='<span class="btn-spinner"></span>PUBLICANDO...'; btn.disabled=true;
+    const fd=new FormData(); fd.append('titulo',t); fd.append('contenido',c); if(img) fd.append('imagen',img);
+    try{const r=await fetch(`${API}/api/noticia`,{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Noticia publicada','ok'); limpiarNoticia(); cargarNot();
+    }catch(e){authErr(e);}finally{btn.innerHTML='🥊 PUBLICAR';btn.disabled=false;}
+}
+function limpiarNoticia(){
+    ['fTitulo','fContenido'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('fImagen').value='';
+    const p=document.getElementById('prevNoticia'); p.src=''; p.style.display='none';
+}
+
+/* ════════════ IMÁGENES ════════════ */
+
+// Agrupación visual de claves
+const IMG_GRUPOS = {
+    identidad:  ['logo_icono'],
+    secciones:  ['hero_bg','historia','mike'],
+    servicios:  ['servicio_boxeo','servicio_fitness','servicio_personal'],
+    categorias: ['cat_edad','cat_modalidad']
+};
+
+function renderImgCard(img) {
+    return `<div class="card" id="card-img-${img.clave}" style="margin-bottom:0">
+        <h4 class="card-title" style="font-size:.9rem">${esc(img.label)}</h4>
+        <img src="${esc(img.url)}" alt="${esc(img.label)}" class="img-current" onerror="this.style.display='none'">
+        <div class="form-group" style="margin-bottom:10px"><label>Subir nueva imagen</label>
+            <label class="img-upload-label" for="file-${img.clave}">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text"><strong>Seleccionar archivo</strong>JPG · PNG · WEBP · máx 8MB</span>
+                <input type="file" id="file-${img.clave}" accept="image/*" onchange="prevImg(this,'prev-${img.clave}')">
+            </label>
+            <img id="prev-${img.clave}" class="img-preview" src="" alt=""></div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarImg('${img.clave}',this)">💾 GUARDAR</button>
+        </div>
+    </div>`;
+}
+
+async function cargarImgs(){
+    try{
+        const r=await fetch(`${API}/api/imagenes`); if(!r.ok) return;
+        const imgs=await r.json();
+        const byKey = Object.fromEntries(imgs.map(i=>[i.clave,i]));
+
+        Object.entries(IMG_GRUPOS).forEach(([grp, claves])=>{
+            const el = document.getElementById('imgGrp-'+grp);
+            if(!el) return;
+            const cards = claves.map(c => byKey[c]).filter(Boolean);
+            if(!cards.length){ el.innerHTML='<p class="no-data" style="font-size:.75rem">Sin imágenes en este grupo.</p>'; return; }
+            el.innerHTML = `<div class="img-group-grid">${cards.map(renderImgCard).join('')}</div>`;
+        });
+    }catch(e){console.warn(e);}
+}
+
+async function guardarImg(clave,btn){
+    const f=document.getElementById('file-'+clave).files[0];
+    if(!f){toast('Selecciona una imagen primero','err');return;}
+    btn.innerHTML='<span class="btn-spinner"></span>GUARDANDO...'; btn.disabled=true;
+    const fd=new FormData(); fd.append('imagen',f);
+    try{
+        const r=await fetch(`${API}/api/imagenes/${clave}`,{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Imagen actualizada','ok');
+        const ic=document.querySelector('#card-img-'+clave+' .img-current');
+        if(ic){ic.src=d.url+'?t='+Date.now();ic.style.display='block';}
+        document.getElementById('file-'+clave).value='';
+        const pv=document.getElementById('prev-'+clave); pv.src=''; pv.style.display='none';
+    }catch(e){authErr(e);}finally{btn.innerHTML='💾 GUARDAR';btn.disabled=false;}
+}
+
+/* ════════════ GALERÍA DE FOTOS ════════════ */
+async function cargarGaleriaAdmin(){
+    try{
+        const r=await fetch(`${API}/api/galeria`); if(!r.ok) return;
+        const fotos=await r.json();
+        const cont=document.getElementById('galeriaAdminContainer');
+        if(!fotos.length){
+            cont.innerHTML='<p class="no-data">Galería vacía. Añade la primera foto arriba.</p>';
+            return;
+        }
+        cont.innerHTML=`<div class="galeria-admin-grid">${fotos.map(f=>`
+        <div class="galeria-admin-card" id="gc-${f.id}">
+            <span class="galeria-admin-badge">#${f.orden||0}</span>
+            <img src="${esc(f.url)}" alt="${esc(f.titulo||'')}" class="galeria-admin-img"
+                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22140%22%3E%3Crect fill=%22%23111%22 width=%22200%22 height=%22140%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23333%22 text-anchor=%22middle%22 font-size=%2228%22%3E🖼️%3C/text%3E%3C/svg%3E'">
+            <div class="galeria-admin-body">
+                <p class="galeria-admin-title">${esc(f.titulo||'Sin título')}</p>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+                    <button class="btn-icon" onclick="abrirEditFoto(${f.id},'${esc(f.titulo||'')}',${f.orden||0})">✏️ Editar</button>
+                    <button class="btn-icon danger" onclick="borrarFoto(${f.id})">🗑️ Borrar</button>
+                </div>
+            </div>
+        </div>`).join('')}</div>`;
+    }catch(e){console.warn(e);}
+}
+
+async function agregarFotoGaleria(){
+    const titulo=document.getElementById('gTitulo').value.trim();
+    const orden=parseInt(document.getElementById('gOrden').value)||0;
+    const img=document.getElementById('gImagen').files[0];
+    if(!img){toast('Selecciona una imagen','err');return;}
+    const btn=document.getElementById('btnAddFoto');
+    btn.innerHTML='<span class="btn-spinner"></span>SUBIENDO...'; btn.disabled=true;
+    const fd=new FormData();
+    fd.append('titulo',titulo); fd.append('orden',orden); fd.append('imagen',img);
+    try{
+        const r=await fetch(`${API}/api/galeria`,{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Foto añadida a la galería','ok');
+        limpiarGaleria(); cargarGaleriaAdmin();
+    }catch(e){authErr(e);}finally{btn.innerHTML='📷 AÑADIR FOTO';btn.disabled=false;}
+}
+
+function limpiarGaleria(){
+    document.getElementById('gTitulo').value='';
+    document.getElementById('gOrden').value='0';
+    document.getElementById('gImagen').value='';
+    const p=document.getElementById('gPrev'); p.src=''; p.style.display='none';
+}
+
+function abrirEditFoto(id,titulo,orden){
+    document.getElementById('mFotoId').value=id;
+    document.getElementById('mFotoTitulo').value=titulo;
+    document.getElementById('mFotoOrden').value=orden;
+    document.getElementById('mFotoImg').value='';
+    const p=document.getElementById('mFotoPrev'); p.src=''; p.style.display='none';
+    document.getElementById('modalFoto').style.display='flex';
+}
+
+async function guardarFoto(){
+    const id=document.getElementById('mFotoId').value;
+    const img=document.getElementById('mFotoImg').files[0];
+    const fd=new FormData();
+    fd.append('titulo',document.getElementById('mFotoTitulo').value);
+    fd.append('orden',document.getElementById('mFotoOrden').value||0);
+    if(img) fd.append('imagen',img);
+    try{
+        const r=await fetch(`${API}/api/galeria/${id}`,{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Foto actualizada','ok');
+        document.getElementById('modalFoto').style.display='none';
+        cargarGaleriaAdmin();
+    }catch(e){authErr(e);}
+}
+
+async function borrarFoto(id){
+    if(!confirm('¿Eliminar esta foto de la galería? No se puede deshacer.')) return;
+    try{
+        const r=await fetch(`${API}/api/galeria/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('Foto eliminada','ok'); cargarGaleriaAdmin();
+    }catch(e){authErr(e);}
+}
+
+/* ════════════ PRECIOS ════════════ */
+async function cargarPlan(){
+    try{const r=await fetch(`${API}/api/planes`); if(!r.ok) return;
+        const planes=await r.json();
+        const princ=planes.filter(p=>['boxeo','gym','valera'].includes(p.clave));
+        const dia=planes.filter(p=>p.clave.startsWith('dia_'));
+        document.getElementById('preciosContainer').innerHTML=`
+        <div class="planes-grid">${princ.map(p=>`
+            <div class="plan-card">
+                <div class="plan-card-header"><span class="plan-card-name">${esc(p.nombre)}</span><span class="plan-price-display">${fmt(p.precio)}</span></div>
+                <div class="form-group"><label>Nombre</label><input type="text" id="pnom-${p.clave}" value="${esc(p.nombre)}"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="pdes-${p.clave}" value="${esc(p.descripcion||'')}"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Precio (COP)</label><input type="number" id="ppre-${p.clave}" value="${p.precio}" min="0"></div>
+                    <div class="form-group"><label>Período</label><input type="text" id="pper-${p.clave}" value="${esc(p.periodo)}"></div>
+                </div>
+                <div class="form-actions"><button class="btn-submit" onclick="guardarPlan('${p.clave}',this)">💾 GUARDAR</button></div>
+            </div>`).join('')}
+        </div>
+        <div class="card" style="margin-top:20px">
+            <h3 class="card-title">PLAN DÍA</h3>
+            <div class="planes-grid">${dia.map(p=>`
+            <div class="plan-card">
+                <div class="plan-card-header"><span class="plan-card-name" style="font-size:.9rem">${esc(p.nombre)}</span><span class="plan-price-display" style="font-size:1.3rem">${fmt(p.precio)}</span></div>
+                <div class="form-group"><label>Precio (COP)</label><input type="number" id="ppre-${p.clave}" value="${p.precio}" min="0"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="pdes-${p.clave}" value="${esc(p.descripcion||'')}"></div>
+                <div class="form-actions"><button class="btn-submit" onclick="guardarPlan('${p.clave}',this)">💾</button></div>
+            </div>`).join('')}
+            </div>
+        </div>`;
+    }catch(e){console.warn(e);}
+}
+async function guardarPlan(clave,btn){
+    const precio=parseInt(document.getElementById('ppre-'+clave)?.value||0);
+    const nombre=document.getElementById('pnom-'+clave)?.value||undefined;
+    const desc=document.getElementById('pdes-'+clave)?.value||undefined;
+    const per=document.getElementById('pper-'+clave)?.value||undefined;
+    btn.innerHTML='<span class="btn-spinner"></span>'; btn.disabled=true;
+    try{const r=await fetch(`${API}/api/planes/${clave}`,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({precio,nombre,descripcion:desc,periodo:per})});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Plan actualizado','ok');
+        const disp=btn.closest('.plan-card')?.querySelector('.plan-price-display');
+        if(disp) disp.textContent=fmt(precio);
+    }catch(e){authErr(e);}finally{btn.innerHTML='💾 GUARDAR';btn.disabled=false;}
+}
+
+/* ════════════ VIDEOS ════════════ */
+async function cargarVids(){
+    try{const r=await fetch(`${API}/api/videos`); if(!r.ok) return;
+        const vids=await r.json();
+        const cont=document.getElementById('videosContainer');
+        if(!vids.length){cont.innerHTML='<p class="no-data">No hay videos. Añade el primero arriba.</p>';return;}
+        const bads={instagram:'badge-ig',tiktok:'badge-tk',facebook:'badge-fb'};
+        cont.innerHTML='<div class="video-admin-grid">'+vids.map(v=>`
+        <div class="video-admin-card" id="vc-${v.id}">
+            <p class="video-admin-plat"><span class="badge ${bads[v.plataforma]||'badge-ig'}">${v.plataforma}</span></p>
+            <p class="video-admin-title">${esc(v.titulo)}</p>
+            <p class="video-admin-url">${esc(v.url)}</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn-icon" onclick="abrirEditVid(${v.id},'${esc(v.titulo)}','${esc(v.url)}',${v.orden},${v.activo||1})">✏️ Editar</button>
+                <button class="btn-icon danger" onclick="borrarVideo(${v.id})">🗑️ Borrar</button>
+                <a href="${esc(v.url)}" target="_blank" class="btn-icon" style="text-decoration:none">↗ Ver</a>
+            </div>
+        </div>`).join('')+'</div>';
+    }catch(e){console.warn(e);}
+}
+async function agregarVideo(){
+    const t=document.getElementById('vTitulo').value.trim(), u=document.getElementById('vUrl').value.trim();
+    const o=parseInt(document.getElementById('vOrden').value)||0;
+    if(!t||!u){toast('Título y URL son obligatorios','err');return;}
+    try{const r=await fetch(`${API}/api/videos`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({titulo:t,url:u,orden:o})});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Video añadido','ok'); document.getElementById('vTitulo').value=''; document.getElementById('vUrl').value=''; cargarVids();
+    }catch(e){authErr(e);}
+}
+function abrirEditVid(id,titulo,url,orden,activo){
+    document.getElementById('mVidId').value=id; document.getElementById('mVidTitulo').value=titulo;
+    document.getElementById('mVidUrl').value=url; document.getElementById('mVidOrden').value=orden;
+    document.getElementById('mVidActivo').value=activo;
+    document.getElementById('modalVid').style.display='flex';
+}
+async function guardarVideo(){
+    const id=document.getElementById('mVidId').value;
+    const body={titulo:document.getElementById('mVidTitulo').value,url:document.getElementById('mVidUrl').value,orden:parseInt(document.getElementById('mVidOrden').value)||0,activo:parseInt(document.getElementById('mVidActivo').value)};
+    try{const r=await fetch(`${API}/api/videos/${id}`,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Video actualizado','ok'); document.getElementById('modalVid').style.display='none'; cargarVids();
+    }catch(e){authErr(e);}
+}
+async function borrarVideo(id){
+    if(!confirm('¿Eliminar este video?')) return;
+    try{const r=await fetch(`${API}/api/videos/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('Video eliminado','ok'); cargarVids();
+    }catch(e){authErr(e);}
+}
+
+/* ════════════ CATÁLOGO ════════════ */
+async function cargarCat(){
+    try{const r=await fetch(`${API}/api/catalogo`); if(!r.ok) return;
+        const prods=await r.json();
+        const cont=document.getElementById('catalogoContainer');
+        if(!prods.length){cont.innerHTML='<p class="no-data">No hay productos aún. Añade el primero arriba.</p>';return;}
+        cont.innerHTML='<div class="catalogo-admin-grid">'+prods.map(p=>`
+        <div class="catalogo-admin-card" id="cc-${p.id}">
+            ${p.imagen_url?`<img src="${esc(p.imagen_url)}" class="catalogo-admin-img" alt="${esc(p.nombre)}">`:'<div class="catalogo-admin-img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;color:#222">🥊</div>'}
+            <div class="catalogo-admin-body">
+                <p class="catalogo-admin-cat">${esc(p.categoria||'')}</p>
+                <p class="catalogo-admin-name">${esc(p.nombre)}</p>
+                <p class="catalogo-admin-price">${fmt(p.precio)}</p>
+                <p style="font-size:.68rem;color:#444;margin-top:4px;text-transform:none">Stock: ${p.stock}</p>
+                <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+                    <button class="btn-icon" onclick="abrirEditCat(${p.id},'${esc(p.nombre)}','${esc(p.categoria||'')}','${esc(p.descripcion||'')}',${p.precio},${p.stock})">✏️</button>
+                    <button class="btn-icon danger" onclick="borrarProducto(${p.id})">🗑️</button>
+                </div>
+            </div>
+        </div>`).join('')+'</div>';
+    }catch(e){console.warn(e);}
+}
+async function agregarProducto(){
+    const n=document.getElementById('cNombre').value.trim(), p=document.getElementById('cPrecio').value;
+    const d=document.getElementById('cDesc').value.trim(), c=document.getElementById('cCategoria').value.trim();
+    const s=parseInt(document.getElementById('cStock').value)||0, img=document.getElementById('cImagen').files[0];
+    if(!n||!p){toast('Nombre y precio son obligatorios','err');return;}
+    const fd=new FormData(); fd.append('nombre',n); fd.append('precio',p); fd.append('descripcion',d); fd.append('categoria',c); fd.append('stock',s); if(img) fd.append('imagen',img);
+    try{const r=await fetch(`${API}/api/catalogo`,{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+        const da=await r.json(); if(!r.ok) throw new Error(da.error||'Error');
+        toast('✅ Producto añadido','ok'); limpiarCatalogo(); cargarCat();
+    }catch(e){authErr(e);}
+}
+function limpiarCatalogo(){
+    ['cNombre','cCategoria','cDesc','cPrecio'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('cStock').value='0'; document.getElementById('cImagen').value='';
+    const p=document.getElementById('prevCat'); p.src=''; p.style.display='none';
+}
+function abrirEditCat(id,nombre,cat,desc,precio,stock){
+    document.getElementById('mCatId').value=id; document.getElementById('mCatNombre').value=nombre;
+    document.getElementById('mCatCat').value=cat; document.getElementById('mCatDesc').value=desc;
+    document.getElementById('mCatPrecio').value=precio; document.getElementById('mCatStock').value=stock;
+    document.getElementById('mCatImg').value='';
+    const p=document.getElementById('mCatPrev'); p.src=''; p.style.display='none';
+    document.getElementById('modalCat').style.display='flex';
+}
+async function guardarProducto(){
+    const id=document.getElementById('mCatId').value, img=document.getElementById('mCatImg').files[0];
+    const fd=new FormData();
+    fd.append('nombre',document.getElementById('mCatNombre').value);
+    fd.append('categoria',document.getElementById('mCatCat').value);
+    fd.append('descripcion',document.getElementById('mCatDesc').value);
+    fd.append('precio',document.getElementById('mCatPrecio').value);
+    fd.append('stock',document.getElementById('mCatStock').value);
+    if(img) fd.append('imagen',img);
+    try{const r=await fetch(`${API}/api/catalogo/${id}`,{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Producto actualizado','ok'); document.getElementById('modalCat').style.display='none'; cargarCat();
+    }catch(e){authErr(e);}
+}
+async function borrarProducto(id){
+    if(!confirm('¿Eliminar este producto?')) return;
+    try{const r=await fetch(`${API}/api/catalogo/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('Producto eliminado','ok'); cargarCat();
+    }catch(e){authErr(e);}
+}
+
+/* ════════════ SOLICITUDES ════════════ */
+async function cargarSols(){
+    try{const r=await fetch(`${API}/api/solicitudes`,{headers:{Authorization:'Bearer '+token}}); if(!r.ok) return;
+        const rows=await r.json();
+        const nuevas=rows.filter(x=>!x.leido).length;
+        const b=document.getElementById('badge-nuevas');
+        if(nuevas>0){b.textContent=nuevas;b.style.display='inline';}else b.style.display='none';
+        const cont=document.getElementById('solicitudesContainer');
+        if(!rows.length){cont.innerHTML='<p class="no-data">No hay solicitudes aún.</p>';return;}
+        cont.innerHTML=`<div class="table-wrap"><table class="data-table">
+            <thead><tr><th>Estado</th><th>Nombre</th><th>WhatsApp</th><th>Email</th><th>Plan</th><th>Mensaje</th><th>Fecha</th><th>Acciones</th></tr></thead>
+            <tbody>${rows.map(s=>`
+            <tr id="sr-${s.id}">
+                <td>${s.leido?'<span class="badge badge-leido">Leído</span>':'<span class="badge badge-new">Nuevo</span>'}</td>
+                <td><strong>${esc(s.nombre)}</strong></td>
+                <td>${s.whatsapp?`<a href="https://wa.me/57${s.whatsapp.replace(/\D/g,'')}" target="_blank" style="color:#e31c25;font-weight:700">${esc(s.whatsapp)}</a>`:'—'}</td>
+                <td style="font-size:.72rem">${s.email?esc(s.email):'—'}</td>
+                <td style="font-size:.72rem">${s.plan_interes?esc(s.plan_interes):'—'}</td>
+                <td style="max-width:180px;font-size:.72rem;word-break:break-word">${s.mensaje?esc(s.mensaje):'—'}</td>
+                <td style="white-space:nowrap;font-size:.72rem">${new Date(s.fecha).toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'})}</td>
+                <td class="actions">
+                    <button class="btn-icon" onclick="abrirEditSol(${s.id},'${esc(s.nombre)}','${esc(s.whatsapp||'')}','${esc(s.email||'')}','${esc(s.plan_interes||'')}','${esc(s.mensaje||'')}')">✏️</button>
+                    ${!s.leido?`<button class="btn-icon" onclick="leerSol(${s.id})">✓</button>`:''}
+                    <button class="btn-icon danger" onclick="borrarSol(${s.id})">🗑️</button>
+                </td>
+            </tr>`).join('')}
+            </tbody></table></div>`;
+    }catch(e){console.warn(e);}
+}
+function abrirEditSol(id,nombre,wa,email,plan,msg){
+    document.getElementById('mSolId').value=id; document.getElementById('mSolNombre').value=nombre;
+    document.getElementById('mSolWa').value=wa; document.getElementById('mSolEmail').value=email;
+    document.getElementById('mSolPlan').value=plan; document.getElementById('mSolMsg').value=msg;
+    document.getElementById('modalSol').style.display='flex';
+}
+function cerrarModal(){document.getElementById('modalSol').style.display='none';}
+async function guardarSolicitud(){
+    const id=document.getElementById('mSolId').value;
+    const body={nombre:document.getElementById('mSolNombre').value,whatsapp:document.getElementById('mSolWa').value,email:document.getElementById('mSolEmail').value,plan_interes:document.getElementById('mSolPlan').value,mensaje:document.getElementById('mSolMsg').value};
+    try{const r=await fetch(`${API}/api/solicitudes/${id}`,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(body)});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Solicitud actualizada','ok'); cerrarModal(); cargarSols();
+    }catch(e){authErr(e);}
+}
+async function leerSol(id){
+    try{await fetch(`${API}/api/solicitudes/${id}/leido`,{method:'PUT',headers:{Authorization:'Bearer '+token}});
+        toast('Marcada como leída','ok'); cargarSols();
+    }catch(e){authErr(e);}
+}
+async function borrarSol(id){
+    if(!confirm('¿Eliminar esta solicitud? Esta acción no se puede deshacer.')) return;
+    try{const r=await fetch(`${API}/api/solicitudes/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('Solicitud eliminada','ok'); cargarSols();
+    }catch(e){authErr(e);}
+}
+/* ════════════ TEXTOS DEL SITIO ════════════ */
+const TEXTOS_DEFAULTS = {
+    'hero-linea1':  'FORJA TU',
+    'hero-acento':  'CAMPEÓN',
+    'hero-linea3':  'INTERIOR',
+    'hero-sub':     'Entrena como campeón. Conviértete en campeón.\nBoxeo · Musculación · Funcional · Para todas las edades.',
+    'hero-eyebrow': 'BOXING CENTER · BOSA · BOGOTÁ',
+    'nos-titulo':   'DONDE LA PASIÓN COBRA FUERZA',
+    'est-año':      '2010',
+    'nos-p1':       'Black Diamond Gym es más que un gimnasio — es el epicentro del boxeo en Bosa, Bogotá. Un espacio donde boxeadores y entusiastas del fitness convergen para alcanzar sus metas, sin importar la edad ni el nivel.',
+    'nos-p2':       'Nuestra filosofía se basa en la disciplina, el trabajo duro y la superación constante. Cada entrenamiento está diseñado para llevar tu cuerpo y mente al siguiente nivel.',
+    'nos-s1':       '15',
+    'nos-s1-suf':   '+',
+    'nos-s1-label': 'Años de experiencia',
+    'nos-s2':       '7',
+    'nos-s2-suf':   '',
+    'nos-s2-label': 'Tipos de entrenamiento',
+    'nos-s3':       '3',
+    'nos-s3-suf':   '',
+    'nos-s3-label': 'Categorías de edad',
+    'hor-titulo':   '¿CUÁNDO NOS VISITAS?',
+    'hor-lv':       '6:00 a.m. – 10:00 p.m.',
+    'hor-sa':       '8:00 a.m. – 5:00 p.m.',
+    'hor-do':       '8:00 a.m. – 1:00 p.m.',
+    'hor-fe':       'Consultar RRSS',
+    'hor-cta-title':'RESERVA TU CLASE',
+    'hor-cta-sub':  'Sin costo, sin compromiso',
+    'con-dir':      'Bosa, Bogotá D.C.',
+    'con-wa':       '573133737590',
+    'con-ig':       'https://www.instagram.com/gym_blackdiamond_boxing_center/',
+    'con-tk':       'https://www.tiktok.com/@gymblackdiamondboxingcen',
+    'con-footer':   '© 2025 Black Diamond Gym · Boxing Center · Bosa, Bogotá',
+};
+
+async function cargarTextos() {
+    try {
+        const r = await fetch(`${API}/api/textos`);
+        const data = r.ok ? await r.json() : {};
+        // Merge con defaults
+        const textos = { ...TEXTOS_DEFAULTS, ...data };
+        Object.entries(textos).forEach(([clave, valor]) => {
+            const el = document.getElementById('txt-' + clave);
+            if (el) el.value = valor;
+        });
+    } catch(e) {
+        // Si no hay endpoint aún, cargar defaults
+        Object.entries(TEXTOS_DEFAULTS).forEach(([clave, valor]) => {
+            const el = document.getElementById('txt-' + clave);
+            if (el) el.value = valor;
+        });
+        console.warn('Endpoint /api/textos no disponible — usando valores por defecto');
+    }
+}
+
+async function guardarTextos(seccion) {
+    const claves = {
+        hero:     ['hero-linea1','hero-acento','hero-linea3','hero-sub','hero-eyebrow'],
+        nosotros: ['nos-titulo','est-año','nos-p1','nos-p2','nos-s1','nos-s1-suf','nos-s1-label','nos-s2','nos-s2-suf','nos-s2-label','nos-s3','nos-s3-suf','nos-s3-label'],
+        horarios: ['hor-titulo','hor-lv','hor-sa','hor-do','hor-fe','hor-cta-title','hor-cta-sub'],
+        contacto: ['con-dir','con-wa','con-ig','con-tk','con-footer'],
+    };
+    const payload = {};
+    (claves[seccion] || []).forEach(k => {
+        const el = document.getElementById('txt-' + k);
+        if (el) payload[k] = el.value;
+    });
+
+    try {
+        const r = await fetch(`${API}/api/textos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+            body: JSON.stringify(payload)
+        });
+        if (!r.ok) throw new Error((await r.json()).error || 'Error');
+        toast('✅ Textos guardados · Recarga la web para verlos', 'ok');
+    } catch(e) {
+        // Si el endpoint no existe aún en el servidor, guardamos en localStorage como fallback
+        if (e.message.includes('404') || e.message.includes('Failed')) {
+            localStorage.setItem('bdg_textos', JSON.stringify({
+                ...(JSON.parse(localStorage.getItem('bdg_textos') || '{}')),
+                ...payload
+            }));
+            toast('✅ Textos guardados localmente · Agrega el endpoint /api/textos al servidor para persistencia real', 'ok');
+        } else {
+            authErr(e);
+        }
+    }
+}
+/* ════════════ FEATURES DE PRECIOS ════════════ */
+const FEATURES_DEFAULTS = {
+    'feat-boxeo-1': 'Clases de boxeo técnico',
+    'feat-boxeo-2': 'Musculación incluida',
+    'feat-boxeo-3': 'Entrenamiento funcional',
+    'feat-boxeo-4': 'Acceso completo al gym',
+    'feat-boxeo-5': 'Instructores certificados',
+    'feat-gym-1':   'Entrenamiento de musculación',
+    'feat-gym-2':   'Funcional incluido',
+    'feat-gym-3':   'Acceso ilimitado al gym',
+    'feat-gym-4':   'Equipamiento completo',
+    'feat-gym-5':   'Clases de boxeo',
+    'feat-valera-1':'Válido por 15 días',
+    'feat-valera-2':'Clases de boxeo',
+    'feat-valera-3':'Musculación incluida',
+    'feat-valera-4':'Ideal para comenzar',
+    'feat-valera-5':'Entrenamiento funcional',
+};
+
+async function cargarFeatures() {
+    try {
+        const r = await fetch(`${API}/api/textos`);
+        const data = r.ok ? await r.json() : {};
+        const vals = { ...FEATURES_DEFAULTS, ...data };
+        Object.entries(vals).forEach(([k, v]) => {
+            const el = document.getElementById(k + '-val');
+            if (el) el.value = v;
+        });
+    } catch(e) {
+        Object.entries(FEATURES_DEFAULTS).forEach(([k, v]) => {
+            const el = document.getElementById(k + '-val');
+            if (el) el.value = v;
+        });
+    }
+}
+
+async function guardarFeatures() {
+    const payload = {};
+    Object.keys(FEATURES_DEFAULTS).forEach(k => {
+        const el = document.getElementById(k + '-val');
+        if (el) payload[k] = el.value;
+    });
+    try {
+        const r = await fetch(`${API}/api/textos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+            body: JSON.stringify(payload)
+        });
+        if (!r.ok) throw new Error((await r.json()).error || 'Error');
+        toast('✅ Características guardadas · Recarga la web para verlas', 'ok');
+    } catch(e) {
+        authErr(e);
+    }
+}
+</script>
+</body>
+</html>
