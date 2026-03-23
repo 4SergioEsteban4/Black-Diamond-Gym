@@ -473,9 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ── Configuración ────────────────────────────────────────────
 // API_BASE: usa la misma URL del servidor si no es localhost, si no apunta a :3000
-const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? `http://${window.location.hostname}:3000`
-    : window.location.origin;
+const API_BASE = 'https://black-diamond-gym.onrender.com';
 
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
 async function cargarNoticia() {
