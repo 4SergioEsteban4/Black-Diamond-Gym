@@ -48,7 +48,7 @@
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
         .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
         label{font-size:.68rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase}
-        input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],textarea,select{
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=password],textarea,select{
             background:#0a0a0a;border:1.5px solid #2a2a2a;color:var(--white);border-radius:9px;
             padding:11px 14px;font-family:var(--font-b);font-size:.85rem;transition:border-color .2s;
             resize:vertical;text-transform:none;width:100%}
@@ -653,7 +653,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'http://localhost:3000';
+const API = 'https://black-diamond-gym.onrender.com';
 let token = localStorage.getItem('bdg_token') || null;
 
 window.addEventListener('DOMContentLoaded', () => { if (token) mostrarPanel(); });
