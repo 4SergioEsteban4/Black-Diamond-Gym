@@ -94,14 +94,14 @@ app.get('/api/admin/reset-hash', async (req, res) => {
 });
 
 app.post('/api/admin/login', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email||!password) return res.status(400).json({ error:'Faltan campos' });
+    const { usuario, password } = req.body;
+    if (!usuario||!password) return res.status(400).json({ error:'Faltan campos' });
     try {
-        const [rows] = await pool.query('SELECT * FROM admins WHERE email=? LIMIT 1',[email.trim()]);
+        const [rows] = await pool.query('SELECT * FROM admins WHERE usuario=? LIMIT 1',[usuario.trim()]);
         if (!rows.length) return res.status(401).json({ error:'Credenciales incorrectas' });
         if (!await bcrypt.compare(password, rows[0].password_hash.trim()))
             return res.status(401).json({ error:'Credenciales incorrectas' });
-        const token = jwt.sign({ id:rows[0].id, email:rows[0].email, rol:'admin' },
+        const token = jwt.sign({ id:rows[0].id, usuario:rows[0].usuario, rol:'admin' },
             process.env.JWT_SECRET||'secreto_dev', { expiresIn:'8h' });
         res.json({ token, nombre:rows[0].nombre });
     } catch(e){ res.status(500).json({ error:e.message }); }

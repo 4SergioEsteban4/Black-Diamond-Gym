@@ -174,10 +174,10 @@
     <div class="login-card">
         <p class="login-logo">BLACK DIAMOND</p>
         <p class="login-sub">Panel de administración</p>
-        <div class="form-group"><label>Correo electrónico</label>
-            <input type="text" id="loginEmail" placeholder="admin@blackdiamondgym.co"></div>
+        <div class="form-group"><label>Usuario</label>
+            <input type="text" id="loginUsuario" placeholder="blackdiamond1"></div>
         <div class="form-group"><label>Contraseña</label>
-            <input type="text" id="loginPass" placeholder="••••••••"></div>
+            <input type="password" id="loginPass" placeholder="••••••••"></div>
         <div class="form-actions">
             <button class="btn-submit" id="btnLogin" onclick="hacerLogin()" style="width:100%">INGRESAR</button>
         </div>
@@ -653,20 +653,20 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://black-diamond-gym.onrender.com';
+const API = 'http://localhost:3000';
 let token = localStorage.getItem('bdg_token') || null;
 
 window.addEventListener('DOMContentLoaded', () => { if (token) mostrarPanel(); });
 
 /* ── LOGIN ── */
 async function hacerLogin() {
-    const e=document.getElementById('loginEmail').value.trim(), p=document.getElementById('loginPass').value;
+    const u=document.getElementById('loginUsuario').value.trim(), p=document.getElementById('loginPass').value;
     const btn=document.getElementById('btnLogin'), err=document.getElementById('loginError');
     err.style.display='none';
-    if(!e||!p){err.textContent='Completa todos los campos';err.style.display='block';return}
+    if(!u||!p){err.textContent='Completa todos los campos';err.style.display='block';return}
     btn.innerHTML='<span class="btn-spinner"></span>INGRESANDO...'; btn.disabled=true;
     try{
-        const res=await fetch(`${API}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p})});
+        const res=await fetch(`${API}/api/admin/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario:u,password:p})});
         const d=await res.json();
         if(!res.ok) throw new Error(d.error||'Error');
         token=d.token; localStorage.setItem('bdg_token',token); localStorage.setItem('bdg_nombre',d.nombre);
