@@ -636,20 +636,28 @@ async function cargarPrecios() {
         if (!res.ok) return;
         const planes = await res.json();
         planes.forEach(({ clave, nombre, descripcion, precio, periodo }) => {
+            // Formato COP: 120000 → num="$120" dec=".000" | 75000 → "$75" ".000"
+            const formatPartes = (n) => {
+                const s = n.toLocaleString('es-CO'); // ej: "120.000"
+                const dot = s.lastIndexOf('.');
+                if (dot !== -1) {
+                    return { num: '$' + s.slice(0, dot), dec: '.' + s.slice(dot + 1) };
+                }
+                return { num: '$' + s, dec: '' };
+            };
+
             // Planes con price-tag partido (boxeo, gym, valera)
             const numEl = document.getElementById(`precio-${clave}-num`);
             const decEl = document.getElementById(`precio-${clave}-dec`);
             if (numEl && decEl) {
-                const s   = precio.toString();
-                const mil = s.slice(0, -3);
-                numEl.textContent = `$${mil}`;
-                decEl.innerHTML   = `.${s.slice(-3)}<small id="precio-${clave}-per">${periodo}</small>`;
+                const { num, dec } = formatPartes(precio);
+                numEl.textContent = num;
+                decEl.innerHTML   = `${dec}<small id="precio-${clave}-per">${periodo}</small>`;
             }
             // Planes día (span directo)
             const diaEl = document.getElementById(`precio-${clave}`);
             if (diaEl) {
-                const s = precio.toString();
-                diaEl.textContent = `$${s.slice(0,-3)}.${s.slice(-3)}`;
+                diaEl.textContent = '$' + precio.toLocaleString('es-CO');
             }
             const nomEl = document.getElementById(`plan-${clave}-nombre`);
             const desEl = document.getElementById(`plan-${clave}-desc`);
@@ -744,11 +752,15 @@ async function cargarVideos() {
         videos.forEach(async (v, i) => {
             let thumb = null;
             if (v.plataforma === 'instagram') {
-                const match = v.url.match(/instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/);
-                if (match) {
-                    // Instagram permite miniatura via /media/ endpoint
-                    thumb = `https://www.instagram.com/p/${match[1]}/media/?size=m`;
-                }
+                // Instagram bloquea /media/ desde el navegador (CORS).
+                // Usamos el endpoint oEmbed público que sí devuelve thumbnail_url sin auth.
+                try {
+                    const oRes = await fetch(`https://api.instagram.com/oembed/?url=${encodeURIComponent(v.url)}&maxwidth=480`);
+                    if (oRes.ok) {
+                        const oData = await oRes.json();
+                        thumb = oData.thumbnail_url || null;
+                    }
+                } catch(_) { /* fallback al placeholder */ }
             } else if (v.plataforma === 'tiktok') {
                 thumb = await getTikTokThumb(v.url);
             } else if (v.plataforma === 'facebook') {
@@ -833,8 +845,8 @@ function abrirVideoModal(index) {
 
 /* ── Cerrar modal ── */
 function cerrarVideoModal(e) {
-    // Si se hizo clic en el fondo (no en el inner), cerrar
-    if (e && e.target !== document.getElementById('videoModal')) return;
+    // Cerrar si: sin argumento, clic en el fondo, o clic en el botón ✕
+    if (e && e.target && e.target !== document.getElementById('videoModal') && !e.target.classList.contains('video-modal-close')) return;
     const modal = document.getElementById('videoModal');
     if (!modal) return;
     modal.style.display = 'none';

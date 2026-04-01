@@ -88,8 +88,8 @@ const fullUrl = (req, url) => (url&&url.startsWith('/uploads')) ? `${req.protoco
 app.get('/api/admin/reset-hash', async (req, res) => {
     try {
         const h = await bcrypt.hash('Admin1234!', 10);
-        await pool.query('UPDATE admins SET password_hash=? WHERE email=?',[h,'admin@blackdiamondgym.co']);
-        res.json({ ok:true, mensaje:'Hash actualizado. Ya puedes loguearte con Admin1234!' });
+        await pool.query('UPDATE admins SET password_hash=?', [h]);
+        res.json({ ok:true, mensaje:'Hash actualizado en todos los admins. Ya puedes loguearte con Admin1234!' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 

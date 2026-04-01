@@ -1,6 +1,15 @@
 -- ================================================================
---  BLACK DIAMOND GYM — Esquema MySQL COMPLETO v3
+--  BLACK DIAMOND GYM — Esquema MySQL COMPLETO v4
 --  Incluye DROP DATABASE para instalación limpia.
+-- ================================================================
+--
+--  CREDENCIALES DE ACCESO AL PANEL ADMIN
+--  ──────────────────────────────────────
+--  URL:          /admin.html
+--  Usuario 1:    blackdiamond1  →  Contraseña: Admin1234!
+--  Usuario 2:    blackdiamond2  →  Contraseña: Admin1234!
+--  Usuario 3:    blackdiamond3  →  Contraseña: Admin1234!
+--
 -- ================================================================
 
 DROP DATABASE IF EXISTS blackdiamond_gym;
@@ -14,7 +23,7 @@ USE blackdiamond_gym;
 CREATE TABLE admins (
     id            INT          NOT NULL AUTO_INCREMENT,
     nombre        VARCHAR(120) NOT NULL,
-    email         VARCHAR(180) NOT NULL UNIQUE,
+    usuario       VARCHAR(60)  NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     creado_en     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
@@ -44,8 +53,7 @@ CREATE TABLE imagenes_sitio (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
--- ── galeria_fotos ────────────────────────────────────────────
--- Fotos adicionales de la sección "Fotos y Videos" (ilimitadas)
+-- ── galeria_fotos ─────────────────────────────────────────────
 CREATE TABLE galeria_fotos (
     id          INT          NOT NULL AUTO_INCREMENT,
     titulo      VARCHAR(150) NOT NULL DEFAULT '',
@@ -68,8 +76,7 @@ CREATE TABLE planes (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
--- ── textos_sitio ─────────────────────────────────────────────
--- Textos editables de la página (hero, historia, horarios, etc.)
+-- ── textos_sitio ──────────────────────────────────────────────
 CREATE TABLE textos_sitio (
     id          INT          NOT NULL AUTO_INCREMENT,
     clave       VARCHAR(80)  NOT NULL UNIQUE,
@@ -92,12 +99,11 @@ CREATE TABLE solicitudes (
 ) ENGINE=InnoDB;
 
 -- ── videos_destacados ─────────────────────────────────────────
--- Almacena URLs de Instagram, TikTok o Facebook para incrustar.
 CREATE TABLE videos_destacados (
     id          INT          NOT NULL AUTO_INCREMENT,
     titulo      VARCHAR(150) NOT NULL,
-    url         VARCHAR(500) NOT NULL,   -- URL completa de la publicación
-    plataforma  VARCHAR(20)  NOT NULL DEFAULT 'instagram',  -- instagram | tiktok | facebook
+    url         VARCHAR(500) NOT NULL,
+    plataforma  VARCHAR(20)  NOT NULL DEFAULT 'instagram',
     orden       INT          NOT NULL DEFAULT 0,
     activo      TINYINT(1)   NOT NULL DEFAULT 1,
     creado_en   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -105,14 +111,13 @@ CREATE TABLE videos_destacados (
 ) ENGINE=InnoDB;
 
 -- ── catalogo ──────────────────────────────────────────────────
--- Productos deportivos que vende el gimnasio.
 CREATE TABLE catalogo (
     id          INT            NOT NULL AUTO_INCREMENT,
     nombre      VARCHAR(150)   NOT NULL,
     descripcion TEXT                    DEFAULT NULL,
     precio      INT            NOT NULL,
     imagen_url  VARCHAR(400)            DEFAULT NULL,
-    categoria   VARCHAR(80)             DEFAULT NULL,  -- Guantes | Ropa | Accesorios | etc.
+    categoria   VARCHAR(80)             DEFAULT NULL,
     stock       INT            NOT NULL DEFAULT 0,
     activo      TINYINT(1)     NOT NULL DEFAULT 1,
     creado_en   DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -123,17 +128,18 @@ CREATE TABLE catalogo (
 --  DATOS INICIALES
 -- ================================================================
 
--- Admin (contraseña: Admin1234!)
-INSERT INTO admins (nombre, email, password_hash) VALUES
-('Profe Black Diamond','admin@blackdiamondgym.co',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHi');
+-- Admins (contraseña: Admin1234!)
+INSERT INTO admins (nombre, usuario, password_hash) VALUES
+('Admin Principal', 'blackdiamond1', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHi'),
+('Admin 2',         'blackdiamond2', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHi'),
+('Admin 3',         'blackdiamond3', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lHHi');
 
 -- Noticia de ejemplo
 INSERT INTO noticias (titulo, contenido) VALUES
 ('¡Bienvenidos a la nueva sección de noticias!',
  'Black Diamond Gym estrena su sistema de noticias en tiempo real. ¡Mantente conectado!');
 
--- Imágenes por defecto (TODAS las imágenes editables del sitio)
+-- Imágenes por defecto
 INSERT INTO imagenes_sitio (clave, label, url) VALUES
   ('hero_bg',          'Fondo Hero (sección principal)',          'MEDIA/Background.jpg'),
   ('logo_icono',       'Logo / Ícono del Gym (header y footer)',  'MEDIA/icono.jpg'),
@@ -163,39 +169,16 @@ INSERT INTO galeria_fotos (titulo, url, orden) VALUES
 
 -- Videos de ejemplo
 INSERT INTO videos_destacados (titulo, url, plataforma, orden) VALUES
-  ('Entrena con nosotros', 'https://www.instagram.com/p/DO3tb-kDpaA/', 'instagram', 1),
+  ('Entrena con nosotros',    'https://www.instagram.com/p/DO3tb-kDpaA/',                  'instagram', 1),
   ('Black Diamond en acción', 'https://www.instagram.com/gym_blackdiamond_boxing_center/', 'instagram', 2);
 
--- Productos reales Black Diamond Gym
+-- Productos
 INSERT INTO catalogo (nombre, descripcion, precio, categoria, stock) VALUES
-  ('Vendaje de Boxeo y Protectores Bucales',
-   'Vendas de protección para nudillo, muñeca y articulaciones. Incluye protector bucal de alta resistencia. Ideales para entrenamiento diario.',
-   1234, 'Protección', 30),
-
-  ('Coderas, Muñequeras, Straps y Vendas de Rodilla',
-   'Kit completo de protección articular: coderas ajustables, muñequeras de neopreno, straps de soporte y vendas de rodilla elásticas.',
-   12345, 'Protección', 20),
-
-  ('Kit Caretas Talla L/M + Guantes + Bucales + Vendas',
-   'Paquete completo para sparring: careta ajustable talla L o M, guantes de boxeo, protector bucal y vendas de entrenamiento.',
-   12345, 'Kits', 15),
-
-  ('Guantes de Boxeo 10 oz',
-   'Guantes profesionales de 10 onzas. Espuma de alta densidad, cuero sintético reforzado. Ideales para saco y mitt.',
-   12345, 'Guantes', 10),
-
-  ('Guantes de Boxeo 12 oz',
-   'Guantes profesionales de 12 onzas. Perfectos para entrenamiento general y sparring ligero. Cierre de velcro seguro.',
-   12345, 'Guantes', 10),
-
-  ('Guantes de Boxeo 14 oz',
-   'Guantes profesionales de 14 onzas. Mayor protección para sparring. Espuma multi-capa y palma ventilada.',
-   12345, 'Guantes', 10),
-
-  ('Zapatillas de Boxeo Everlast',
-   'Zapatillas Everlast originales para boxeo. Suela antideslizante, bota alta para soporte de tobillo. Diseño profesional.',
-   12345, 'Calzado', 8),
-
-  ('Venta de Implementación Deportiva',
-   'Venta de guantes de boxeo y caretas. Consulta disponibilidad de tallas y modelos con el profe.',
-   50, 'Varios', 99);
+  ('Vendaje de Boxeo y Protectores Bucales',   'Vendas de protección para nudillo, muñeca y articulaciones.',  1234,  'Protección', 30),
+  ('Coderas, Muñequeras, Straps y Vendas',     'Kit completo de protección articular.',                        12345, 'Protección', 20),
+  ('Kit Caretas L/M + Guantes + Bucales',      'Paquete completo para sparring.',                              12345, 'Kits',       15),
+  ('Guantes de Boxeo 10 oz',                   'Guantes profesionales de 10 onzas.',                           12345, 'Guantes',    10),
+  ('Guantes de Boxeo 12 oz',                   'Guantes profesionales de 12 onzas.',                           12345, 'Guantes',    10),
+  ('Guantes de Boxeo 14 oz',                   'Guantes profesionales de 14 onzas.',                           12345, 'Guantes',    10),
+  ('Zapatillas de Boxeo Everlast',             'Zapatillas Everlast originales para boxeo.',                   12345, 'Calzado',     8),
+  ('Venta de Implementación Deportiva',        'Venta de guantes de boxeo y caretas.',                            50, 'Varios',     99);

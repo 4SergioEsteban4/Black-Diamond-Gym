@@ -53,6 +53,8 @@
             <li><a href="#horarios" class="mob-link">HORARIOS</a></li>
             <li><a href="#precios" class="mob-link">PRECIOS</a></li>
             <li><a href="#contacto" class="mob-link">CONTACTO</a></li>
+            <li><a href="#noticias" class="mob-link">NOTICIAS</a></li>
+            <li><a href="#catalogo" class="mob-link">TIENDA</a></li>
             <li><a href="https://wa.me/573133737590" target="_blank" class="mob-link mob-wa">WHATSAPP: 313 373 7590</a>
             </li>
         </ul>
@@ -378,10 +380,10 @@
                         <div class="popular-badge">MÁS POPULAR</div>
                         <div class="card-top">
                             <span class="plan-label">💪 MENSUALIDAD</span>
-                            <h3>BOXEO</h3>
-                            <p class="plan-desc">Boxeo + Musculación + Funcional</p>
+                            <h3 id="plan-boxeo-nombre">BOXEO</h3>
+                            <p class="plan-desc" id="plan-boxeo-desc">Boxeo + Musculación + Funcional</p>
                         </div>
-                        <div class="price-tag">$120<span>.000<small>/mes</small></span></div>
+                        <div class="price-tag"><span id="precio-boxeo-num">$120</span><span id="precio-boxeo-dec">.000<small id="precio-boxeo-per">/mes</small></span></div>
                         <ul class="features-3d">
                             <li id="feat-boxeo-1">Clases de boxeo técnico</li>
                             <li id="feat-boxeo-2">Musculación incluida</li>
@@ -395,10 +397,10 @@
                     <div class="price-card-3d">
                         <div class="card-top">
                             <span class="plan-label">💪 MENSUALIDAD</span>
-                            <h3>GYM</h3>
-                            <p class="plan-desc">Musculación + Funcional</p>
+                            <h3 id="plan-gym-nombre">GYM</h3>
+                            <p class="plan-desc" id="plan-gym-desc">Musculación + Funcional</p>
                         </div>
-                        <div class="price-tag">$75<span>.000<small>/mes</small></span></div>
+                        <div class="price-tag"><span id="precio-gym-num">$75</span><span id="precio-gym-dec">.000<small id="precio-gym-per">/mes</small></span></div>
                         <ul class="features-3d">
                             <li id="feat-gym-1">Entrenamiento de musculación</li>
                             <li id="feat-gym-2">Funcional incluido</li>
@@ -412,10 +414,10 @@
                     <div class="price-card-3d">
                         <div class="card-top">
                             <span class="plan-label">⏱ QUINCENA</span>
-                            <h3>VALERA</h3>
-                            <p class="plan-desc">Boxeo + Musculación · 15 días</p>
+                            <h3 id="plan-valera-nombre">VALERA</h3>
+                            <p class="plan-desc" id="plan-valera-desc">Boxeo + Musculación · 15 días</p>
                         </div>
-                        <div class="price-tag">$60<span>.000<small>/15 días</small></span></div>
+                        <div class="price-tag"><span id="precio-valera-num">$60</span><span id="precio-valera-dec">.000<small id="precio-valera-per">/15 días</small></span></div>
                         <ul class="features-3d">
                             <li id="feat-valera-1">Válido por 15 días</li>
                             <li id="feat-valera-2">Clases de boxeo</li>
@@ -435,19 +437,19 @@
                         <ul class="features-3d dia-list">
                             <li class="dia-item">
                                 <span class="dia-label">Dirigido Boxeo</span>
-                                <span class="dia-price">$20.000</span>
+                                <span class="dia-price" id="precio-dia_dir_boxeo">$20.000</span>
                             </li>
                             <li class="dia-item">
                                 <span class="dia-label">Libre Boxeo</span>
-                                <span class="dia-price">$15.000</span>
+                                <span class="dia-price" id="precio-dia_lib_boxeo">$15.000</span>
                             </li>
                             <li class="dia-item">
                                 <span class="dia-label">Dirigido Gym</span>
-                                <span class="dia-price">$15.000</span>
+                                <span class="dia-price" id="precio-dia_dir_gym">$15.000</span>
                             </li>
                             <li class="dia-item">
                                 <span class="dia-label">Libre Gym</span>
-                                <span class="dia-price">$10.000</span>
+                                <span class="dia-price" id="precio-dia_lib_gym">$10.000</span>
                             </li>
                         </ul>
                         <a href="https://wa.me/573133737590?text=Hola,%20quiero%20info%20del%20plan%20día"
@@ -463,8 +465,10 @@
             <div class="carousel-3d-dots" id="dots3d"></div>
             <p class="pricing-footer">ⓘ Todos los planes incluyen duchas. Precios en COP. Sujetos a cambios sin previo
                 aviso.</p>
-            <!-- CATÁLOGO DEPORTIVO -->
-            <section id="catalogo" class="catalogo-section">
+        </section>
+
+        <!-- CATÁLOGO DEPORTIVO -->
+        <section id="catalogo" class="catalogo-section">
                 <div class="section-label"><span class="red-dot">●</span> TIENDA</div>
                 <h2 class="section-title sr-target">CATÁLOGO DEPORTIVO</h2>
                 <p class="section-sub sr-target">Equipamiento y ropa oficial Black Diamond Gym</p>
@@ -472,10 +476,10 @@
                     <div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Cargando
                         productos...</div>
                 </div>
-            </section>
+        </section>
 
-            <!-- CONTACTO -->
-            <section id="contacto" class="contacto-section">
+        <!-- CONTACTO -->
+        <section id="contacto" class="contacto-section">
                 <div class="section-label"><span class="red-dot">●</span> ENCUÉNTRANOS</div>
                 <h2 class="section-title sr-target">CONTÁCTANOS</h2>
                 <p class="section-sub sr-target">Estamos en Bosa, Bogotá. ¡Ven a conocernos!</p>
