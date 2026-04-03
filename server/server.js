@@ -32,14 +32,16 @@
 ================================================================ */
 
 require('dotenv').config();
-const express = require('express');
-const mysql   = require('mysql2/promise');
-const bcrypt  = require('bcryptjs');
-const jwt     = require('jsonwebtoken');
-const cors    = require('cors');
-const multer  = require('multer');
-const path    = require('path');
-const fs      = require('fs');
+const express    = require('express');
+const mysql      = require('mysql2/promise');
+const bcrypt     = require('bcryptjs');
+const jwt        = require('jsonwebtoken');
+const cors       = require('cors');
+const multer     = require('multer');
+const path       = require('path');
+const fs         = require('fs');
+const cloudinary = require('cloudinary').v2;
+const { Readable } = require('stream');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -47,7 +49,38 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Configurar Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Función para subir buffer a Cloudinary
+function subirACloudinary(buffer, folder) {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: folder || 'blackdiamond', resource_type: 'image' },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result.secure_url);
+            }
+        );
+        Readable.from(buffer).pipe(stream);
+    });
+}
+
+// Función para eliminar imagen de Cloudinary por URL
+async function eliminarDeCloudinary(url) {
+    try {
+        if (!url || !url.includes('cloudinary.com')) return;
+        const partes = url.split('/');
+        const archivo = partes[partes.length - 1].split('.')[0];
+        const folder  = partes[partes.length - 2];
+        await cloudinary.uploader.destroy(`${folder}/${archivo}`);
+    } catch(e) { console.warn('Error eliminando de Cloudinary:', e.message); }
+}
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost', port: process.env.DB_PORT || 3306,
@@ -56,18 +89,10 @@ const pool = mysql.createPool({
     waitForConnections: true, connectionLimit: 10,
 });
 
-/* ── Multer ─────────────────────────────────────────────────── */
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, 'uploads');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `img-${Date.now()}${path.extname(file.originalname).toLowerCase()}`);
-    }
-});
-const upload = multer({ storage, limits: { fileSize: 8*1024*1024 },
+/* ── Multer — memoria en vez de disco ───────────────────────── */
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 8*1024*1024 },
     fileFilter: (req,f,cb) => cb(/jpeg|jpg|png|webp/.test(f.mimetype)?null:new Error('Solo JPG/PNG/WEBP'),/jpeg|jpg|png|webp/.test(f.mimetype))
 });
 
@@ -79,8 +104,8 @@ function auth(req, res, next) {
     catch { res.status(403).json({ error: 'Token inválido o expirado' }); }
 }
 
-/* ── Helper URL ─────────────────────────────────────────────── */
-const fullUrl = (req, url) => (url&&url.startsWith('/uploads')) ? `${req.protocol}://${req.get('host')}${url}` : url;
+/* ── Helper URL — Cloudinary ya devuelve URLs absolutas ─────── */
+const fullUrl = (req, url) => url || null;
 
 /* ================================================================
    AUTH
@@ -121,7 +146,8 @@ app.get('/api/noticia', async (req, res) => {
 app.post('/api/noticia', auth, upload.single('imagen'), async (req, res) => {
     const { titulo, contenido } = req.body;
     if (!titulo||!contenido) return res.status(400).json({ error:'Faltan campos' });
-    const img = req.file ? `/uploads/${req.file.filename}` : null;
+    let img = null;
+    if (req.file) img = await subirACloudinary(req.file.buffer, 'blackdiamond/noticias');
     try {
         const [r] = await pool.query('INSERT INTO noticias (titulo,contenido,imagen_url,fecha_publicacion,admin_id) VALUES(?,?,?,NOW(),?)',
             [titulo.trim(),contenido.trim(),img,req.usuario.id]);
@@ -136,8 +162,8 @@ app.put('/api/noticia/:id', auth, upload.single('imagen'), async (req, res) => {
         if (!rows.length) return res.status(404).json({ error:'No encontrada' });
         const n = rows[0]; let img = n.imagen_url;
         if (req.file) {
-            if (img&&img.startsWith('/uploads')){ const p=path.join(__dirname,img); if(fs.existsSync(p)) fs.unlinkSync(p); }
-            img = `/uploads/${req.file.filename}`;
+            await eliminarDeCloudinary(img);
+            img = await subirACloudinary(req.file.buffer, 'blackdiamond/noticias');
         }
         await pool.query('UPDATE noticias SET titulo=?,contenido=?,imagen_url=?,fecha_publicacion=NOW() WHERE id=?',
             [titulo?.trim()||n.titulo, contenido?.trim()||n.contenido, img, req.params.id]);
@@ -161,11 +187,10 @@ app.put('/api/imagenes/:clave', auth, upload.single('imagen'), async (req, res) 
         const [rows] = await pool.query('SELECT * FROM imagenes_sitio WHERE clave=?',[req.params.clave]);
         if (!rows.length) return res.status(404).json({ error:'Clave no encontrada' });
         if (!req.file) return res.status(400).json({ error:'No se envió imagen' });
-        const ant = rows[0].url;
-        if (ant.startsWith('/uploads')){ const p=path.join(__dirname,ant); if(fs.existsSync(p)) fs.unlinkSync(p); }
-        const url = `/uploads/${req.file.filename}`;
+        await eliminarDeCloudinary(rows[0].url);
+        const url = await subirACloudinary(req.file.buffer, 'blackdiamond/sitio');
         await pool.query('UPDATE imagenes_sitio SET url=? WHERE clave=?',[url, req.params.clave]);
-        res.json({ mensaje:'Imagen actualizada', url: fullUrl(req,url) });
+        res.json({ mensaje:'Imagen actualizada', url });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
@@ -297,7 +322,8 @@ app.get('/api/catalogo', async (req, res) => {
 app.post('/api/catalogo', auth, upload.single('imagen'), async (req, res) => {
     const { nombre, descripcion, precio, categoria, stock } = req.body;
     if (!nombre||precio===undefined) return res.status(400).json({ error:'Nombre y precio requeridos' });
-    const img = req.file ? `/uploads/${req.file.filename}` : null;
+    let img = null;
+    if (req.file) img = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
     try {
         const [r] = await pool.query('INSERT INTO catalogo (nombre,descripcion,precio,imagen_url,categoria,stock) VALUES(?,?,?,?,?,?)',
             [nombre.trim(), descripcion||null, Number(precio), img, categoria||null, Number(stock)||0]);
@@ -312,8 +338,8 @@ app.put('/api/catalogo/:id', auth, upload.single('imagen'), async (req, res) => 
         if (!rows.length) return res.status(404).json({ error:'No encontrado' });
         const c = rows[0]; let img = c.imagen_url;
         if (req.file) {
-            if (img&&img.startsWith('/uploads')){ const p=path.join(__dirname,img); if(fs.existsSync(p)) fs.unlinkSync(p); }
-            img = `/uploads/${req.file.filename}`;
+            await eliminarDeCloudinary(img);
+            img = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
         }
         await pool.query('UPDATE catalogo SET nombre=?,descripcion=?,precio=?,imagen_url=?,categoria=?,stock=?,activo=? WHERE id=?',
             [nombre||c.nombre, descripcion??c.descripcion, precio!==undefined?Number(precio):c.precio,
@@ -325,10 +351,7 @@ app.put('/api/catalogo/:id', auth, upload.single('imagen'), async (req, res) => 
 app.delete('/api/catalogo/:id', auth, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT imagen_url FROM catalogo WHERE id=?',[req.params.id]);
-        if (rows[0]?.imagen_url?.startsWith('/uploads')){
-            const p = path.join(__dirname, rows[0].imagen_url);
-            if (fs.existsSync(p)) fs.unlinkSync(p);
-        }
+        if (rows[0]?.imagen_url) await eliminarDeCloudinary(rows[0].imagen_url);
         await pool.query('DELETE FROM catalogo WHERE id=?',[req.params.id]);
         res.json({ mensaje:'Producto eliminado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
@@ -350,14 +373,14 @@ app.get('/api/galeria', async (req, res) => {
 app.post('/api/galeria', auth, upload.single('imagen'), async (req, res) => {
     const { titulo, orden } = req.body;
     let url = req.body.url || null;
-    if (req.file) url = `/uploads/${req.file.filename}`;
+    if (req.file) url = await subirACloudinary(req.file.buffer, 'blackdiamond/galeria');
     if (!url) return res.status(400).json({ error: 'Se requiere imagen o URL' });
     try {
         const [r] = await pool.query(
             'INSERT INTO galeria_fotos (titulo, url, orden) VALUES (?, ?, ?)',
             [titulo || '', url, parseInt(orden) || 0]
         );
-        res.status(201).json({ mensaje: 'Foto añadida', id: r.insertId, url: fullUrl(req, url) });
+        res.status(201).json({ mensaje: 'Foto añadida', id: r.insertId, url });
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
@@ -369,17 +392,14 @@ app.put('/api/galeria/:id', auth, upload.single('imagen'), async (req, res) => {
         const f = rows[0];
         let url = f.url;
         if (req.file) {
-            if (url && url.startsWith('/uploads')) {
-                const p = path.join(__dirname, url);
-                if (fs.existsSync(p)) fs.unlinkSync(p);
-            }
-            url = `/uploads/${req.file.filename}`;
+            await eliminarDeCloudinary(url);
+            url = await subirACloudinary(req.file.buffer, 'blackdiamond/galeria');
         }
         await pool.query(
             'UPDATE galeria_fotos SET titulo=?, url=?, orden=? WHERE id=?',
             [titulo ?? f.titulo, url, orden !== undefined ? parseInt(orden) : f.orden, req.params.id]
         );
-        res.json({ mensaje: 'Foto actualizada', url: fullUrl(req, url) });
+        res.json({ mensaje: 'Foto actualizada', url });
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
@@ -387,11 +407,7 @@ app.delete('/api/galeria/:id', auth, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT url FROM galeria_fotos WHERE id=?', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error: 'No encontrada' });
-        const url = rows[0].url;
-        if (url && url.startsWith('/uploads')) {
-            const p = path.join(__dirname, url);
-            if (fs.existsSync(p)) fs.unlinkSync(p);
-        }
+        await eliminarDeCloudinary(rows[0].url);
         await pool.query('DELETE FROM galeria_fotos WHERE id=?', [req.params.id]);
         res.json({ mensaje: 'Foto eliminada' });
     } catch(e){ res.status(500).json({ error: e.message }); }
