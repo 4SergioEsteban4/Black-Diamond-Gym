@@ -807,14 +807,8 @@ function abrirVideoModal(index) {
                 style="max-width:340px;display:block;margin:0 auto;border-radius:12px"></iframe>`;
         }
     } else if (plat === 'facebook') {
-        // Facebook embed
-        const fbUrl = encodeURIComponent(url);
-        embedHTML = `<iframe
-            src="https://www.facebook.com/plugins/post.php?href=${fbUrl}&show_text=true&width=500"
-            width="100%" height="400" style="border:none;overflow:hidden;background:#fff"
-            scrolling="no" frameborder="0" allowfullscreen="true"
-            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>`;
-    }
+    embedHTML = '';
+}
 
     // Si no se pudo generar embed → mostrar botón de fallback
     if (!embedHTML) {
