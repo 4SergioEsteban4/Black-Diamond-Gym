@@ -1076,7 +1076,6 @@ async function cargarTextosSitio() {
         if (heroSub && t['hero-sub']) heroSub.innerHTML = t['hero-sub'].replace(/\n/g, '<br>');
         const heroEye = document.querySelector('.hero-eyebrow');
         if (heroEye && t['hero-eyebrow']) {
-            // mantener el dot-pulse span
             const dot = heroEye.querySelector('.dot-pulse');
             heroEye.innerHTML = '';
             if (dot) heroEye.appendChild(dot);
@@ -1086,13 +1085,11 @@ async function cargarTextosSitio() {
         // ── NOSOTROS ──────────────────────────────────────────
         const nosTit = document.querySelector('.nosotros-text h2');
         if (nosTit && t['nos-titulo']) nosTit.textContent = t['nos-titulo'];
-        // EST. badge year
         const estEl = document.getElementById('txt-est-año');
         if (estEl && t['est-año']) estEl.textContent = t['est-año'];
         const nosPs = document.querySelectorAll('.nosotros-text > p:not(.eyebrow-label)');
         if (nosPs[0] && t['nos-p1']) nosPs[0].textContent = t['nos-p1'];
         if (nosPs[1] && t['nos-p2']) nosPs[1].textContent = t['nos-p2'];
-        // Stats — número, sufijo y etiqueta completa
         [1, 2, 3].forEach(i => {
             const numEl   = document.getElementById(`stat-num-${i}`);
             const sufEl   = document.getElementById(`stat-suf-${i}`);
@@ -1101,7 +1098,7 @@ async function cargarTextosSitio() {
             if (numEl && t[key]) {
                 const val = parseInt(t[key]);
                 numEl.dataset.target = val;
-                numEl.textContent    = val; // también actualizar el texto directo
+                numEl.textContent    = val;
             }
             if (sufEl   && t[key + '-suf']   !== undefined) sufEl.textContent   = t[key + '-suf'];
             if (labelEl && t[key + '-label'])                labelEl.innerHTML   = t[key + '-label'].replace(/\n/g, '<br>');
@@ -1133,9 +1130,22 @@ async function cargarTextosSitio() {
 
         // ── CONTACTO / FOOTER ─────────────────────────────────
         if (t['con-wa']) {
+            const wa = t['con-wa'].replace(/\D/g, '');
+
+            // Actualizar todos los href de WhatsApp
             document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-                const wa = t['con-wa'].replace(/\D/g,'');
-                a.href = `https://wa.me/${wa}`;
+                // Preservar el texto del query si existe (ej: ?text=Hola...)
+                const query = a.href.includes('?') ? '?' + a.href.split('?')[1] : '';
+                a.href = `https://wa.me/${wa}${query}`;
+            });
+
+            // Actualizar textos visibles que muestran el número
+            const waLocal = wa.startsWith('57') ? wa.slice(2) : wa;
+            const waFormato = `${waLocal.slice(0,3)} ${waLocal.slice(3,6)} ${waLocal.slice(6)}`;
+            document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+                if (a.textContent.match(/\d{3}\s\d{3}\s\d{4}/)) {
+                    a.textContent = waFormato;
+                }
             });
         }
         if (t['con-ig']) {
