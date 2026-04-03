@@ -709,9 +709,9 @@ async function getTikTokThumb(url) {
 
 /* ── Thumbnails de fallback por plataforma ── */
 const PLATFORM_THUMBS = {
-    instagram: null,   // se intenta dinámica
-    tiktok:    null,   // se intenta dinámica
-    facebook:  'https://images.unsplash.com/photo-1552072805-2a9039d00e57?q=80&w=800',
+    instagram: 'MEDIA/icono.jpg',
+    tiktok:    null,
+    facebook:  'MEDIA/icono.jpg',
 };
 
 /* ── Placeholder SVG mientras carga ── */
@@ -750,21 +750,13 @@ async function cargarVideos() {
         // Cargar thumbnails reales de forma asíncrona
         videos.forEach(async (v, i) => {
             let thumb = null;
-            if (v.plataforma === 'instagram') {
-                // Instagram bloquea /media/ desde el navegador (CORS).
-                // Usamos el endpoint oEmbed público que sí devuelve thumbnail_url sin auth.
-                try {
-                    const oRes = await fetch(`https://api.instagram.com/oembed/?url=${encodeURIComponent(v.url)}&maxwidth=480`);
-                    if (oRes.ok) {
-                        const oData = await oRes.json();
-                        thumb = oData.thumbnail_url || null;
-                    }
-                } catch(_) { /* fallback al placeholder */ }
-            } else if (v.plataforma === 'tiktok') {
+if (v.plataforma === 'instagram') {
+    thumb = PLATFORM_THUMBS.instagram;
+} else if (v.plataforma === 'tiktok') {
                 thumb = await getTikTokThumb(v.url);
-            } else if (v.plataforma === 'facebook') {
-                thumb = PLATFORM_THUMBS.facebook;
-            }
+} else if (v.plataforma === 'facebook') {
+    thumb = null;
+}
             if (thumb) {
                 const img = document.getElementById(`vthumb-${i}`);
                 if (img) {
