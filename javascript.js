@@ -1134,16 +1134,15 @@ async function cargarTextosSitio() {
 
             // Actualizar todos los href de WhatsApp
             document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-                // Preservar el texto del query si existe (ej: ?text=Hola...)
                 const query = a.href.includes('?') ? '?' + a.href.split('?')[1] : '';
                 a.href = `https://wa.me/${wa}${query}`;
             });
 
             // Actualizar textos visibles que muestran el número
             const waLocal = wa.startsWith('57') ? wa.slice(2) : wa;
-            const waFormato = `${waLocal.slice(0,3)} ${waLocal.slice(3,6)} ${waLocal.slice(6)}`;
+            const waFormato = `${waLocal.slice(0,3)} ${waLocal.slice(3,6)} ${waLocal.slice(6,10)}`;
             document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-                if (a.textContent.match(/\d{3}\s\d{3}\s\d{4}/)) {
+                if (a.textContent.match(/\d{3}[\s.]\d{3}[\s.]\d{3,4}/)) {
                     a.textContent = waFormato;
                 }
             });
