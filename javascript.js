@@ -651,8 +651,7 @@ async function cargarPrecios() {
             const decEl = document.getElementById(`precio-${clave}-dec`);
             if (numEl && decEl) {
                 const { num, dec } = formatPartes(precio);
-                numEl.textContent = num;
-                decEl.innerHTML   = `${dec}<small id="precio-${clave}-per">${periodo}</small>`;
+numEl.firstChild.textContent = num;                decEl.innerHTML   = `${dec}<small id="precio-${clave}-per">${periodo}</small>`;
             }
             // Planes día (span directo)
             const diaEl = document.getElementById(`precio-${clave}`);
