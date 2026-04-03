@@ -709,9 +709,9 @@ async function getTikTokThumb(url) {
 
 /* ── Thumbnails de fallback por plataforma ── */
 const PLATFORM_THUMBS = {
-    instagram: 'MEDIA/icono.jpg',
-    tiktok:    null,
-    facebook:  'MEDIA/icono.jpg',
+    instagram: 'MEDIA/instagram.png',
+    tiktok:    null, // Sin thumbnail confiable → se mantiene el placeholder genérico
+    facebook:  'MEDIA/facebook.png',
 };
 
 /* ── Placeholder SVG mientras carga ── */
@@ -755,7 +755,7 @@ if (v.plataforma === 'instagram') {
 } else if (v.plataforma === 'tiktok') {
                 thumb = await getTikTokThumb(v.url);
 } else if (v.plataforma === 'facebook') {
-    thumb = null;
+    thumb = PLATFORM_THUMBS.facebook;
 }
             if (thumb) {
                 const img = document.getElementById(`vthumb-${i}`);
