@@ -64,6 +64,9 @@ const solicitudesLimiter = rateLimit({
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// Necesario para que express-rate-limit funcione correctamente detrás del proxy de Render
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -101,14 +104,10 @@ async function eliminarDeCloudinary(url) {
 }
 
 const pool = mysql.createPool({
-    host:               process.env.DB_HOST     || 'localhost',
-    port:               process.env.DB_PORT     || 3306,
-    user:               process.env.DB_USER     || 'root',
-    password:           process.env.DB_PASSWORD || '',
-    database:           process.env.DB_NAME     || 'blackdiamond_gym',
-    waitForConnections: true,
-    connectionLimit:    10,
-    ssl: { rejectUnauthorized: false }, // Requerido por Aiven
+    host: process.env.DB_HOST || 'localhost', port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root', password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'blackdiamond_gym',
+    waitForConnections: true, connectionLimit: 10,
 });
 
 /* ── Multer — memoria en vez de disco ───────────────────────── */
