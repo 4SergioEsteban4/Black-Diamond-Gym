@@ -55,7 +55,7 @@ const loginLimiter = rateLimit({
 // Máx 5 formularios de contacto por hora por IP
 const solicitudesLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 5,
+    max: 3,
     message: { error: 'Demasiadas solicitudes enviadas. Intenta en 1 hora.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -101,10 +101,14 @@ async function eliminarDeCloudinary(url) {
 }
 
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost', port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root', password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'blackdiamond_gym',
-    waitForConnections: true, connectionLimit: 10,
+    host:               process.env.DB_HOST     || 'localhost',
+    port:               process.env.DB_PORT     || 3306,
+    user:               process.env.DB_USER     || 'root',
+    password:           process.env.DB_PASSWORD || '',
+    database:           process.env.DB_NAME     || 'blackdiamond_gym',
+    waitForConnections: true,
+    connectionLimit:    10,
+    ssl: { rejectUnauthorized: false }, // Requerido por Aiven
 });
 
 /* ── Multer — memoria en vez de disco ───────────────────────── */
