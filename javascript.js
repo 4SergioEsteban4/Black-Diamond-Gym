@@ -86,30 +86,118 @@ document.addEventListener('DOMContentLoaded', function () {
     const horarioHoy = document.getElementById('horario-hoy');
 
     if (horarioHoy) {
-        // getDay() devuelve: 0=Domingo, 1=Lunes, ..., 6=Sábado
-        const diaSemana = new Date().getDay();
+        // ── Hora actual en Colombia (UTC-5, sin horario de verano) ──
+        const ahora      = new Date();
+        const hoy        = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+        const anio       = hoy.getFullYear();
+        const mes        = hoy.getMonth() + 1; // 1-12
+        const dia        = hoy.getDate();
+        const diaSemana  = hoy.getDay();       // 0=Dom … 6=Sáb
 
-        // Objeto con los horarios por número de día
+        // ── Calcular Semana Santa (Pascua) ──────────────────────
+        // Algoritmo de Butcher para obtener el domingo de Pascua
+        function pascua(y) {
+            const a = y % 19, b = Math.floor(y / 100), c = y % 100;
+            const d = Math.floor(b / 4), e = b % 4;
+            const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3);
+            const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4), k = c % 4;
+            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const mes = Math.floor((h + l - 7 * m + 114) / 31);
+            const dia = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(y, mes - 1, dia);
+        }
+
+        function agregarDias(fecha, dias) {
+            const d = new Date(fecha);
+            d.setDate(d.getDate() + dias);
+            return d;
+        }
+
+        const domPascua    = pascua(anio);
+        const juevesSanto  = agregarDias(domPascua, -3);
+        const viernesSanto = agregarDias(domPascua, -2);
+
+        // ── Lista de festivos fijos colombianos ─────────────────
+        // Formato: 'MM-DD'
+        const festivosFijos = [
+            '01-01', // Año Nuevo
+            '05-01', // Día del Trabajo
+            '07-04', // — (traslado Sagrado Corazón, variable pero approx)
+            '07-20', // Independencia de Colombia
+            '08-07', // Batalla de Boyacá
+            '12-08', // Inmaculada Concepción
+            '12-25', // Navidad
+        ];
+
+        // ── Festivos móviles que se trasladan al lunes ──────────
+        // En Colombia varios festivos se mueven al lunes siguiente
+        function proximoLunes(mes, dia) {
+            const f = new Date(anio, mes - 1, dia);
+            const dow = f.getDay();
+            if (dow === 1) return f; // ya es lunes
+            const diff = dow === 0 ? 1 : 8 - dow;
+            return agregarDias(f, diff);
+        }
+
+        const festivosMoviles = [
+            proximoLunes(1, 6),   // Reyes Magos
+            proximoLunes(3, 19),  // San José
+            agregarDias(domPascua, -3), // Jueves Santo
+            agregarDias(domPascua, -2), // Viernes Santo
+            agregarDias(domPascua, 43), // Ascensión (39+4 por traslado)
+            agregarDias(domPascua, 64), // Corpus Christi
+            agregarDias(domPascua, 71), // Sagrado Corazón
+            proximoLunes(6, 29),  // San Pedro y San Pablo
+            proximoLunes(8, 15),  // Asunción de la Virgen
+            proximoLunes(10, 12), // Día de la Raza
+            proximoLunes(11, 1),  // Todos los Santos
+            proximoLunes(11, 11), // Independencia de Cartagena
+        ];
+
+        // ── Verificar si hoy es festivo ─────────────────────────
+        function dosDigitos(n) { return String(n).padStart(2, '0'); }
+        const claveHoy = dosDigitos(mes) + '-' + dosDigitos(dia);
+
+        const esFestivoFijo = festivosFijos.includes(claveHoy);
+
+        const esFestivoMovil = festivosMoviles.some(f => {
+            const fm = new Date(f.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+            return fm.getFullYear() === anio &&
+                   (fm.getMonth() + 1) === mes &&
+                   fm.getDate() === dia;
+        });
+
+        const esFestivo = esFestivoFijo || esFestivoMovil;
+
+        // ── Horarios normales por día ───────────────────────────
         const horarios = {
-            0: '8:00 a.m. – 1:00 p.m.',    // Domingo
-            1: '6:00 a.m. – 10:00 p.m.',   // Lunes
-            2: '6:00 a.m. – 10:00 p.m.',   // Martes
-            3: '6:00 a.m. – 10:00 p.m.',   // Miércoles
-            4: '6:00 a.m. – 10:00 p.m.',   // Jueves
-            5: '6:00 a.m. – 10:00 p.m.',   // Viernes
-            6: '8:00 a.m. – 5:00 p.m.'     // Sábado
+            0: '8:00 a.m. – 1:00 p.m.',
+            1: '6:00 a.m. – 10:00 p.m.',
+            2: '6:00 a.m. – 10:00 p.m.',
+            3: '6:00 a.m. – 10:00 p.m.',
+            4: '6:00 a.m. – 10:00 p.m.',
+            5: '6:00 a.m. – 10:00 p.m.',
+            6: '8:00 a.m. – 5:00 p.m.'
         };
 
-        // Nombres de los días para mostrarlos en la tarjeta
         const nombresDias = {
             0: 'Domingo', 1: 'Lunes', 2: 'Martes',
             3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado'
         };
 
-        // Insertar el HTML con el día y el horario correspondiente
-        horarioHoy.innerHTML =
-            '<strong>' + nombresDias[diaSemana] + ':</strong><br>' +
-            horarios[diaSemana];
+        // ── Mostrar resultado ───────────────────────────────────
+        if (esFestivo) {
+            horarioHoy.innerHTML =
+                '<strong>🎉 Día Festivo</strong><br>' +
+                'Consulta nuestras redes sociales<br>o panel de noticias';
+        } else {
+            horarioHoy.innerHTML =
+                '<strong>' + nombresDias[diaSemana] + ':</strong><br>' +
+                horarios[diaSemana];
+        }
     }
 
 
@@ -473,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ── Configuración ────────────────────────────────────────────
 // API_BASE: usa la misma URL del servidor si no es localhost, si no apunta a :3000
-const API_BASE = 'https://black-diamond-gym-5d2h.onrender.com';
+const API_BASE = 'https://black-diamond-gym.onrender.com';
 
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
 async function cargarNoticia() {
