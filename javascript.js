@@ -970,7 +970,7 @@ async function cargarCatalogo() {
                         <span class="catalogo-precio">${precio}</span>
                         <span class="catalogo-stock">${p.stock > 0 ? `Stock: ${p.stock}` : 'Consultar'}</span>
                     </div>
-                    <a href="https://wa.me/573133737590?text=Hola,%20me%20interesa%20el%20producto:%20${encodeURIComponent(p.nombre)}" target="_blank" class="catalogo-btn">PEDIR AHORA</a>
+                    <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20me%20interesa%20el%20producto:%20${encodeURIComponent(p.nombre)}" target="_blank" class="catalogo-btn">PEDIR AHORA</a>
                 </div>
             </div>`;
         }).join('');
@@ -1219,6 +1219,9 @@ async function cargarTextosSitio() {
         // ── CONTACTO / FOOTER ─────────────────────────────────
         if (t['con-wa']) {
             const wa = t['con-wa'].replace(/\D/g, '');
+
+            // Guardar número globalmente para usarlo en el catálogo y otros componentes dinámicos
+            window._waNumber = wa;
 
             // Actualizar todos los href de WhatsApp
             document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
