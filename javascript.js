@@ -16,6 +16,21 @@
    Todo el código que manipula elementos HTML debe ir aquí dentro
    para garantizar que los elementos ya existen en la página.
 ================================================================ */
+
+/* ── PANTALLA DE CARGA ── */
+(function() {
+    const loader = document.getElementById('pageLoader');
+    if (!loader) return;
+    window.addEventListener('load', function() {
+        const msg = loader.querySelector('p:last-child');
+        if (msg) msg.textContent = '✅ ¡Listo!';
+        setTimeout(() => {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+        }, 600);
+    });
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
 
 
