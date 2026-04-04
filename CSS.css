@@ -412,8 +412,8 @@ nav {
 
 /* En móvil: mostrar tap, ocultar mouse */
 @media (max-width: 768px) {
-    .scroll-mouse { display: none; }
-    .scroll-tap   { display: block; }
+    .scroll-mouse { display: none !important; }
+    .scroll-tap   { display: block !important; }
     #scrollText   { letter-spacing: 4px; }
 }
 
