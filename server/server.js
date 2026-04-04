@@ -105,6 +105,7 @@ const pool = mysql.createPool({
     user: process.env.DB_USER || 'root', password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'blackdiamond_gym',
     waitForConnections: true, connectionLimit: 10,
+    charset: 'utf8mb4',
 });
 
 /* ── Multer — memoria en vez de disco ───────────────────────── */
