@@ -238,7 +238,7 @@ nav {
     width: min(320px, 90vw);
     height: 100vh;
     background: #0a0a0a;
-    border-left: 1px solid #222;
+    border-left: 3px solid var(--red);
     z-index: 2000;
     display: flex;
     flex-direction: column;
@@ -247,13 +247,24 @@ nav {
 }
 .mobile-menu.open { right: 0; }
 
+/* Línea roja decorativa en la parte superior */
+.mobile-menu::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--red), #ff4d4d);
+}
+
 .mobile-close {
     position: absolute;
     top: 20px; right: 20px;
     background: none; border: none;
     color: var(--white); font-size: 1.4rem;
     cursor: pointer;
+    transition: color .2s;
 }
+.mobile-close:hover { color: var(--red); }
 
 .mobile-menu ul { display: flex; flex-direction: column; gap: 8px; }
 .mobile-menu li a {
@@ -264,9 +275,14 @@ nav {
     color: #ccc;
     padding: 10px 0;
     border-bottom: 1px solid #1a1a1a;
-    transition: color .2s;
+    transition: color .2s, border-color .2s, padding-left .2s;
 }
-.mobile-menu li a:hover { color: var(--red); }
+.mobile-menu li a:hover,
+.mobile-menu li a:active {
+    color: var(--red);
+    border-bottom-color: var(--red);
+    padding-left: 8px;
+}
 .mob-wa { color: #25d366 !important; border-color: #1a3a1a !important; }
 
 /* ============================================================
