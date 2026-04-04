@@ -64,9 +64,6 @@ const solicitudesLimiter = rateLimit({
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// Necesario para que express-rate-limit funcione correctamente detrás del proxy de Render
-app.set('trust proxy', 1);
-
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
@@ -164,6 +161,19 @@ app.post('/api/noticia', auth, upload.single('imagen'), async (req, res) => {
     try {
         const [r] = await pool.query('INSERT INTO noticias (titulo,contenido,imagen_url,fecha_publicacion,admin_id) VALUES(?,?,?,NOW(),?)',
             [titulo.trim(),contenido.trim(),img,req.usuario.id]);
+
+        // Mantener solo las últimas 5 noticias — borrar las más antiguas
+        await pool.query(`
+            DELETE FROM noticias
+            WHERE id NOT IN (
+                SELECT id FROM (
+                    SELECT id FROM noticias
+                    ORDER BY fecha_publicacion DESC
+                    LIMIT 5
+                ) tmp
+            )
+        `);
+
         res.status(201).json({ mensaje:'Noticia publicada', id:r.insertId });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
