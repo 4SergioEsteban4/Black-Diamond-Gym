@@ -2,14 +2,6 @@
 --  BLACK DIAMOND GYM — Esquema MySQL COMPLETO v4
 --  Incluye DROP DATABASE para instalación limpia.
 -- ================================================================
---
---  CREDENCIALES DE ACCESO AL PANEL ADMIN
---  ──────────────────────────────────────
---  URL:          /admin.html
---  Usuario 1:    blackdiamond1  →  Contraseña: Admin1234!
---  Usuario 2:    blackdiamond2  →  Contraseña: Admin1234!
---  Usuario 3:    blackdiamond3  →  Contraseña: Admin1234!
---
 -- ================================================================
 
 DROP DATABASE IF EXISTS blackdiamond_gym;
