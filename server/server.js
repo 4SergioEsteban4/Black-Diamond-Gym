@@ -2,7 +2,6 @@
    BLACK DIAMOND GYM — Backend API v3
    ================================================================
    POST /api/admin/login
-   GET  /api/admin/reset-hash
    GET  /api/noticia              → última noticia (público)
    POST /api/noticia              → crear (admin)
    PUT  /api/noticia/:id          → editar (admin)
@@ -42,6 +41,25 @@ const path       = require('path');
 const fs         = require('fs');
 const cloudinary = require('cloudinary').v2;
 const { Readable } = require('stream');
+const rateLimit  = require('express-rate-limit');
+
+// Máx 10 intentos de login cada 15 min por IP
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Demasiados intentos. Espera 15 minutos.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Máx 5 formularios de contacto por hora por IP
+const solicitudesLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 5,
+    message: { error: 'Demasiadas solicitudes enviadas. Intenta en 1 hora.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -110,19 +128,11 @@ const fullUrl = (req, url) => url || null;
 /* ================================================================
    AUTH
 ================================================================ */
-app.get('/api/admin/reset-hash', async (req, res) => {
-    try {
-        const h = await bcrypt.hash('Admin1234!', 10);
-        await pool.query('UPDATE admins SET password_hash=?', [h]);
-        res.json({ ok:true, mensaje:'Hash actualizado en todos los admins. Ya puedes loguearte con Admin1234!' });
-    } catch(e){ res.status(500).json({ error:e.message }); }
-});
-
-app.post('/api/admin/login', async (req, res) => {
+app.post('/api/admin/login', loginLimiter, async (req, res) => {
     const { usuario, password } = req.body;
     if (!usuario||!password) return res.status(400).json({ error:'Faltan campos' });
     try {
-        const [rows] = await pool.query('SELECT * FROM admins WHERE usuario=? LIMIT 1',[usuario.trim()]);
+        const [rows] = await pool.query('SELECT id, nombre, usuario, password_hash FROM admins WHERE usuario=? LIMIT 1',[usuario.trim()]);
         if (!rows.length) return res.status(401).json({ error:'Credenciales incorrectas' });
         if (!await bcrypt.compare(password, rows[0].password_hash.trim()))
             return res.status(401).json({ error:'Credenciales incorrectas' });
@@ -220,7 +230,7 @@ app.put('/api/planes/:clave', auth, async (req, res) => {
 /* ================================================================
    SOLICITUDES
 ================================================================ */
-app.post('/api/solicitudes', async (req, res) => {
+app.post('/api/solicitudes', solicitudesLimiter, async (req, res) => {
     const { nombre, email, whatsapp, plan_interes, mensaje } = req.body;
     if (!nombre) return res.status(400).json({ error:'El nombre es obligatorio' });
     if (!email && !whatsapp) return res.status(400).json({ error:'Debes ingresar correo o WhatsApp' });
@@ -235,7 +245,7 @@ app.post('/api/solicitudes', async (req, res) => {
 
 app.get('/api/solicitudes', auth, async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM solicitudes ORDER BY fecha DESC');
+        const [rows] = await pool.query('SELECT id, nombre, email, whatsapp, plan_interes, mensaje, leido, fecha FROM solicitudes ORDER BY fecha DESC');
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -428,21 +438,30 @@ app.get('/api/textos', async (req, res) => {
 app.post('/api/textos', auth, async (req, res) => {
     const textos = req.body;
     if (!textos || typeof textos !== 'object') return res.status(400).json({ error: 'Payload inválido' });
+    const entries = Object.entries(textos);
+    if (!entries.length) return res.status(400).json({ error: 'No se enviaron textos' });
+    const conn = await pool.getConnection();
     try {
-        const entries = Object.entries(textos);
-        for (const [clave, valor] of entries) {
-            await pool.query(
-                'INSERT INTO textos_sitio (clave, valor) VALUES (?, ?) ON DUPLICATE KEY UPDATE valor=?, actualizado=NOW()',
-                [clave, String(valor), String(valor)]
-            );
-        }
+        await conn.beginTransaction();
+        const placeholders = entries.map(() => '(?, ?)').join(', ');
+        const values = entries.flatMap(([clave, valor]) => [clave, String(valor)]);
+        await conn.query(
+            `INSERT INTO textos_sitio (clave, valor) VALUES ${placeholders}
+             ON DUPLICATE KEY UPDATE valor = VALUES(valor), actualizado = NOW()`,
+            values
+        );
+        await conn.commit();
         res.json({ mensaje: 'Textos guardados', actualizados: entries.length });
-    } catch(e){ res.status(500).json({ error: e.message }); }
+    } catch(e) {
+        await conn.rollback();
+        res.status(500).json({ error: e.message });
+    } finally {
+        conn.release();
+    }
 });
 
 /* ── Listen ─────────────────────────────────────────────────── */
 app.listen(PORT, () => {
     console.log(`✅ API corriendo en   http://localhost:${PORT}`);
     console.log(`🔑 Panel admin en     http://localhost:${PORT}/admin.html`);
-    console.log(`🔧 Reset hash en      http://localhost:${PORT}/api/admin/reset-hash`);
 });
