@@ -93,10 +93,12 @@ function subirACloudinary(buffer, folder) {
 async function eliminarDeCloudinary(url) {
     try {
         if (!url || !url.includes('cloudinary.com')) return;
-        const partes = url.split('/');
-        const archivo = partes[partes.length - 1].split('.')[0];
-        const folder  = partes[partes.length - 2];
-        await cloudinary.uploader.destroy(`${folder}/${archivo}`);
+        // Extraer el public_id completo desde /upload/v.../
+        // URL ejemplo: https://res.cloudinary.com/cloud/image/upload/v1234/blackdiamond/sitio/img.jpg
+        const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
+        if (!match) return;
+        const publicId = match[1]; // ej: blackdiamond/sitio/img-123
+        await cloudinary.uploader.destroy(publicId);
     } catch(e) { console.warn('Error eliminando de Cloudinary:', e.message); }
 }
 
