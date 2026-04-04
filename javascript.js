@@ -548,7 +548,28 @@ document.addEventListener('DOMContentLoaded', function () {
             observadorLazy.observe(img);
         });
     }
+/* ── MENÚ MÓVIL — Hamburger ── */
+const hamburger  = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileClose = document.getElementById('mobileClose');
+const mobLinks   = document.querySelectorAll('.mob-link');
 
+if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', function () {
+        mobileMenu.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    });
+    mobileClose.addEventListener('click', function () {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+    mobLinks.forEach(function (link) {
+        link.addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            document.body.style.overflow = '';
+        });
+    });
+}
 
 }); // Fin del DOMContentLoaded
 
