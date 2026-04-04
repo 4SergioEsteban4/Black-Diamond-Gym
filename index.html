@@ -77,8 +77,9 @@
                 </div>
             </div>
             <div class="scroll-indicator" id="scrollIndicator">
-                <span class="scroll-text">SCROLL</span>
-                <!-- Mouse con rueda animada -->
+                <!-- Texto: SCROLL en desktop, TAP en móvil -->
+                <span class="scroll-text" id="scrollText">SCROLL</span>
+                <!-- Mouse con rueda animada — solo desktop -->
                 <svg class="scroll-mouse" viewBox="0 0 28 44" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <!-- Cuerpo del mouse -->
                     <rect x="1" y="1" width="26" height="42" rx="13" stroke="white" stroke-width="2" />
@@ -86,6 +87,12 @@
                     <line x1="14" y1="1" x2="14" y2="22" stroke="white" stroke-width="1" opacity="0.3" />
                     <!-- Rueda animada -->
                     <rect class="mouse-wheel" x="12" y="8" width="4" height="8" rx="2" fill="#e31c25" />
+                </svg>
+                <!-- Dedo tap — solo móvil -->
+                <svg class="scroll-tap" viewBox="0 0 40 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 4 C20 4 20 28 20 28" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="20" cy="32" r="6" fill="#e31c25" opacity="0.9"/>
+                    <circle cx="20" cy="32" r="10" stroke="#e31c25" stroke-width="1.5" opacity="0.4"/>
                 </svg>
                 <!-- Tres chevrons en cascada -->
                 <div class="scroll-chevrons">

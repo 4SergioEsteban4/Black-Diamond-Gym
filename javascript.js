@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (scrollIndicator) {
 
+        // Cambiar texto SCROLL → TAP en dispositivos táctiles
+        const scrollText = document.getElementById('scrollText');
+        if (scrollText && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+            scrollText.textContent = 'TAP';
+        }
+
         // Al hacer clic en la flecha, desplazarse suavemente
         // hasta la sección "nosotros" que es la que sigue al hero
         scrollIndicator.addEventListener('click', function () {

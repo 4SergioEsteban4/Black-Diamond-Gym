@@ -388,11 +388,33 @@ nav {
     text-transform: uppercase;
 }
 
-/* Mouse SVG */
+/* Mouse SVG — solo desktop */
 .scroll-mouse {
     width: 22px;
     height: 35px;
     filter: drop-shadow(0 0 6px rgba(227,28,37,.5));
+}
+
+/* Dedo tap SVG — solo móvil */
+.scroll-tap {
+    width: 32px;
+    height: 36px;
+    display: none;
+    filter: drop-shadow(0 0 6px rgba(227,28,37,.5));
+    animation: tapPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes tapPulse {
+    0%   { transform: translateY(0);  opacity: 1; }
+    50%  { transform: translateY(4px); opacity: .5; }
+    100% { transform: translateY(0);  opacity: 1; }
+}
+
+/* En móvil: mostrar tap, ocultar mouse */
+@media (max-width: 768px) {
+    .scroll-mouse { display: none; }
+    .scroll-tap   { display: block; }
+    #scrollText   { letter-spacing: 4px; }
 }
 
 /* Rueda del mouse sube y baja */

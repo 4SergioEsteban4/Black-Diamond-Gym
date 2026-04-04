@@ -106,6 +106,7 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME || 'blackdiamond_gym',
     waitForConnections: true, connectionLimit: 10,
     charset: 'utf8mb4',
+    ssl: process.env.DB_HOST?.includes('aivencloud.com') ? { rejectUnauthorized: false } : false,
 });
 
 /* ── Multer — memoria en vez de disco ───────────────────────── */
