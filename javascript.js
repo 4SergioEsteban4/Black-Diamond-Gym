@@ -595,14 +595,9 @@ if (hamburger && mobileMenu) {
    Llama a GET /api/noticia para obtener la última noticia desde
    MySQL. Muestra la imagen si existe, adapta el layout y aplica
    una animación de entrada.
-
-   URL de la API: ajusta API_BASE según tu entorno.
-   · Desarrollo : http://localhost:3000
-   · Producción : https://tu-dominio.com
 ================================================================ */
 
-// ── Configuración ────────────────────────────────────────────
-// API_BASE: usa la misma URL del servidor si no es localhost, si no apunta a :3000
+// URL de la API en producción
 const API_BASE = 'https://black-diamond-gym-5d2h.onrender.com';
 
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
