@@ -64,8 +64,13 @@ const solicitudesLimiter = rateLimit({
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// Necesario para que express-rate-limit funcione correctamente en Render
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
+// Servir archivos estáticos desde la raíz del repo (un nivel arriba de server/)
+app.use(express.static(path.join(__dirname, '..')));
 app.use(express.static(path.join(__dirname)));
 
 // Configurar Cloudinary
