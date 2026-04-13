@@ -483,6 +483,15 @@ app.post('/api/textos', auth, async (req, res) => {
 });
 
 /* ── Listen ─────────────────────────────────────────────────── */
+// Mantener Aiven despierto — consulta cada 4 horas
+setInterval(async () => {
+    try {
+        await pool.query('SELECT 1');
+        console.log('✅ Aiven keep-alive OK');
+    } catch(e) {
+        console.warn('⚠️ Aiven keep-alive error:', e.message);
+    }
+}, 4 * 60 * 60 * 1000);
 app.listen(PORT, () => {
     console.log(`✅ API corriendo en   http://localhost:${PORT}`);
     console.log(`🔑 Panel admin en     http://localhost:${PORT}/admin.html`);
