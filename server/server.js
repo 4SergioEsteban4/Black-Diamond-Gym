@@ -1,5 +1,5 @@
 /* ================================================================
-   BLACK DIAMOND GYM — Backend API v3
+   BLACK DIAMOND GYM — Backend API v3 (PostgreSQL / Supabase)
    ================================================================
    POST /api/admin/login
    GET  /api/noticia              → última noticia (público)
@@ -32,7 +32,7 @@
 
 require('dotenv').config();
 const express    = require('express');
-const mysql      = require('mysql2/promise');
+const { Pool }   = require('pg');
 const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const cors       = require('cors');
@@ -52,7 +52,7 @@ const loginLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Máx 5 formularios de contacto por hora por IP
+// Máx 3 formularios de contacto por hora por IP
 const solicitudesLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
     max: 3,
@@ -98,23 +98,21 @@ function subirACloudinary(buffer, folder) {
 async function eliminarDeCloudinary(url) {
     try {
         if (!url || !url.includes('cloudinary.com')) return;
-        // Extraer el public_id completo desde /upload/v.../
-        // URL ejemplo: https://res.cloudinary.com/cloud/image/upload/v1234/blackdiamond/sitio/img.jpg
         const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
         if (!match) return;
-        const publicId = match[1]; // ej: blackdiamond/sitio/img-123
+        const publicId = match[1];
         await cloudinary.uploader.destroy(publicId);
     } catch(e) { console.warn('Error eliminando de Cloudinary:', e.message); }
 }
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost', port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root', password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'blackdiamond_gym',
-    waitForConnections: true, connectionLimit: 10,
-    charset: 'utf8mb4',
-    ssl: process.env.DB_HOST?.includes('aivencloud.com') ? { rejectUnauthorized: false } : false,
+// ── Conexión PostgreSQL (Supabase) ───────────────────────────
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
 });
+
+// Helper: ejecutar query con valores
+const query = (text, params) => pool.query(text, params);
 
 /* ── Multer — memoria en vez de disco ───────────────────────── */
 const upload = multer({
@@ -131,7 +129,7 @@ function auth(req, res, next) {
     catch { res.status(403).json({ error: 'Token inválido o expirado' }); }
 }
 
-/* ── Helper URL — Cloudinary ya devuelve URLs absolutas ─────── */
+/* ── Helper URL ─────────────────────────────────────────────── */
 const fullUrl = (req, url) => url || null;
 
 /* ================================================================
@@ -141,12 +139,18 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
     const { usuario, password } = req.body;
     if (!usuario||!password) return res.status(400).json({ error:'Faltan campos' });
     try {
-        const [rows] = await pool.query('SELECT id, nombre, usuario, password_hash FROM admins WHERE usuario=? LIMIT 1',[usuario.trim()]);
+        const { rows } = await query(
+            'SELECT id, nombre, usuario, password_hash FROM admins WHERE usuario=$1 LIMIT 1',
+            [usuario.trim()]
+        );
         if (!rows.length) return res.status(401).json({ error:'Credenciales incorrectas' });
         if (!await bcrypt.compare(password, rows[0].password_hash.trim()))
             return res.status(401).json({ error:'Credenciales incorrectas' });
-        const token = jwt.sign({ id:rows[0].id, usuario:rows[0].usuario, rol:'admin' },
-            process.env.JWT_SECRET||'secreto_dev', { expiresIn:'8h' });
+        const token = jwt.sign(
+            { id:rows[0].id, usuario:rows[0].usuario, rol:'admin' },
+            process.env.JWT_SECRET||'secreto_dev',
+            { expiresIn:'8h' }
+        );
         res.json({ token, nombre:rows[0].nombre });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -156,7 +160,9 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
 ================================================================ */
 app.get('/api/noticia', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT id,titulo,contenido,imagen_url,fecha_publicacion FROM noticias ORDER BY fecha_publicacion DESC LIMIT 1');
+        const { rows } = await query(
+            'SELECT id,titulo,contenido,imagen_url,fecha_publicacion FROM noticias ORDER BY fecha_publicacion DESC LIMIT 1'
+        );
         if (!rows.length) return res.status(404).json({ error:'Sin noticias' });
         const n = rows[0]; n.imagen_url = fullUrl(req, n.imagen_url); res.json(n);
     } catch(e){ res.status(500).json({ error:e.message }); }
@@ -168,37 +174,39 @@ app.post('/api/noticia', auth, upload.single('imagen'), async (req, res) => {
     let img = null;
     if (req.file) img = await subirACloudinary(req.file.buffer, 'blackdiamond/noticias');
     try {
-        const [r] = await pool.query('INSERT INTO noticias (titulo,contenido,imagen_url,fecha_publicacion,admin_id) VALUES(?,?,?,NOW(),?)',
-            [titulo.trim(),contenido.trim(),img,req.usuario.id]);
+        const { rows: r } = await query(
+            'INSERT INTO noticias (titulo,contenido,imagen_url,fecha_publicacion,admin_id) VALUES($1,$2,$3,NOW(),$4) RETURNING id',
+            [titulo.trim(), contenido.trim(), img, req.usuario.id]
+        );
 
-        // Mantener solo las últimas 5 noticias — borrar las más antiguas
-        await pool.query(`
+        // Mantener solo las últimas 5 noticias
+        await query(`
             DELETE FROM noticias
             WHERE id NOT IN (
-                SELECT id FROM (
-                    SELECT id FROM noticias
-                    ORDER BY fecha_publicacion DESC
-                    LIMIT 5
-                ) tmp
+                SELECT id FROM noticias
+                ORDER BY fecha_publicacion DESC
+                LIMIT 5
             )
         `);
 
-        res.status(201).json({ mensaje:'Noticia publicada', id:r.insertId });
+        res.status(201).json({ mensaje:'Noticia publicada', id: r[0].id });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.put('/api/noticia/:id', auth, upload.single('imagen'), async (req, res) => {
     const { titulo, contenido } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM noticias WHERE id=?',[req.params.id]);
+        const { rows } = await query('SELECT * FROM noticias WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error:'No encontrada' });
         const n = rows[0]; let img = n.imagen_url;
         if (req.file) {
             await eliminarDeCloudinary(img);
             img = await subirACloudinary(req.file.buffer, 'blackdiamond/noticias');
         }
-        await pool.query('UPDATE noticias SET titulo=?,contenido=?,imagen_url=?,fecha_publicacion=NOW() WHERE id=?',
-            [titulo?.trim()||n.titulo, contenido?.trim()||n.contenido, img, req.params.id]);
+        await query(
+            'UPDATE noticias SET titulo=$1,contenido=$2,imagen_url=$3,fecha_publicacion=NOW() WHERE id=$4',
+            [titulo?.trim()||n.titulo, contenido?.trim()||n.contenido, img, req.params.id]
+        );
         res.json({ mensaje:'Actualizada' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -208,7 +216,7 @@ app.put('/api/noticia/:id', auth, upload.single('imagen'), async (req, res) => {
 ================================================================ */
 app.get('/api/imagenes', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT clave,label,url FROM imagenes_sitio ORDER BY id');
+        const { rows } = await query('SELECT clave,label,url FROM imagenes_sitio ORDER BY id');
         rows.forEach(r => r.url = fullUrl(req, r.url));
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
@@ -216,12 +224,12 @@ app.get('/api/imagenes', async (req, res) => {
 
 app.put('/api/imagenes/:clave', auth, upload.single('imagen'), async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM imagenes_sitio WHERE clave=?',[req.params.clave]);
+        const { rows } = await query('SELECT * FROM imagenes_sitio WHERE clave=$1', [req.params.clave]);
         if (!rows.length) return res.status(404).json({ error:'Clave no encontrada' });
         if (!req.file) return res.status(400).json({ error:'No se envió imagen' });
         await eliminarDeCloudinary(rows[0].url);
         const url = await subirACloudinary(req.file.buffer, 'blackdiamond/sitio');
-        await pool.query('UPDATE imagenes_sitio SET url=? WHERE clave=?',[url, req.params.clave]);
+        await query('UPDATE imagenes_sitio SET url=$1, actualizado=NOW() WHERE clave=$2', [url, req.params.clave]);
         res.json({ mensaje:'Imagen actualizada', url });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -231,7 +239,7 @@ app.put('/api/imagenes/:clave', auth, upload.single('imagen'), async (req, res) 
 ================================================================ */
 app.get('/api/planes', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT clave,nombre,descripcion,precio,periodo FROM planes ORDER BY id');
+        const { rows } = await query('SELECT clave,nombre,descripcion,precio,periodo FROM planes ORDER BY id');
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -240,11 +248,13 @@ app.put('/api/planes/:clave', auth, async (req, res) => {
     const { nombre, descripcion, precio, periodo } = req.body;
     if (precio===undefined) return res.status(400).json({ error:'Precio requerido' });
     try {
-        const [rows] = await pool.query('SELECT * FROM planes WHERE clave=?',[req.params.clave]);
+        const { rows } = await query('SELECT * FROM planes WHERE clave=$1', [req.params.clave]);
         if (!rows.length) return res.status(404).json({ error:'Plan no encontrado' });
         const p = rows[0];
-        await pool.query('UPDATE planes SET nombre=?,descripcion=?,precio=?,periodo=? WHERE clave=?',
-            [nombre||p.nombre, descripcion||p.descripcion, Number(precio), periodo||p.periodo, req.params.clave]);
+        await query(
+            'UPDATE planes SET nombre=$1,descripcion=$2,precio=$3,periodo=$4,actualizado=NOW() WHERE clave=$5',
+            [nombre||p.nombre, descripcion||p.descripcion, Number(precio), periodo||p.periodo, req.params.clave]
+        );
         res.json({ mensaje:'Plan actualizado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -259,15 +269,19 @@ app.post('/api/solicitudes', solicitudesLimiter, async (req, res) => {
     const wa = whatsapp ? whatsapp.replace(/\D/g,'') : '';
     if (whatsapp && wa.length < 10) return res.status(400).json({ error:'WhatsApp debe tener al menos 10 dígitos' });
     try {
-        const [r] = await pool.query('INSERT INTO solicitudes (nombre,email,whatsapp,plan_interes,mensaje) VALUES(?,?,?,?,?)',
-            [nombre.trim(), email||null, whatsapp||null, plan_interes||null, mensaje||null]);
-        res.status(201).json({ mensaje:'Solicitud recibida', id:r.insertId });
+        const { rows: r } = await query(
+            'INSERT INTO solicitudes (nombre,email,whatsapp,plan_interes,mensaje) VALUES($1,$2,$3,$4,$5) RETURNING id',
+            [nombre.trim(), email||null, whatsapp||null, plan_interes||null, mensaje||null]
+        );
+        res.status(201).json({ mensaje:'Solicitud recibida', id: r[0].id });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.get('/api/solicitudes', auth, async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT id, nombre, email, whatsapp, plan_interes, mensaje, leido, fecha FROM solicitudes ORDER BY fecha DESC');
+        const { rows } = await query(
+            'SELECT id, nombre, email, whatsapp, plan_interes, mensaje, leido, fecha FROM solicitudes ORDER BY fecha DESC'
+        );
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -275,25 +289,27 @@ app.get('/api/solicitudes', auth, async (req, res) => {
 app.put('/api/solicitudes/:id', auth, async (req, res) => {
     const { nombre, email, whatsapp, plan_interes, mensaje, leido } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM solicitudes WHERE id=?',[req.params.id]);
+        const { rows } = await query('SELECT * FROM solicitudes WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error:'No encontrada' });
         const s = rows[0];
-        await pool.query('UPDATE solicitudes SET nombre=?,email=?,whatsapp=?,plan_interes=?,mensaje=?,leido=? WHERE id=?',
-            [nombre??s.nombre, email??s.email, whatsapp??s.whatsapp, plan_interes??s.plan_interes, mensaje??s.mensaje, leido??s.leido, req.params.id]);
+        await query(
+            'UPDATE solicitudes SET nombre=$1,email=$2,whatsapp=$3,plan_interes=$4,mensaje=$5,leido=$6 WHERE id=$7',
+            [nombre??s.nombre, email??s.email, whatsapp??s.whatsapp, plan_interes??s.plan_interes, mensaje??s.mensaje, leido??s.leido, req.params.id]
+        );
         res.json({ mensaje:'Solicitud actualizada' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.put('/api/solicitudes/:id/leido', auth, async (req, res) => {
     try {
-        await pool.query('UPDATE solicitudes SET leido=1 WHERE id=?',[req.params.id]);
+        await query('UPDATE solicitudes SET leido=true WHERE id=$1', [req.params.id]);
         res.json({ mensaje:'Marcada como leída' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.delete('/api/solicitudes/:id', auth, async (req, res) => {
     try {
-        await pool.query('DELETE FROM solicitudes WHERE id=?',[req.params.id]);
+        await query('DELETE FROM solicitudes WHERE id=$1', [req.params.id]);
         res.json({ mensaje:'Solicitud eliminada' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -303,7 +319,9 @@ app.delete('/api/solicitudes/:id', auth, async (req, res) => {
 ================================================================ */
 app.get('/api/videos', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT id,titulo,url,plataforma,orden FROM videos_destacados WHERE activo=1 ORDER BY orden,id');
+        const { rows } = await query(
+            'SELECT id,titulo,url,plataforma,orden FROM videos_destacados WHERE activo=true ORDER BY orden,id'
+        );
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -311,31 +329,34 @@ app.get('/api/videos', async (req, res) => {
 app.post('/api/videos', auth, async (req, res) => {
     const { titulo, url, plataforma, orden } = req.body;
     if (!titulo||!url) return res.status(400).json({ error:'Título y URL requeridos' });
-    // Detectar plataforma automáticamente si no se especifica
     const plat = plataforma || (url.includes('tiktok')?'tiktok': url.includes('facebook')||url.includes('fb.watch')?'facebook':'instagram');
     try {
-        const [r] = await pool.query('INSERT INTO videos_destacados (titulo,url,plataforma,orden) VALUES(?,?,?,?)',
-            [titulo.trim(), url.trim(), plat, orden||0]);
-        res.status(201).json({ mensaje:'Video añadido', id:r.insertId });
+        const { rows: r } = await query(
+            'INSERT INTO videos_destacados (titulo,url,plataforma,orden) VALUES($1,$2,$3,$4) RETURNING id',
+            [titulo.trim(), url.trim(), plat, orden||0]
+        );
+        res.status(201).json({ mensaje:'Video añadido', id: r[0].id });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.put('/api/videos/:id', auth, async (req, res) => {
     const { titulo, url, plataforma, orden, activo } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM videos_destacados WHERE id=?',[req.params.id]);
+        const { rows } = await query('SELECT * FROM videos_destacados WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error:'No encontrado' });
         const v = rows[0];
         const plat = plataforma||(url&&url.includes('tiktok')?'tiktok': url&&(url.includes('facebook')||url.includes('fb.watch'))?'facebook':v.plataforma);
-        await pool.query('UPDATE videos_destacados SET titulo=?,url=?,plataforma=?,orden=?,activo=? WHERE id=?',
-            [titulo||v.titulo, url||v.url, plat, orden??v.orden, activo??v.activo, req.params.id]);
+        await query(
+            'UPDATE videos_destacados SET titulo=$1,url=$2,plataforma=$3,orden=$4,activo=$5 WHERE id=$6',
+            [titulo||v.titulo, url||v.url, plat, orden??v.orden, activo??v.activo, req.params.id]
+        );
         res.json({ mensaje:'Video actualizado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.delete('/api/videos/:id', auth, async (req, res) => {
     try {
-        await pool.query('DELETE FROM videos_destacados WHERE id=?',[req.params.id]);
+        await query('DELETE FROM videos_destacados WHERE id=$1', [req.params.id]);
         res.json({ mensaje:'Video eliminado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -345,7 +366,9 @@ app.delete('/api/videos/:id', auth, async (req, res) => {
 ================================================================ */
 app.get('/api/catalogo', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT id,nombre,descripcion,precio,imagen_url,categoria,stock FROM catalogo WHERE activo=1 ORDER BY categoria,nombre');
+        const { rows } = await query(
+            'SELECT id,nombre,descripcion,precio,imagen_url,categoria,stock FROM catalogo WHERE activo=true ORDER BY categoria,nombre'
+        );
         rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
@@ -357,34 +380,38 @@ app.post('/api/catalogo', auth, upload.single('imagen'), async (req, res) => {
     let img = null;
     if (req.file) img = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
     try {
-        const [r] = await pool.query('INSERT INTO catalogo (nombre,descripcion,precio,imagen_url,categoria,stock) VALUES(?,?,?,?,?,?)',
-            [nombre.trim(), descripcion||null, Number(precio), img, categoria||null, Number(stock)||0]);
-        res.status(201).json({ mensaje:'Producto creado', id:r.insertId });
+        const { rows: r } = await query(
+            'INSERT INTO catalogo (nombre,descripcion,precio,imagen_url,categoria,stock) VALUES($1,$2,$3,$4,$5,$6) RETURNING id',
+            [nombre.trim(), descripcion||null, Number(precio), img, categoria||null, Number(stock)||0]
+        );
+        res.status(201).json({ mensaje:'Producto creado', id: r[0].id });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.put('/api/catalogo/:id', auth, upload.single('imagen'), async (req, res) => {
     const { nombre, descripcion, precio, categoria, stock, activo } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM catalogo WHERE id=?',[req.params.id]);
+        const { rows } = await query('SELECT * FROM catalogo WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error:'No encontrado' });
         const c = rows[0]; let img = c.imagen_url;
         if (req.file) {
             await eliminarDeCloudinary(img);
             img = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
         }
-        await pool.query('UPDATE catalogo SET nombre=?,descripcion=?,precio=?,imagen_url=?,categoria=?,stock=?,activo=? WHERE id=?',
+        await query(
+            'UPDATE catalogo SET nombre=$1,descripcion=$2,precio=$3,imagen_url=$4,categoria=$5,stock=$6,activo=$7 WHERE id=$8',
             [nombre||c.nombre, descripcion??c.descripcion, precio!==undefined?Number(precio):c.precio,
-             img, categoria||c.categoria, stock!==undefined?Number(stock):c.stock, activo??c.activo, req.params.id]);
+             img, categoria||c.categoria, stock!==undefined?Number(stock):c.stock, activo??c.activo, req.params.id]
+        );
         res.json({ mensaje:'Producto actualizado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
 app.delete('/api/catalogo/:id', auth, async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT imagen_url FROM catalogo WHERE id=?',[req.params.id]);
+        const { rows } = await query('SELECT imagen_url FROM catalogo WHERE id=$1', [req.params.id]);
         if (rows[0]?.imagen_url) await eliminarDeCloudinary(rows[0].imagen_url);
-        await pool.query('DELETE FROM catalogo WHERE id=?',[req.params.id]);
+        await query('DELETE FROM catalogo WHERE id=$1', [req.params.id]);
         res.json({ mensaje:'Producto eliminado' });
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -394,8 +421,8 @@ app.delete('/api/catalogo/:id', auth, async (req, res) => {
 ================================================================ */
 app.get('/api/galeria', async (req, res) => {
     try {
-        const [rows] = await pool.query(
-            'SELECT id, titulo, url, orden FROM galeria_fotos WHERE activo=1 ORDER BY orden, id'
+        const { rows } = await query(
+            'SELECT id, titulo, url, orden FROM galeria_fotos WHERE activo=true ORDER BY orden, id'
         );
         rows.forEach(r => r.url = fullUrl(req, r.url));
         res.json(rows);
@@ -408,18 +435,18 @@ app.post('/api/galeria', auth, upload.single('imagen'), async (req, res) => {
     if (req.file) url = await subirACloudinary(req.file.buffer, 'blackdiamond/galeria');
     if (!url) return res.status(400).json({ error: 'Se requiere imagen o URL' });
     try {
-        const [r] = await pool.query(
-            'INSERT INTO galeria_fotos (titulo, url, orden) VALUES (?, ?, ?)',
+        const { rows: r } = await query(
+            'INSERT INTO galeria_fotos (titulo, url, orden) VALUES ($1, $2, $3) RETURNING id',
             [titulo || '', url, parseInt(orden) || 0]
         );
-        res.status(201).json({ mensaje: 'Foto añadida', id: r.insertId, url });
+        res.status(201).json({ mensaje: 'Foto añadida', id: r[0].id, url });
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
 app.put('/api/galeria/:id', auth, upload.single('imagen'), async (req, res) => {
     const { titulo, orden } = req.body;
     try {
-        const [rows] = await pool.query('SELECT * FROM galeria_fotos WHERE id=?', [req.params.id]);
+        const { rows } = await query('SELECT * FROM galeria_fotos WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error: 'No encontrada' });
         const f = rows[0];
         let url = f.url;
@@ -427,8 +454,8 @@ app.put('/api/galeria/:id', auth, upload.single('imagen'), async (req, res) => {
             await eliminarDeCloudinary(url);
             url = await subirACloudinary(req.file.buffer, 'blackdiamond/galeria');
         }
-        await pool.query(
-            'UPDATE galeria_fotos SET titulo=?, url=?, orden=? WHERE id=?',
+        await query(
+            'UPDATE galeria_fotos SET titulo=$1, url=$2, orden=$3 WHERE id=$4',
             [titulo ?? f.titulo, url, orden !== undefined ? parseInt(orden) : f.orden, req.params.id]
         );
         res.json({ mensaje: 'Foto actualizada', url });
@@ -437,10 +464,10 @@ app.put('/api/galeria/:id', auth, upload.single('imagen'), async (req, res) => {
 
 app.delete('/api/galeria/:id', auth, async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT url FROM galeria_fotos WHERE id=?', [req.params.id]);
+        const { rows } = await query('SELECT url FROM galeria_fotos WHERE id=$1', [req.params.id]);
         if (!rows.length) return res.status(404).json({ error: 'No encontrada' });
         await eliminarDeCloudinary(rows[0].url);
-        await pool.query('DELETE FROM galeria_fotos WHERE id=?', [req.params.id]);
+        await query('DELETE FROM galeria_fotos WHERE id=$1', [req.params.id]);
         res.json({ mensaje: 'Foto eliminada' });
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
@@ -450,7 +477,7 @@ app.delete('/api/galeria/:id', auth, async (req, res) => {
 ================================================================ */
 app.get('/api/textos', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT clave, valor FROM textos_sitio');
+        const { rows } = await query('SELECT clave, valor FROM textos_sitio');
         const obj = {};
         rows.forEach(r => obj[r.clave] = r.valor);
         res.json(obj);
@@ -462,36 +489,38 @@ app.post('/api/textos', auth, async (req, res) => {
     if (!textos || typeof textos !== 'object') return res.status(400).json({ error: 'Payload inválido' });
     const entries = Object.entries(textos);
     if (!entries.length) return res.status(400).json({ error: 'No se enviaron textos' });
-    const conn = await pool.getConnection();
+    const client = await pool.connect();
     try {
-        await conn.beginTransaction();
-        const placeholders = entries.map(() => '(?, ?)').join(', ');
-        const values = entries.flatMap(([clave, valor]) => [clave, String(valor)]);
-        await conn.query(
-            `INSERT INTO textos_sitio (clave, valor) VALUES ${placeholders}
-             ON DUPLICATE KEY UPDATE valor = VALUES(valor), actualizado = NOW()`,
-            values
-        );
-        await conn.commit();
+        await client.query('BEGIN');
+        for (const [clave, valor] of entries) {
+            await client.query(
+                `INSERT INTO textos_sitio (clave, valor)
+                 VALUES ($1, $2)
+                 ON CONFLICT (clave) DO UPDATE SET valor = EXCLUDED.valor, actualizado = NOW()`,
+                [clave, String(valor)]
+            );
+        }
+        await client.query('COMMIT');
         res.json({ mensaje: 'Textos guardados', actualizados: entries.length });
     } catch(e) {
-        await conn.rollback();
+        await client.query('ROLLBACK');
         res.status(500).json({ error: e.message });
     } finally {
-        conn.release();
+        client.release();
     }
 });
 
-/* ── Listen ─────────────────────────────────────────────────── */
-// Mantener Aiven despierto — consulta cada 4 horas
+/* ── Keep-alive Supabase ────────────────────────────────────── */
 setInterval(async () => {
     try {
-        await pool.query('SELECT 1');
-        console.log('✅ Aiven keep-alive OK');
+        await query('SELECT 1');
+        console.log('✅ Supabase keep-alive OK');
     } catch(e) {
-        console.warn('⚠️ Aiven keep-alive error:', e.message);
+        console.warn('⚠️ Supabase keep-alive error:', e.message);
     }
-}, 4 * 60 * 60 * 1000);
+}, 4 * 60 * 60 * 1000); // cada 4 horas
+
+/* ── Listen ─────────────────────────────────────────────────── */
 app.listen(PORT, () => {
     console.log(`✅ API corriendo en   http://localhost:${PORT}`);
     console.log(`🔑 Panel admin en     http://localhost:${PORT}/admin.html`);
