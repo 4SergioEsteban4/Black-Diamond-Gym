@@ -1287,4 +1287,45 @@ async function cargarTextosSitio() {
         if (t['con-dir']) dirEls.forEach(el => el.textContent = t['con-dir']);
 
     } catch(e) { console.warn('Textos dinámicos:', e.message); }
-}
+}/* ================================================================
+   MEJORAS VISUALES — Pegar al final de javascript.js
+================================================================ */
+
+/* Parallax suave en hero */
+(function() {
+    var hero = document.querySelector('.hero-section');
+    if (!hero || window.innerWidth < 768) return;
+    window.addEventListener('scroll', function() {
+        if (window.scrollY < window.innerHeight) {
+            hero.style.backgroundPositionY = 'calc(50% + ' + (window.scrollY * 0.3) + 'px)';
+        }
+    }, { passive: true });
+})();
+
+/* Hover 3D en tarjetas */
+(function() {
+    document.querySelectorAll('.service-card, .info-card').forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var x = (e.clientX - rect.left) / rect.width - 0.5;
+            var y = (e.clientY - rect.top) / rect.height - 0.5;
+            card.style.transform = 'perspective(600px) rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 6) + 'deg) translateY(-4px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = '';
+        });
+    });
+})();
+
+/* WA flotante: animacion de entrada */
+(function() {
+    var btn = document.querySelector('.float-wa');
+    if (!btn) return;
+    btn.style.opacity = '0';
+    btn.style.transform = 'scale(0)';
+    btn.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    setTimeout(function() {
+        btn.style.opacity = '1';
+        btn.style.transform = 'scale(1)';
+    }, 2000);
+})();
