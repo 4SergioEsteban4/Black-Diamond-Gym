@@ -984,19 +984,30 @@ async function cargarCatalogo() {
         const productos = await res.json();
         if (!productos.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Próximamente productos disponibles.</div>'; return; }
 
-        grid.innerHTML = productos.map(p => {
-            // Formato COP correcto para cualquier valor: 1234 → $1.234, 85000 → $85.000, 50 → $50
-            const formatCOP = (n) => {
-                return '$' + n.toLocaleString('es-CO');
-            };
+        grid.innerHTML = productos.map((p, idx) => {
+            const formatCOP = (n) => '$' + n.toLocaleString('es-CO');
             const precio = formatCOP(p.precio);
-            const img = p.imagen_url
-                ? `<img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy">`
-                : `<div class="catalogo-no-img">🥊</div>`;
+
+            // Soporte multi-imagen: usa p.imagenes[] si existe, sino imagen_url como fallback
+            const imgs = Array.isArray(p.imagenes) && p.imagenes.length
+                ? p.imagenes
+                : (p.imagen_url ? [p.imagen_url] : []);
+
+            const sliderInner = imgs.length
+                ? imgs.map(url => `<div class="cslide"><img src="${url}" alt="${p.nombre}" loading="lazy"></div>`).join('')
+                : `<div class="cslide"><div class="catalogo-no-img">🥊</div></div>`;
+
+            const arrows = imgs.length > 1 ? `
+                <button class="cslide-arrow cslide-prev" onclick="cSlide(this,-1)" aria-label="Anterior">&#8592;</button>
+                <button class="cslide-arrow cslide-next" onclick="cSlide(this,1)" aria-label="Siguiente">&#8594;</button>
+                <div class="cslide-dots">${imgs.map((_,i) => `<span class="csdot${i===0?' active':''}" data-i="${i}"></span>`).join('')}</div>
+            ` : '';
+
             return `
             <div class="catalogo-card sr-target">
                 <div class="catalogo-img-wrap">
-                    ${img}
+                    <div class="cslide-track" data-idx="0">${sliderInner}</div>
+                    ${arrows}
                     ${p.categoria ? `<span class="catalogo-badge">${p.categoria}</span>` : ''}
                 </div>
                 <div class="catalogo-body">
@@ -1344,3 +1355,22 @@ async function cargarTextosSitio() {
         })
         .catch(function() {});
 })();
+
+/* ================================================================
+   CATÁLOGO — Slider de imágenes por tarjeta
+================================================================ */
+function cSlide(btn, dir) {
+    const wrap  = btn.closest('.catalogo-img-wrap');
+    const track = wrap.querySelector('.cslide-track');
+    const slides = track.querySelectorAll('.cslide');
+    const dots   = wrap.querySelectorAll('.csdot');
+    const total  = slides.length;
+    if (total < 2) return;
+
+    let current = parseInt(track.dataset.idx) || 0;
+    current = (current + dir + total) % total;
+    track.dataset.idx = current;
+    track.style.transform = `translateX(-${current * 100}%)`;
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+}
