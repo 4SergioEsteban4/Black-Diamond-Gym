@@ -1329,3 +1329,18 @@ async function cargarTextosSitio() {
         btn.style.transform = 'scale(1)';
     }, 2000);
 })();
+
+/* Favicon dinamico desde API */
+(function() {
+    var API = window.location.origin;
+    fetch(API + '/api/imagenes')
+        .then(function(r) { return r.json(); })
+        .then(function(imgs) {
+            var fav = imgs.find(function(i) { return i.clave === 'favicon'; });
+            if (fav && fav.url) {
+                var link = document.getElementById('site-favicon');
+                if (link) link.href = fav.url;
+            }
+        })
+        .catch(function() {});
+})();

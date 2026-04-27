@@ -351,6 +351,33 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <h1 class="sec-title">IMÁGENES DEL SITIO</h1>
             <p class="sec-desc">Cambia cualquier imagen del sitio. Sube una foto nueva y pulsa Guardar — el cambio es inmediato.</p>
 
+            <!-- FAVICON -->
+            <div class="img-group-label">🌐 ÍCONO DE PESTAÑA (FAVICON)</div>
+            <div class="card" style="margin-bottom:28px">
+                <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+                    <div style="width:64px;height:64px;background:#111;border:1px solid #222;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                        <img id="favicon-preview" src="" alt="" style="width:100%;height:100%;object-fit:contain;display:none">
+                        <span id="favicon-placeholder" style="font-size:1.6rem">🌐</span>
+                    </div>
+                    <div style="flex:1;min-width:200px">
+                        <p style="font-size:.82rem;color:#ccc;margin-bottom:4px">Ícono de la pestaña del navegador</p>
+                        <p style="font-size:.7rem;color:#444;text-transform:none;line-height:1.6">Se recomienda imagen cuadrada. Puedes subir <strong style="color:#e31c25">.ico</strong>, PNG o JPG — se aplica automáticamente al sitio.</p>
+                        <p style="font-size:.65rem;color:#e31c25;margin-top:6px;letter-spacing:1px">⚠️ Para mejor resultado usa archivos .ICO (32×32 o 64×64 px)</p>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                        <label class="img-upload-label" for="faviconFile" style="cursor:pointer;min-width:200px">
+                            <span class="upload-icon">🌐</span>
+                            <span class="upload-text">
+                                <strong>Seleccionar favicon</strong>
+                                .ico · .png · .jpg
+                            </span>
+                            <input type="file" id="faviconFile" accept=".ico,.png,.jpg,.jpeg,.webp" onchange="onFaviconSelect(this)" style="display:none">
+                        </label>
+                        <button class="btn-submit" id="btnFavicon" onclick="subirFavicon()" style="display:none">💾 GUARDAR FAVICON</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Grupos visuales -->
             <div class="img-group-label">⚙️ IDENTIDAD</div>
             <div id="imgGrp-identidad"><p class="no-data">Cargando...</p></div>
@@ -928,6 +955,65 @@ async function cargarDashboard() {
         document.getElementById('ds-noticias').textContent = rNot.ok ? '✓' : '0';
 
     } catch(e) { console.warn('Dashboard error:', e.message); }
+}
+
+/* ════════════ FAVICON ════════════ */
+function onFaviconSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    const btn = document.getElementById('btnFavicon');
+    const prev = document.getElementById('favicon-preview');
+    const placeholder = document.getElementById('favicon-placeholder');
+
+    // Mostrar preview
+    const reader = new FileReader();
+    reader.onload = e => {
+        prev.src = e.target.result;
+        prev.style.display = 'block';
+        placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+    btn.style.display = 'block';
+
+    // Advertencia si no es .ico
+    if (ext !== 'ico') {
+        toast('⚠️ Para mejor resultado usa archivo .ICO', 'err');
+    }
+}
+
+async function subirFavicon() {
+    const file = document.getElementById('faviconFile').files[0];
+    if (!file) return;
+    const btn = document.getElementById('btnFavicon');
+    btn.innerHTML = '<span class="btn-spinner"></span>SUBIENDO...';
+    btn.disabled = true;
+
+    const fd = new FormData();
+    fd.append('imagen', file);
+
+    try {
+        // Reutilizamos el endpoint de imagenes con clave 'favicon'
+        const r = await fetch(`${API}/api/imagenes/favicon`, {
+            method: 'PUT',
+            headers: { Authorization: 'Bearer ' + token },
+            body: fd
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+
+        // Aplicar favicon al admin también
+        let link = document.querySelector("link[rel*='icon']");
+        if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+        link.href = d.url;
+
+        toast('✅ Favicon guardado · Recarga la web para verlo en la pestaña', 'ok');
+    } catch(e) {
+        authErr(e);
+    } finally {
+        btn.innerHTML = '💾 GUARDAR FAVICON';
+        btn.disabled = false;
+    }
 }
 
 /* ── HELPERS ── */
