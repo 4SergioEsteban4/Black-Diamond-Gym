@@ -2040,4 +2040,303 @@ nav {
 
 @media (max-width: 600px) {
     .video-modal-inner { border-radius: 12px; }
+}/* ============================================================
+   MEJORAS VISUALES — Black Diamond Gym
+   Añadir al final de CSS.css
+============================================================ */
+
+/* ── WHATSAPP FLOTANTE MEJORADO ── */
+.float-wa {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    width: 62px; height: 62px;
+    background: #25d366;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    z-index: 999;
+    box-shadow: 0 6px 24px rgba(37,211,102,.45);
+    transition: transform .25s, box-shadow .25s;
+    animation: waPulse 2.8s ease-in-out infinite;
+    text-decoration: none;
+}
+
+.float-wa::before {
+    content: '¡Escríbenos!';
+    position: absolute;
+    right: 72px;
+    background: #25d366;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    padding: 7px 14px;
+    border-radius: 30px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.3);
+}
+
+.float-wa:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.float-wa:hover {
+    transform: scale(1.12);
+    box-shadow: 0 8px 32px rgba(37,211,102,.65);
+    animation: none;
+}
+
+@keyframes waPulse {
+    0%, 100% { box-shadow: 0 6px 24px rgba(37,211,102,.4); transform: scale(1); }
+    50%       { box-shadow: 0 6px 40px rgba(37,211,102,.7); transform: scale(1.05); }
+}
+
+/* Anillo de onda alrededor del botón WA */
+.float-wa::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(37,211,102,.5);
+    animation: waRing 2.8s ease-in-out infinite;
+}
+
+@keyframes waRing {
+    0%, 100% { transform: scale(1); opacity: .5; }
+    50%       { transform: scale(1.18); opacity: 0; }
+}
+
+/* ── ANIMACIONES DE ENTRADA MEJORADAS ── */
+.sr-hidden {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity .8s cubic-bezier(.25,.46,.45,.94),
+                transform .8s cubic-bezier(.25,.46,.45,.94);
+}
+.sr-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Variantes de entrada */
+.sr-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity .8s cubic-bezier(.25,.46,.45,.94),
+                transform .8s cubic-bezier(.25,.46,.45,.94);
+}
+.sr-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity .8s cubic-bezier(.25,.46,.45,.94),
+                transform .8s cubic-bezier(.25,.46,.45,.94);
+}
+.sr-scale {
+    opacity: 0;
+    transform: scale(.92);
+    transition: opacity .7s ease, transform .7s ease;
+}
+.sr-left.sr-visible,
+.sr-right.sr-visible,
+.sr-scale.sr-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ── HOVER EN TARJETAS ── */
+.info-card {
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(227,28,37,.12);
+    border-color: rgba(227,28,37,.3);
+}
+
+.catalogo-card {
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+.catalogo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(0,0,0,.4);
+}
+
+/* ── ADMIN: DASHBOARD STATS ── */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.dash-stat {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+}
+.dash-stat:hover {
+    border-color: #333;
+    transform: translateY(-2px);
+}
+.dash-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--red);
+    border-radius: 14px 14px 0 0;
+}
+.dash-stat.green::before  { background: #25d366; }
+.dash-stat.blue::before   { background: #3b82f6; }
+.dash-stat.yellow::before { background: #f59e0b; }
+
+.dash-stat-icon { font-size: 1.6rem; margin-bottom: 4px; }
+.dash-stat-val  {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    letter-spacing: 2px;
+    color: #fff;
+    line-height: 1;
+}
+.dash-stat-label {
+    font-size: .65rem;
+    letter-spacing: 2px;
+    color: #555;
+    text-transform: uppercase;
+}
+.dash-stat-sub {
+    font-size: .7rem;
+    color: #e31c25;
+    font-weight: 700;
+}
+.dash-stat.green .dash-stat-sub { color: #25d366; }
+.dash-stat.blue  .dash-stat-sub { color: #3b82f6; }
+
+/* ── NOTIFICACIÓN BADGE MEJORADA ── */
+#badge-nuevas {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    background: var(--red);
+    color: #fff;
+    font-size: .55rem;
+    font-weight: 700;
+    padding: 0 5px;
+    border-radius: 20px;
+    margin-left: 5px;
+    animation: badgePop .3s ease;
+    vertical-align: middle;
+}
+
+@keyframes badgePop {
+    0%   { transform: scale(0); }
+    70%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* ── SOLICITUDES: FILA NUEVA RESALTADA ── */
+.sol-nueva td {
+    background: rgba(227,28,37,.05) !important;
+}
+.sol-nueva td:first-child {
+    border-left: 3px solid var(--red);
+}
+
+/* ── TOAST MEJORADO ── */
+.toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    z-index: 9999;
+    transform: translateY(100px) scale(.9);
+    opacity: 0;
+    transition: .35s cubic-bezier(.25,.46,.45,.94);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 340px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.toast.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+.toast.ok  { background: #0d2b1a; border: 1px solid #25d366; color: #25d366; }
+.toast.err { background: #2b0d0d; border: 1px solid var(--red); color: var(--red); }
+
+/* ── MICRO-INTERACCIONES BOTONES ADMIN ── */
+.btn-submit {
+    position: relative;
+    overflow: hidden;
+}
+.btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.1);
+    transform: translateX(-100%);
+    transition: transform .3s ease;
+}
+.btn-submit:hover:not(:disabled)::after {
+    transform: translateX(0);
+}
+
+/* ── PÁGINA 404 ── */
+.not-found-wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    background: #0a0a0a;
+}
+.not-found-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(7rem, 20vw, 14rem);
+    color: var(--red);
+    line-height: 1;
+    letter-spacing: 10px;
+    animation: glitch404 3s infinite;
+}
+@keyframes glitch404 {
+    0%, 90%, 100% { text-shadow: none; }
+    92% { text-shadow: -4px 0 #e31c25, 4px 0 #fff; }
+    94% { text-shadow: 4px 0 #e31c25, -4px 0 #fff; }
+    96% { text-shadow: none; }
+}
+.not-found-msg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: #fff;
+    margin-bottom: 12px;
+}
+.not-found-sub {
+    font-size: .9rem;
+    color: #666;
+    margin-bottom: 32px;
+    text-transform: none;
+    line-height: 1.6;
 }
