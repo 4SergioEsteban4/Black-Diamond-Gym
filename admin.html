@@ -211,59 +211,76 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
     <!-- ══ DASHBOARD ══ -->
     <div class="tab-panel active" id="tab-dashboard">
         <div class="panel-body">
-            <h1 class="sec-title">DASHBOARD</h1>
-            <p class="sec-desc">Resumen general del gimnasio en tiempo real.</p>
-            <div class="dashboard-grid">
-                <div class="dash-stat">
-                    <div class="dash-stat-icon">📩</div>
-                    <div class="dash-stat-val" id="ds-sol-nuevas">—</div>
-                    <div class="dash-stat-label">Solicitudes nuevas</div>
-                    <div class="dash-stat-sub" id="ds-sol-sub">cargando...</div>
+
+            <!-- Header bienvenida -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px">
+                <div>
+                    <p style="font-size:.65rem;letter-spacing:4px;color:#444;text-transform:uppercase;margin-bottom:4px">PANEL DE CONTROL</p>
+                    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;color:#fff;line-height:1">BLACK DIAMOND <span style="color:#e31c25">GYM</span></h1>
                 </div>
-                <div class="dash-stat green">
-                    <div class="dash-stat-icon">📋</div>
-                    <div class="dash-stat-val" id="ds-sol-total">—</div>
-                    <div class="dash-stat-label">Total solicitudes</div>
-                    <div class="dash-stat-sub" style="color:#25d366">historial completo</div>
-                </div>
-                <div class="dash-stat blue">
-                    <div class="dash-stat-icon">🛍️</div>
-                    <div class="dash-stat-val" id="ds-productos">—</div>
-                    <div class="dash-stat-label">Productos en tienda</div>
-                    <div class="dash-stat-sub" style="color:#3b82f6">catálogo activo</div>
-                </div>
-                <div class="dash-stat yellow">
-                    <div class="dash-stat-icon">📰</div>
-                    <div class="dash-stat-val" id="ds-noticias">—</div>
-                    <div class="dash-stat-label">Noticias publicadas</div>
-                    <div class="dash-stat-sub" style="color:#f59e0b">últimas 5</div>
-                </div>
-                <div class="dash-stat">
-                    <div class="dash-stat-icon">📷</div>
-                    <div class="dash-stat-val" id="ds-galeria">—</div>
-                    <div class="dash-stat-label">Fotos en galería</div>
-                    <div class="dash-stat-sub">galería activa</div>
-                </div>
-                <div class="dash-stat green">
-                    <div class="dash-stat-icon">▶</div>
-                    <div class="dash-stat-val" id="ds-videos">—</div>
-                    <div class="dash-stat-label">Videos destacados</div>
-                    <div class="dash-stat-sub" style="color:#25d366">activos</div>
+                <div style="text-align:right">
+                    <p style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase" id="ds-fecha-hoy"></p>
+                    <p style="font-size:.75rem;color:#555;margin-top:2px">Todo bajo control 🥊</p>
                 </div>
             </div>
-            <div class="card">
-                <h3 class="card-title">📩 SOLICITUDES RECIENTES</h3>
-                <p class="sec-desc" style="margin-bottom:16px">Las últimas 5 solicitudes recibidas.</p>
+
+            <!-- Stats grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px">
+
+                <div style="background:linear-gradient(135deg,#1a0000,#2d0808);border:1px solid rgba(227,28,37,.3);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📩</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#e31c25;text-transform:uppercase;margin-bottom:8px">SOLICITUDES NUEVAS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-sol-nuevas">—</p>
+                    <p style="font-size:.7rem;color:#555" id="ds-sol-sub">cargando...</p>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#001a0a,#002d14);border:1px solid rgba(37,211,102,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📋</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#25d366;text-transform:uppercase;margin-bottom:8px">TOTAL SOLICITUDES</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-sol-total">—</p>
+                    <p style="font-size:.7rem;color:#555">historial completo</p>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#00091a,#001433);border:1px solid rgba(59,130,246,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">🛍️</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#3b82f6;text-transform:uppercase;margin-bottom:8px">PRODUCTOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-productos">—</p>
+                    <p style="font-size:.7rem;color:#555">catálogo activo</p>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#0d0a00,#1a1400);border:1px solid rgba(245,158,11,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📷</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px">FOTOS GALERÍA</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-galeria">—</p>
+                    <p style="font-size:.7rem;color:#555">galería activa</p>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#0d0014,#1a0028);border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">▶</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#a855f7;text-transform:uppercase;margin-bottom:8px">VIDEOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-videos">—</p>
+                    <p style="font-size:.7rem;color:#555">destacados activos</p>
+                </div>
+
+                <div style="background:linear-gradient(135deg,#001a1a,#002d2d);border:1px solid rgba(20,184,166,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📰</div>
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;margin-bottom:8px">NOTICIAS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-noticias">—</p>
+                    <p style="font-size:.7rem;color:#555">publicadas</p>
+                </div>
+
+            </div>
+
+            <!-- Solicitudes recientes -->
+            <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:16px;padding:24px 28px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:#fff">SOLICITUDES RECIENTES</span>
+                    <span style="flex:1;height:1px;background:#1a1a1a"></span>
+                    <span style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase">últimas 5</span>
+                </div>
                 <div id="ds-sol-recientes"><p class="no-data">Cargando...</p></div>
             </div>
-            <div class="card" style="text-align:center;padding:24px">
-                <p style="font-size:.7rem;color:#333;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">ACCESOS RÁPIDOS</p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-                    <button class="btn-submit" onclick="tab('noticias',document.querySelectorAll('.tab-btn')[1])">📰 Nueva Noticia</button>
-                    <button class="btn-secondary" onclick="tab('solicitudes',document.querySelectorAll('.tab-btn')[8])">📩 Ver Solicitudes</button>
-                    <button class="btn-secondary" onclick="tab('catalogo',document.querySelectorAll('.tab-btn')[7])">🛍️ Catálogo</button>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -758,6 +775,12 @@ function tab(n,b){
 
 /* ════════════ DASHBOARD ════════════ */
 async function cargarDashboard() {
+    // Fecha de hoy
+    const fechaEl = document.getElementById('ds-fecha-hoy');
+    if (fechaEl) {
+        const hoy = new Date().toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        fechaEl.textContent = hoy.charAt(0).toUpperCase() + hoy.slice(1);
+    }
     try {
         const [rSols, rCat, rGal, rVids, rNot] = await Promise.all([
             fetch(`${API}/api/solicitudes`, { headers: { Authorization: 'Bearer ' + token } }),
