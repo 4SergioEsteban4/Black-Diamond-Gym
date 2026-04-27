@@ -118,7 +118,10 @@ const query = (text, params) => pool.query(text, params);
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 8*1024*1024 },
-    fileFilter: (req,f,cb) => cb(/jpeg|jpg|png|webp/.test(f.mimetype)?null:new Error('Solo JPG/PNG/WEBP'),/jpeg|jpg|png|webp/.test(f.mimetype))
+    fileFilter: (req,f,cb) => {
+        const ok = /jpeg|jpg|png|webp|x-icon|vnd\.microsoft\.icon/.test(f.mimetype) || f.originalname.toLowerCase().endsWith('.ico');
+        cb(ok ? null : new Error('Solo JPG/PNG/WEBP/ICO'), ok);
+    }
 });
 
 /* ── JWT ────────────────────────────────────────────────────── */

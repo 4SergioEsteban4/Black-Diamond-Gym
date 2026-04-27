@@ -2340,3 +2340,37 @@ nav {
     text-transform: none;
     line-height: 1.6;
 }
+
+/* ── SERVICIOS EMOJI ── */
+.servicio-emoji-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(135deg, #111, #0d0d0d);
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+.servicio-emoji {
+    font-size: 4rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 16px rgba(227,28,37,.3));
+    transition: transform .3s ease;
+}
+.servicio-card:hover .servicio-emoji {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+/* ── CATEGORIAS EMOJI ── */
+.cat-emoji-wrap {
+    font-size: 4.5rem;
+    text-align: center;
+    padding: 24px 0 16px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 20px rgba(227,28,37,.25));
+    transition: transform .3s ease;
+}
+.cat-card:hover .cat-emoji-wrap {
+    transform: scale(1.12) rotate(-4deg);
+}
