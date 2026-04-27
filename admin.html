@@ -204,81 +204,109 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
             <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
             <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
-            <button class="tab-btn"        onclick="tab('solicitudes',this)">📩 Solicitudes <span id="badge-nuevas">0</span></button>
         </div>
     </nav>
 
-    <!-- ══ DASHBOARD ══ -->
+    <!-- ══ DASHBOARD + SOLICITUDES ══ -->
     <div class="tab-panel active" id="tab-dashboard">
         <div class="panel-body">
 
-            <!-- Header bienvenida -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px">
+            <!-- Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
                 <div>
-                    <p style="font-size:.65rem;letter-spacing:4px;color:#444;text-transform:uppercase;margin-bottom:4px">PANEL DE CONTROL</p>
-                    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;color:#fff;line-height:1">BLACK DIAMOND <span style="color:#e31c25">GYM</span></h1>
+                    <p style="font-size:.6rem;letter-spacing:4px;color:#333;text-transform:uppercase;margin-bottom:4px">PANEL DE CONTROL</p>
+                    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;color:#fff;line-height:1">BLACK DIAMOND <span style="color:#e31c25">GYM</span></h1>
                 </div>
                 <div style="text-align:right">
                     <p style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase" id="ds-fecha-hoy"></p>
-                    <p style="font-size:.75rem;color:#555;margin-top:2px">Todo bajo control 🥊</p>
+                    <p style="font-size:.72rem;color:#444;margin-top:3px">Bienvenido, <span id="ds-nombre" style="color:#e31c25;font-weight:700"></span></p>
                 </div>
             </div>
 
-            <!-- Stats grid -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px">
+            <!-- Stats -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px">
+                <div style="background:linear-gradient(135deg,#1a0000,#2d0808);border:1px solid rgba(227,28,37,.35);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;cursor:pointer" onclick="scrollToSols()">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📩</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#e31c25;text-transform:uppercase;margin-bottom:6px">NUEVAS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-nuevas">—</p>
+                    <p style="font-size:.65rem;color:#555" id="ds-sol-sub">cargando...</p>
+                </div>
+                <div style="background:linear-gradient(135deg,#001a0a,#002d14);border:1px solid rgba(37,211,102,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📋</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#25d366;text-transform:uppercase;margin-bottom:6px">TOTAL SOLS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-total">—</p>
+                    <p style="font-size:.65rem;color:#555">historial</p>
+                </div>
+                <div style="background:linear-gradient(135deg,#00091a,#001433);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">🛍️</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#3b82f6;text-transform:uppercase;margin-bottom:6px">PRODUCTOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-productos">—</p>
+                    <p style="font-size:.65rem;color:#555">activos</p>
+                </div>
+                <div style="background:linear-gradient(135deg,#0d0a00,#1a1400);border:1px solid rgba(245,158,11,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📷</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px">GALERÍA</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-galeria">—</p>
+                    <p style="font-size:.65rem;color:#555">fotos</p>
+                </div>
+                <div style="background:linear-gradient(135deg,#0d0014,#1a0028);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">▶</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#a855f7;text-transform:uppercase;margin-bottom:6px">VIDEOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-videos">—</p>
+                    <p style="font-size:.65rem;color:#555">activos</p>
+                </div>
+                <div style="background:linear-gradient(135deg,#001a1a,#002d2d);border:1px solid rgba(20,184,166,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📰</div>
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;margin-bottom:6px">NOTICIAS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-noticias">—</p>
+                    <p style="font-size:.65rem;color:#555">publicadas</p>
+                </div>
+            </div>
 
-                <div style="background:linear-gradient(135deg,#1a0000,#2d0808);border:1px solid rgba(227,28,37,.3);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📩</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#e31c25;text-transform:uppercase;margin-bottom:8px">SOLICITUDES NUEVAS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-sol-nuevas">—</p>
-                    <p style="font-size:.7rem;color:#555" id="ds-sol-sub">cargando...</p>
+            <!-- Gráfico planes + tabla resumen -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+
+                <!-- Gráfico de barras planes más pedidos -->
+                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:22px 24px">
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#444;text-transform:uppercase;margin-bottom:16px">PLANES MÁS SOLICITADOS</p>
+                    <div id="ds-chart-planes" style="display:flex;flex-direction:column;gap:10px">
+                        <p style="color:#333;font-size:.78rem">Cargando...</p>
+                    </div>
                 </div>
 
-                <div style="background:linear-gradient(135deg,#001a0a,#002d14);border:1px solid rgba(37,211,102,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📋</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#25d366;text-transform:uppercase;margin-bottom:8px">TOTAL SOLICITUDES</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-sol-total">—</p>
-                    <p style="font-size:.7rem;color:#555">historial completo</p>
-                </div>
-
-                <div style="background:linear-gradient(135deg,#00091a,#001433);border:1px solid rgba(59,130,246,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">🛍️</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#3b82f6;text-transform:uppercase;margin-bottom:8px">PRODUCTOS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-productos">—</p>
-                    <p style="font-size:.7rem;color:#555">catálogo activo</p>
-                </div>
-
-                <div style="background:linear-gradient(135deg,#0d0a00,#1a1400);border:1px solid rgba(245,158,11,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📷</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px">FOTOS GALERÍA</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-galeria">—</p>
-                    <p style="font-size:.7rem;color:#555">galería activa</p>
-                </div>
-
-                <div style="background:linear-gradient(135deg,#0d0014,#1a0028);border:1px solid rgba(168,85,247,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">▶</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#a855f7;text-transform:uppercase;margin-bottom:8px">VIDEOS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-videos">—</p>
-                    <p style="font-size:.7rem;color:#555">destacados activos</p>
-                </div>
-
-                <div style="background:linear-gradient(135deg,#001a1a,#002d2d);border:1px solid rgba(20,184,166,.2);border-radius:16px;padding:22px 20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-10px;right:-10px;font-size:3.5rem;opacity:.07">📰</div>
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;margin-bottom:8px">NOTICIAS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#fff;line-height:1;margin-bottom:4px" id="ds-noticias">—</p>
-                    <p style="font-size:.7rem;color:#555">publicadas</p>
+                <!-- Resumen estado solicitudes -->
+                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:22px 24px">
+                    <p style="font-size:.6rem;letter-spacing:3px;color:#444;text-transform:uppercase;margin-bottom:16px">ESTADO DE SOLICITUDES</p>
+                    <div style="display:flex;flex-direction:column;gap:14px" id="ds-estado-wrap">
+                        <p style="color:#333;font-size:.78rem">Cargando...</p>
+                    </div>
                 </div>
 
             </div>
 
-            <!-- Solicitudes recientes -->
-            <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:16px;padding:24px 28px">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-                    <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:#fff">SOLICITUDES RECIENTES</span>
-                    <span style="flex:1;height:1px;background:#1a1a1a"></span>
-                    <span style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase">últimas 5</span>
+            <!-- ══ SOLICITUDES COMPLETAS ══ -->
+            <div id="ds-sols-section" style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:24px 28px">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:#fff">SOLICITUDES</span>
+                    <span id="badge-nuevas" style="display:none">0</span>
+                    <span style="flex:1"></span>
+                    <!-- Filtros -->
+                    <select id="filtro-estado" onchange="filtrarSols()" style="background:#111;border:1px solid #222;color:#888;padding:6px 12px;border-radius:8px;font-size:.72rem;font-family:'Montserrat',sans-serif">
+                        <option value="todas">Todas</option>
+                        <option value="nuevas">Solo nuevas</option>
+                        <option value="leidas">Solo leídas</option>
+                    </select>
+                    <select id="filtro-plan" onchange="filtrarSols()" style="background:#111;border:1px solid #222;color:#888;padding:6px 12px;border-radius:8px;font-size:.72rem;font-family:'Montserrat',sans-serif">
+                        <option value="">Todos los planes</option>
+                        <option>Mensualidad Boxeo</option>
+                        <option>Mensualidad Gym</option>
+                        <option>Valera 15 días</option>
+                        <option>Plan Día</option>
+                        <option>Quiero más información</option>
+                    </select>
+                    <button onclick="cargarDashboard()" style="background:none;border:1px solid #222;color:#555;padding:6px 14px;border-radius:8px;font-size:.72rem;cursor:pointer;font-family:'Montserrat',sans-serif">↺ Refrescar</button>
                 </div>
-                <div id="ds-sol-recientes"><p class="no-data">Cargando...</p></div>
+                <div id="solicitudesContainer"><p class="no-data">Cargando...</p></div>
             </div>
 
         </div>
@@ -611,14 +639,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
         </div>
     </div>
 
-    <!-- ══ SOLICITUDES ══ -->
-    <div class="tab-panel" id="tab-solicitudes">
-        <div class="panel-body">
-            <h1 class="sec-title">SOLICITUDES DE INFORMACIÓN</h1>
-            <p class="sec-desc">Mensajes del formulario del sitio. Puedes editar, marcar como leído o eliminar cada solicitud.</p>
-            <div id="solicitudesContainer"><p class="no-data">Cargando solicitudes...</p></div>
-        </div>
-    </div>
+    <!-- solicitudes integradas en dashboard -->
 
 </div><!-- /panel -->
 
@@ -773,14 +794,109 @@ function tab(n,b){
     document.getElementById('tab-'+n).classList.add('active'); b.classList.add('active');
 }
 
-/* ════════════ DASHBOARD ════════════ */
+/* ════════════ DASHBOARD + SOLICITUDES ════════════ */
+let _todasSols = [];
+
+function scrollToSols() {
+    document.getElementById('ds-sols-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function filtrarSols() {
+    const estado = document.getElementById('filtro-estado').value;
+    const plan = document.getElementById('filtro-plan').value;
+    let rows = _todasSols;
+    if (estado === 'nuevas') rows = rows.filter(s => !s.leido);
+    if (estado === 'leidas') rows = rows.filter(s => s.leido);
+    if (plan) rows = rows.filter(s => s.plan_interes === plan);
+    renderSolsTable(rows);
+}
+
+function renderSolsTable(rows) {
+    const cont = document.getElementById('solicitudesContainer');
+    if (!rows.length) { cont.innerHTML = '<p class="no-data">Sin resultados para este filtro.</p>'; return; }
+    cont.innerHTML = `<div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Estado</th><th>Nombre</th><th>WhatsApp</th><th>Email</th><th>Plan</th><th>Mensaje</th><th>Fecha</th><th>Acciones</th></tr></thead>
+        <tbody>${rows.map(s => `
+        <tr id="sr-${s.id}" class="${!s.leido ? 'sol-nueva' : ''}">
+            <td>${s.leido ? '<span class="badge badge-leido">Leído</span>' : '<span class="badge badge-new">NUEVO</span>'}</td>
+            <td><strong>${esc(s.nombre)}</strong></td>
+            <td>${s.whatsapp ? `<a href="https://wa.me/57${s.whatsapp.replace(/\D/g,'')}" target="_blank" style="color:#25d366;font-weight:700">📱 ${esc(s.whatsapp)}</a>` : '—'}</td>
+            <td style="font-size:.72rem;text-transform:none">${s.email ? esc(s.email) : '—'}</td>
+            <td style="font-size:.72rem">${s.plan_interes ? esc(s.plan_interes) : '—'}</td>
+            <td style="max-width:160px;font-size:.72rem;word-break:break-word;text-transform:none">${s.mensaje ? esc(s.mensaje) : '—'}</td>
+            <td style="white-space:nowrap;font-size:.72rem">${new Date(s.fecha).toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'})}</td>
+            <td class="actions">
+                <button class="btn-icon" onclick="abrirEditSol(${s.id},'${esc(s.nombre)}','${esc(s.whatsapp||'')}','${esc(s.email||'')}','${esc(s.plan_interes||'')}','${esc(s.mensaje||'')}')">✏️</button>
+                ${!s.leido ? `<button class="btn-icon" onclick="leerSol(${s.id})">✓ Leído</button>` : ''}
+                <button class="btn-icon danger" onclick="borrarSol(${s.id})">🗑️</button>
+            </td>
+        </tr>`).join('')}
+        </tbody></table></div>`;
+}
+
+function renderChart(sols) {
+    const planesCount = {};
+    sols.forEach(s => {
+        const p = s.plan_interes || 'Sin especificar';
+        planesCount[p] = (planesCount[p] || 0) + 1;
+    });
+    const sorted = Object.entries(planesCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
+    const max = sorted[0]?.[1] || 1;
+    const colors = ['#e31c25','#25d366','#3b82f6','#f59e0b','#a855f7'];
+    const cont = document.getElementById('ds-chart-planes');
+    if (!sorted.length) { cont.innerHTML = '<p style="color:#333;font-size:.78rem">Sin datos aún.</p>'; return; }
+    cont.innerHTML = sorted.map(([plan, count], i) => `
+        <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:.68rem;color:#888;text-transform:none">${plan}</span>
+                <span style="font-size:.68rem;color:${colors[i]};font-weight:700">${count}</span>
+            </div>
+            <div style="background:#111;border-radius:4px;height:6px;overflow:hidden">
+                <div style="background:${colors[i]};height:100%;width:${Math.round(count/max*100)}%;border-radius:4px;transition:width .8s ease"></div>
+            </div>
+        </div>`).join('');
+}
+
+function renderEstado(sols) {
+    const total = sols.length;
+    const nuevas = sols.filter(s => !s.leido).length;
+    const leidas = total - nuevas;
+    const pct = total > 0 ? Math.round(leidas/total*100) : 0;
+    const cont = document.getElementById('ds-estado-wrap');
+    cont.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:#888">Sin leer</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#e31c25">${nuevas}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:#888">Leídas</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#25d366">${leidas}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:#888">Total</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff">${total}</span>
+        </div>
+        <div style="margin-top:6px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:.62rem;color:#444;text-transform:uppercase;letter-spacing:1px">Atendidas</span>
+                <span style="font-size:.62rem;color:#25d366">${pct}%</span>
+            </div>
+            <div style="background:#111;border-radius:4px;height:6px;overflow:hidden">
+                <div style="background:linear-gradient(90deg,#25d366,#14b8a6);height:100%;width:${pct}%;border-radius:4px;transition:width .8s ease"></div>
+            </div>
+        </div>`;
+}
+
 async function cargarDashboard() {
-    // Fecha de hoy
+    // Fecha y nombre
     const fechaEl = document.getElementById('ds-fecha-hoy');
+    const nombreEl = document.getElementById('ds-nombre');
     if (fechaEl) {
         const hoy = new Date().toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
         fechaEl.textContent = hoy.charAt(0).toUpperCase() + hoy.slice(1);
     }
+    if (nombreEl) nombreEl.textContent = localStorage.getItem('bdg_nombre') || 'Admin';
+
     try {
         const [rSols, rCat, rGal, rVids, rNot] = await Promise.all([
             fetch(`${API}/api/solicitudes`, { headers: { Authorization: 'Bearer ' + token } }),
@@ -793,54 +909,22 @@ async function cargarDashboard() {
         // Solicitudes
         if (rSols.ok) {
             const sols = await rSols.json();
+            _todasSols = sols;
             const nuevas = sols.filter(s => !s.leido).length;
             document.getElementById('ds-sol-nuevas').textContent = nuevas;
             document.getElementById('ds-sol-total').textContent = sols.length;
             document.getElementById('ds-sol-sub').textContent = nuevas > 0 ? `¡${nuevas} sin leer!` : 'al día ✓';
-
-            // Badge en tab
             const badge = document.getElementById('badge-nuevas');
             if (nuevas > 0) { badge.textContent = nuevas; badge.style.display = 'inline-flex'; }
             else { badge.style.display = 'none'; }
-
-            // Tabla recientes en dashboard
-            const recientes = sols.slice(0, 5);
-            const cont = document.getElementById('ds-sol-recientes');
-            if (!recientes.length) { cont.innerHTML = '<p class="no-data">Sin solicitudes aún.</p>'; }
-            else {
-                cont.innerHTML = `<div class="table-wrap"><table class="data-table">
-                    <thead><tr><th>Nombre</th><th>Contacto</th><th>Plan</th><th>Fecha</th><th>Estado</th></tr></thead>
-                    <tbody>${recientes.map(s => `
-                        <tr class="${!s.leido?'sol-nueva':''}">
-                            <td>${esc(s.nombre)}</td>
-                            <td style="text-transform:none">${esc(s.email||s.whatsapp||'—')}</td>
-                            <td>${esc(s.plan_interes||'—')}</td>
-                            <td>${new Date(s.fecha).toLocaleDateString('es-CO')}</td>
-                            <td><span class="badge ${s.leido?'badge-leido':'badge-new'}">${s.leido?'Leído':'NUEVO'}</span></td>
-                        </tr>`).join('')}
-                    </tbody></table></div>`;
-            }
+            renderSolsTable(sols);
+            renderChart(sols);
+            renderEstado(sols);
         }
 
-        // Catálogo
-        if (rCat.ok) {
-            const cat = await rCat.json();
-            document.getElementById('ds-productos').textContent = cat.length;
-        }
-
-        // Galería
-        if (rGal.ok) {
-            const gal = await rGal.json();
-            document.getElementById('ds-galeria').textContent = gal.length;
-        }
-
-        // Videos
-        if (rVids.ok) {
-            const vids = await rVids.json();
-            document.getElementById('ds-videos').textContent = vids.length;
-        }
-
-        // Noticias (solo sabemos si hay 1 o más)
+        if (rCat.ok) { const d = await rCat.json(); document.getElementById('ds-productos').textContent = d.length; }
+        if (rGal.ok) { const d = await rGal.json(); document.getElementById('ds-galeria').textContent = d.length; }
+        if (rVids.ok) { const d = await rVids.json(); document.getElementById('ds-videos').textContent = d.length; }
         document.getElementById('ds-noticias').textContent = rNot.ok ? '✓' : '0';
 
     } catch(e) { console.warn('Dashboard error:', e.message); }
@@ -1193,34 +1277,7 @@ async function borrarProducto(id){
 }
 
 /* ════════════ SOLICITUDES ════════════ */
-async function cargarSols(){
-    try{const r=await fetch(`${API}/api/solicitudes`,{headers:{Authorization:'Bearer '+token}}); if(!r.ok) return;
-        const rows=await r.json();
-        const nuevas=rows.filter(x=>!x.leido).length;
-        const b=document.getElementById('badge-nuevas');
-        if(nuevas>0){b.textContent=nuevas;b.style.display='inline';}else b.style.display='none';
-        const cont=document.getElementById('solicitudesContainer');
-        if(!rows.length){cont.innerHTML='<p class="no-data">No hay solicitudes aún.</p>';return;}
-        cont.innerHTML=`<div class="table-wrap"><table class="data-table">
-            <thead><tr><th>Estado</th><th>Nombre</th><th>WhatsApp</th><th>Email</th><th>Plan</th><th>Mensaje</th><th>Fecha</th><th>Acciones</th></tr></thead>
-            <tbody>${rows.map(s=>`
-            <tr id="sr-${s.id}">
-                <td>${s.leido?'<span class="badge badge-leido">Leído</span>':'<span class="badge badge-new">Nuevo</span>'}</td>
-                <td><strong>${esc(s.nombre)}</strong></td>
-                <td>${s.whatsapp?`<a href="https://wa.me/57${s.whatsapp.replace(/\D/g,'')}" target="_blank" style="color:#e31c25;font-weight:700">${esc(s.whatsapp)}</a>`:'—'}</td>
-                <td style="font-size:.72rem">${s.email?esc(s.email):'—'}</td>
-                <td style="font-size:.72rem">${s.plan_interes?esc(s.plan_interes):'—'}</td>
-                <td style="max-width:180px;font-size:.72rem;word-break:break-word">${s.mensaje?esc(s.mensaje):'—'}</td>
-                <td style="white-space:nowrap;font-size:.72rem">${new Date(s.fecha).toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'})}</td>
-                <td class="actions">
-                    <button class="btn-icon" onclick="abrirEditSol(${s.id},'${esc(s.nombre)}','${esc(s.whatsapp||'')}','${esc(s.email||'')}','${esc(s.plan_interes||'')}','${esc(s.mensaje||'')}')">✏️</button>
-                    ${!s.leido?`<button class="btn-icon" onclick="leerSol(${s.id})">✓</button>`:''}
-                    <button class="btn-icon danger" onclick="borrarSol(${s.id})">🗑️</button>
-                </td>
-            </tr>`).join('')}
-            </tbody></table></div>`;
-    }catch(e){console.warn(e);}
-}
+async function cargarSols(){ await cargarDashboard(); }
 function abrirEditSol(id,nombre,wa,email,plan,msg){
     document.getElementById('mSolId').value=id; document.getElementById('mSolNombre').value=nombre;
     document.getElementById('mSolWa').value=wa; document.getElementById('mSolEmail').value=email;
