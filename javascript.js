@@ -730,7 +730,8 @@ async function cargarGaleria() {
         }
 
         grid.innerHTML = fotos.map((f, i) => `
-            <div class="photo-card sr-target" style="--delay:${(i * 0.08).toFixed(2)}s"
+            <div class="photo-card sr-target${i === 0 ? ' photo-bento-main' : ''}"
+                 style="--delay:${(i * 0.08).toFixed(2)}s"
                  onclick="abrirZoom(this)" title="Ver en grande">
                 <img src="${f.url}" alt="${f.titulo || 'Galería Black Diamond Gym'}" loading="lazy"
                      onerror="this.parentElement.style.display='none'">
