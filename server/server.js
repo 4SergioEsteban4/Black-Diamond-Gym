@@ -667,6 +667,41 @@ app.get('/api/log', auth, async (req, res) => {
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
+/* ================================================================
+   CATÁLOGO — IMÁGENES EXTRA (SLIDER)
+================================================================ */
+app.get('/api/catalogo/:id/imagenes', auth, async (req, res) => {
+    try {
+        const { rows } = await query(
+            'SELECT id, url, orden FROM catalogo_imagenes WHERE producto_id=$1 ORDER BY orden, id',
+            [req.params.id]
+        );
+        res.json(rows);
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/catalogo/:id/imagenes', auth, upload.single('imagen'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'Se requiere imagen' });
+    try {
+        const url = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
+        const { rows: r } = await query(
+            'INSERT INTO catalogo_imagenes (producto_id, url) VALUES($1,$2) RETURNING id',
+            [req.params.id, url]
+        );
+        res.status(201).json({ mensaje: 'Imagen agregada', id: r[0].id, url });
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/catalogo/:id/imagenes/:imgId', auth, async (req, res) => {
+    try {
+        const { rows } = await query('SELECT url FROM catalogo_imagenes WHERE id=$1 AND producto_id=$2', [req.params.imgId, req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Imagen no encontrada' });
+        await eliminarDeCloudinary(rows[0].url);
+        await query('DELETE FROM catalogo_imagenes WHERE id=$1', [req.params.imgId]);
+        res.json({ mensaje: 'Imagen eliminada' });
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
 /* ── Ruta /unete ────────────────────────────────────────────── */
 app.get('/unete', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'unete.html'));
