@@ -367,12 +367,47 @@ app.delete('/api/videos/:id', auth, async (req, res) => {
 /* ================================================================
    CATÁLOGO
 ================================================================ */
+/* Migración automática: tabla de imágenes extra por producto */
+(async () => {
+    try {
+        await query(`
+            CREATE TABLE IF NOT EXISTS catalogo_imagenes (
+                id        SERIAL PRIMARY KEY,
+                producto_id INTEGER NOT NULL REFERENCES catalogo(id) ON DELETE CASCADE,
+                url       TEXT NOT NULL,
+                orden     INTEGER DEFAULT 0,
+                creado    TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+    } catch(e) { console.warn('Migración catalogo_imagenes:', e.message); }
+})();
+
 app.get('/api/catalogo', async (req, res) => {
     try {
         const { rows } = await query(
             'SELECT id,nombre,descripcion,precio,imagen_url,categoria,stock FROM catalogo WHERE activo=true ORDER BY categoria,nombre'
         );
-        rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
+        // Cargar imágenes extra para cada producto
+        const ids = rows.map(r => r.id);
+        let extrasMap = {};
+        if (ids.length) {
+            const { rows: extras } = await query(
+                'SELECT producto_id, url FROM catalogo_imagenes WHERE producto_id = ANY($1) ORDER BY orden, id',
+                [ids]
+            );
+            extras.forEach(e => {
+                if (!extrasMap[e.producto_id]) extrasMap[e.producto_id] = [];
+                extrasMap[e.producto_id].push(fullUrl(req, e.url));
+            });
+        }
+        rows.forEach(r => {
+            r.imagen_url = fullUrl(req, r.imagen_url);
+            // imagenes[] = imagen principal + extras
+            r.imagenes = [
+                ...(r.imagen_url ? [r.imagen_url] : []),
+                ...(extrasMap[r.id] || [])
+            ];
+        });
         res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
@@ -414,8 +449,47 @@ app.delete('/api/catalogo/:id', auth, async (req, res) => {
     try {
         const { rows } = await query('SELECT imagen_url FROM catalogo WHERE id=$1', [req.params.id]);
         if (rows[0]?.imagen_url) await eliminarDeCloudinary(rows[0].imagen_url);
+        // Eliminar también las imágenes extra de Cloudinary
+        const { rows: extras } = await query('SELECT url FROM catalogo_imagenes WHERE producto_id=$1', [req.params.id]);
+        await Promise.all(extras.map(e => eliminarDeCloudinary(e.url)));
         await query('DELETE FROM catalogo WHERE id=$1', [req.params.id]);
         res.json({ mensaje:'Producto eliminado' });
+    } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+/* ── Imágenes extra por producto ── */
+app.post('/api/catalogo/:id/imagenes', auth, upload.single('imagen'), async (req, res) => {
+    try {
+        const { rows } = await query('SELECT id FROM catalogo WHERE id=$1', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error:'Producto no encontrado' });
+        if (!req.file) return res.status(400).json({ error:'Se requiere imagen' });
+        const url = await subirACloudinary(req.file.buffer, 'blackdiamond/catalogo');
+        const { rows: r } = await query(
+            'INSERT INTO catalogo_imagenes (producto_id, url, orden) VALUES($1,$2,(SELECT COALESCE(MAX(orden),0)+1 FROM catalogo_imagenes WHERE producto_id=$1)) RETURNING id,url',
+            [req.params.id, url]
+        );
+        res.status(201).json({ id: r[0].id, url });
+    } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.delete('/api/catalogo/:id/imagenes/:imgId', auth, async (req, res) => {
+    try {
+        const { rows } = await query('SELECT url FROM catalogo_imagenes WHERE id=$1 AND producto_id=$2', [req.params.imgId, req.params.id]);
+        if (!rows.length) return res.status(404).json({ error:'Imagen no encontrada' });
+        await eliminarDeCloudinary(rows[0].url);
+        await query('DELETE FROM catalogo_imagenes WHERE id=$1', [req.params.imgId]);
+        res.json({ mensaje:'Imagen eliminada' });
+    } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+app.get('/api/catalogo/:id/imagenes', auth, async (req, res) => {
+    try {
+        const { rows } = await query(
+            'SELECT id, url, orden FROM catalogo_imagenes WHERE producto_id=$1 ORDER BY orden, id',
+            [req.params.id]
+        );
+        rows.forEach(r => r.url = fullUrl(req, r.url));
+        res.json(rows);
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
