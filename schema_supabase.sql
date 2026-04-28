@@ -40,6 +40,17 @@ SELECT setval('catalogo_id_seq', 12);
 
 -- ============================================================
 
+-- CATALOGO_IMAGENES (imágenes extra del slider por producto)
+CREATE TABLE IF NOT EXISTS catalogo_imagenes (
+  id          SERIAL PRIMARY KEY,
+  producto_id INTEGER NOT NULL REFERENCES catalogo(id) ON DELETE CASCADE,
+  url         VARCHAR(400) NOT NULL,
+  orden       INTEGER NOT NULL DEFAULT 0,
+  creado      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+
 -- GALERIA_FOTOS
 CREATE TABLE IF NOT EXISTS galeria_fotos (
   id SERIAL PRIMARY KEY,

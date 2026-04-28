@@ -210,6 +210,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
             <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
             <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
+            <button class="tab-btn"        onclick="tab('admins',this)">👤 Admins</button>
         </div>
     </nav>
 
@@ -668,6 +669,71 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
 
     <!-- solicitudes integradas en dashboard -->
 
+    <!-- ══ ADMINS ══ -->
+    <div class="tab-panel" id="tab-admins">
+        <div class="panel-body">
+            <h1 class="sec-title">GESTIÓN DE ADMINS</h1>
+            <p class="sec-desc">Administra las cuentas de acceso al panel. Solo los admins existentes pueden crear o eliminar otros admins.</p>
+
+            <!-- Lista de admins -->
+            <div class="card" style="margin-bottom:20px">
+                <h3 class="card-title">👤 ADMINS ACTUALES</h3>
+                <div id="admins-lista"><p class="no-data">Cargando...</p></div>
+            </div>
+
+            <!-- Crear admin -->
+            <div class="card" style="margin-bottom:20px">
+                <h3 class="card-title">➕ CREAR NUEVO ADMIN</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" id="aNombre" placeholder="Ej: Profe Juan">
+                    </div>
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <input type="text" id="aUsuario" placeholder="Ej: blackdiamond4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña (mínimo 8 caracteres)</label>
+                    <input type="password" id="aPassword" placeholder="••••••••">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="crearAdmin()">➕ CREAR ADMIN</button>
+                </div>
+            </div>
+
+            <!-- Cambiar contraseña propia -->
+            <div class="card" style="margin-bottom:20px">
+                <h3 class="card-title">🔑 CAMBIAR MI CONTRASEÑA</h3>
+                <div class="form-group">
+                    <label>Contraseña actual</label>
+                    <input type="password" id="passActual" placeholder="••••••••">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nueva contraseña</label>
+                        <input type="password" id="passNueva" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar nueva contraseña</label>
+                        <input type="password" id="passConfirm" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="cambiarPassword()">🔑 CAMBIAR CONTRASEÑA</button>
+                </div>
+            </div>
+
+            <!-- Log de actividad -->
+            <div class="card">
+                <h3 class="card-title">📋 LOG DE ACTIVIDAD</h3>
+                <p class="sec-desc">Últimas 100 acciones realizadas en el panel.</p>
+                <div id="log-lista"><p class="no-data">Cargando...</p></div>
+            </div>
+        </div>
+    </div>
+
 </div><!-- /panel -->
 
 <!-- MODAL editar foto galería -->
@@ -816,7 +882,7 @@ function mostrarPanel(){
     document.getElementById('panelWrap').style.display='block';
     document.getElementById('navUser').textContent=localStorage.getItem('bdg_nombre')||'Admin';
     cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarFeatures(); cargarVids(); cargarCat(); cargarSols(); cargarTextos();
-    cargarDashboard();
+    cargarDashboard(); cargarAdmins(); cargarLog();
 }
 function cerrarSesion(){
     localStorage.removeItem('bdg_token'); localStorage.removeItem('bdg_nombre'); token=null;
@@ -1581,6 +1647,110 @@ async function guardarFeatures() {
     } catch(e) {
         authErr(e);
     }
+}
+/* ════════════ GESTIÓN DE ADMINS ════════════ */
+async function cargarAdmins() {
+    try {
+        const r = await fetch(`${API}/api/admins`, { headers: { Authorization: 'Bearer ' + token } });
+        if (!r.ok) return;
+        const admins = await r.json();
+        const yo = JSON.parse(atob(token.split('.')[1])).id;
+        const cont = document.getElementById('admins-lista');
+        cont.innerHTML = `<div class="table-wrap"><table class="data-table">
+            <thead><tr><th>ID</th><th>Nombre</th><th>Usuario</th><th>Creado</th><th>Acción</th></tr></thead>
+            <tbody>${admins.map(a => `
+                <tr>
+                    <td>#${a.id}</td>
+                    <td><strong>${esc(a.nombre)}</strong></td>
+                    <td style="color:#e31c25;font-weight:700">${esc(a.usuario)}</td>
+                    <td style="font-size:.72rem">${new Date(a.creado_en).toLocaleDateString('es-CO')}</td>
+                    <td>${a.id === yo
+                        ? '<span style="font-size:.68rem;color:#333;letter-spacing:1px">TÚ</span>'
+                        : `<button class="btn-icon danger" onclick="eliminarAdmin(${a.id},'${esc(a.usuario)}')">🗑️ Eliminar</button>`
+                    }</td>
+                </tr>`).join('')}
+            </tbody></table></div>`;
+    } catch(e) { console.warn(e); }
+}
+
+async function crearAdmin() {
+    const nombre = document.getElementById('aNombre').value.trim();
+    const usuario = document.getElementById('aUsuario').value.trim();
+    const password = document.getElementById('aPassword').value;
+    if (!nombre || !usuario || !password) { toast('⚠️ Completa todos los campos','err'); return; }
+    if (password.length < 8) { toast('⚠️ La contraseña debe tener mínimo 8 caracteres','err'); return; }
+    try {
+        const r = await fetch(`${API}/api/admins`, {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, usuario, password })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        toast('✅ Admin creado exitosamente', 'ok');
+        document.getElementById('aNombre').value = '';
+        document.getElementById('aUsuario').value = '';
+        document.getElementById('aPassword').value = '';
+        cargarAdmins(); cargarLog();
+    } catch(e) { toast('❌ ' + e.message, 'err'); }
+}
+
+async function eliminarAdmin(id, usuario) {
+    if (!confirm(`¿Eliminar al admin "${usuario}"? Esta acción no se puede deshacer.`)) return;
+    try {
+        const r = await fetch(`${API}/api/admins/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: 'Bearer ' + token }
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        toast('✅ Admin eliminado', 'ok');
+        cargarAdmins(); cargarLog();
+    } catch(e) { toast('❌ ' + e.message, 'err'); }
+}
+
+async function cambiarPassword() {
+    const actual = document.getElementById('passActual').value;
+    const nueva = document.getElementById('passNueva').value;
+    const confirm_ = document.getElementById('passConfirm').value;
+    if (!actual || !nueva || !confirm_) { toast('⚠️ Completa todos los campos','err'); return; }
+    if (nueva !== confirm_) { toast('⚠️ Las contraseñas nuevas no coinciden','err'); return; }
+    if (nueva.length < 8) { toast('⚠️ Mínimo 8 caracteres','err'); return; }
+    try {
+        const r = await fetch(`${API}/api/admin/password`, {
+            method: 'PUT',
+            headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ actual, nueva })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Error');
+        toast('✅ Contraseña cambiada · Vuelve a iniciar sesión', 'ok');
+        document.getElementById('passActual').value = '';
+        document.getElementById('passNueva').value = '';
+        document.getElementById('passConfirm').value = '';
+        setTimeout(() => cerrarSesion(), 2500);
+    } catch(e) { toast('❌ ' + e.message, 'err'); }
+}
+
+/* ════════════ LOG DE ACTIVIDAD ════════════ */
+async function cargarLog() {
+    try {
+        const r = await fetch(`${API}/api/log`, { headers: { Authorization: 'Bearer ' + token } });
+        if (!r.ok) return;
+        const logs = await r.json();
+        const cont = document.getElementById('log-lista');
+        if (!logs.length) { cont.innerHTML = '<p class="no-data">Sin actividad registrada aún.</p>'; return; }
+        cont.innerHTML = `<div class="table-wrap"><table class="data-table">
+            <thead><tr><th>Admin</th><th>Acción</th><th>Detalle</th><th>Fecha</th></tr></thead>
+            <tbody>${logs.map(l => `
+                <tr>
+                    <td style="color:#e31c25;font-weight:700">${esc(l.admin_usuario)}</td>
+                    <td>${esc(l.accion)}</td>
+                    <td style="font-size:.72rem;text-transform:none;color:#555">${esc(l.detalle||'—')}</td>
+                    <td style="white-space:nowrap;font-size:.72rem">${new Date(l.fecha).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+                </tr>`).join('')}
+            </tbody></table></div>`;
+    } catch(e) { console.warn(e); }
 }
 </script>
 </body>

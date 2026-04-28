@@ -587,6 +587,86 @@ app.post('/api/textos', auth, async (req, res) => {
     }
 });
 
+/* ================================================================
+   GESTIÓN DE ADMINS
+================================================================ */
+// Listar admins
+app.get('/api/admins', auth, async (req, res) => {
+    try {
+        const { rows } = await query('SELECT id, nombre, usuario, creado_en FROM admins ORDER BY id');
+        res.json(rows);
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+// Crear admin
+app.post('/api/admins', auth, async (req, res) => {
+    const { nombre, usuario, password } = req.body;
+    if (!nombre || !usuario || !password) return res.status(400).json({ error: 'Nombre, usuario y contraseña requeridos' });
+    if (password.length < 8) return res.status(400).json({ error: 'La contraseña debe tener mínimo 8 caracteres' });
+    try {
+        const existe = await query('SELECT id FROM admins WHERE usuario=$1', [usuario.trim()]);
+        if (existe.rows.length) return res.status(400).json({ error: 'El usuario ya existe' });
+        const hash = await bcrypt.hash(password, 10);
+        const { rows: r } = await query(
+            'INSERT INTO admins (nombre, usuario, password_hash) VALUES($1,$2,$3) RETURNING id',
+            [nombre.trim(), usuario.trim(), hash]
+        );
+        await registrarLog(req.usuario.id, req.usuario.usuario, 'Creó admin', `Usuario: ${usuario.trim()}`);
+        res.status(201).json({ mensaje: 'Admin creado', id: r[0].id });
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+// Eliminar admin
+app.delete('/api/admins/:id', auth, async (req, res) => {
+    if (parseInt(req.params.id) === req.usuario.id)
+        return res.status(400).json({ error: 'No puedes eliminarte a ti mismo' });
+    try {
+        const { rows } = await query('SELECT usuario FROM admins WHERE id=$1', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Admin no encontrado' });
+        await query('DELETE FROM admins WHERE id=$1', [req.params.id]);
+        await registrarLog(req.usuario.id, req.usuario.usuario, 'Eliminó admin', `Usuario: ${rows[0].usuario}`);
+        res.json({ mensaje: 'Admin eliminado' });
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+// Cambiar contraseña propia
+app.put('/api/admin/password', auth, async (req, res) => {
+    const { actual, nueva } = req.body;
+    if (!actual || !nueva) return res.status(400).json({ error: 'Contraseña actual y nueva requeridas' });
+    if (nueva.length < 8) return res.status(400).json({ error: 'La nueva contraseña debe tener mínimo 8 caracteres' });
+    try {
+        const { rows } = await query('SELECT password_hash FROM admins WHERE id=$1', [req.usuario.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Admin no encontrado' });
+        if (!await bcrypt.compare(actual, rows[0].password_hash.trim()))
+            return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+        const hash = await bcrypt.hash(nueva, 10);
+        await query('UPDATE admins SET password_hash=$1 WHERE id=$2', [hash, req.usuario.id]);
+        await registrarLog(req.usuario.id, req.usuario.usuario, 'Cambió contraseña', '');
+        res.json({ mensaje: 'Contraseña actualizada' });
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
+/* ================================================================
+   LOG DE ACTIVIDAD
+================================================================ */
+async function registrarLog(adminId, adminUsuario, accion, detalle) {
+    try {
+        await query(
+            'INSERT INTO log_actividad (admin_id, admin_usuario, accion, detalle) VALUES($1,$2,$3,$4)',
+            [adminId, adminUsuario, accion, detalle || '']
+        );
+    } catch(e){ console.warn('Log error:', e.message); }
+}
+
+app.get('/api/log', auth, async (req, res) => {
+    try {
+        const { rows } = await query(
+            'SELECT id, admin_usuario, accion, detalle, fecha FROM log_actividad ORDER BY fecha DESC LIMIT 100'
+        );
+        res.json(rows);
+    } catch(e){ res.status(500).json({ error: e.message }); }
+});
+
 /* ── Keep-alive Supabase ────────────────────────────────────── */
 setInterval(async () => {
     try {
