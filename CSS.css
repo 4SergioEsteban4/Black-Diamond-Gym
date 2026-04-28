@@ -736,12 +736,32 @@ nav {
 
 .photo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 18px;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 300px 260px;
+    gap: 12px;
     margin-bottom: 60px;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Primera foto — grande a la izquierda, ocupa 2 filas */
+.photo-card:first-child {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    height: 100%;
+}
+
+/* Resto de fotos — grid normal */
+.photo-card:not(:first-child) {
+    height: 100%;
+}
+
+/* Si hay más de 5 fotos, las siguientes forman fila normal */
+.photo-card:nth-child(n+6) {
+    grid-column: auto;
+    grid-row: auto;
+    height: 260px;
 }
 
 /* Skeleton loader for gallery */
@@ -762,7 +782,6 @@ nav {
 
 .photo-card {
     position: relative;
-    height: 260px;
     border-radius: var(--radius);
     overflow: hidden;
     cursor: pointer;
@@ -778,6 +797,31 @@ nav {
     font-size: 1rem;
     letter-spacing: 2px;
     transition: .3s;
+}
+
+@media (max-width: 768px) {
+    .photo-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+    .photo-card:first-child {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        height: 260px;
+    }
+    .photo-card:not(:first-child) {
+        height: 200px;
+    }
+}
+@media (max-width: 480px) {
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+    .photo-card:first-child,
+    .photo-card:not(:first-child) {
+        grid-column: 1;
+        height: 220px;
+    }
 }
 
 .videos-header {
