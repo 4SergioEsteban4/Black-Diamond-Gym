@@ -964,12 +964,7 @@ nav {
     padding: 52px 32px 32px;
     text-align: center;
 }
-.cta-overlay h3 {
-    font-size: 1.6rem;
-    margin-bottom: 6px;
-    letter-spacing: 2px;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
+.cta-overlay h3 { color: #ffffff; font-size: 1.6rem; margin-bottom: 6px; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(0,0,0,0.6); }
 .cta-overlay p {
     color: rgba(255,255,255,0.65);
     font-size: .82rem;
