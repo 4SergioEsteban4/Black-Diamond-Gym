@@ -2399,3 +2399,82 @@ nav {
 .cat-card:hover .cat-emoji-wrap {
     transform: scale(1.12) rotate(-4deg);
 }
+/* ── SCROLLBAR PERSONALIZADO ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #e31c25; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #ff2d37; }
+* { scrollbar-width: thin; scrollbar-color: #e31c25 #0a0a0a; }
+
+/* ── CATÁLOGO SLIDER ── */
+.catalogo-img-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
+    background: #111;
+    aspect-ratio: 4/3;
+}
+.cslide-track {
+    display: flex;
+    transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+    height: 100%;
+}
+.cslide {
+    min-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cslide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.cslide-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,.55);
+    border: none;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background .2s;
+}
+.cslide-arrow:hover { background: #e31c25; }
+.cslide-prev { left: 6px; }
+.cslide-next { right: 6px; }
+.cslide-dots {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 2;
+}
+.csdot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.35);
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+.csdot.active {
+    background: #e31c25;
+    transform: scale(1.3);
+}
+.catalogo-no-img {
+    font-size: 3rem;
+    color: #333;
+}
