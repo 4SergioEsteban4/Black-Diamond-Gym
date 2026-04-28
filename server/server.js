@@ -667,6 +667,11 @@ app.get('/api/log', auth, async (req, res) => {
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
+/* ── Ruta /unete ────────────────────────────────────────────── */
+app.get('/unete', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'unete.html'));
+});
+
 /* ── 404 ────────────────────────────────────────────────────── */
 app.use((req, res) => {
     if (!req.path.startsWith('/api')) {

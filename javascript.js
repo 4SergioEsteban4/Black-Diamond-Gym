@@ -235,21 +235,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Función que anima un contador de 0 hasta su valor objetivo
     function animarContador(elemento) {
         const valorFinal = parseInt(elemento.dataset.target, 10);
-        let valorActual  = 0;
+        const duracion = 1800; // ms
+        const inicio = performance.now();
 
-        // Calcular el incremento para que dure ~25 pasos
-        const incremento = Math.ceil(valorFinal / 25);
-
-        // setInterval ejecuta la función cada 50ms (≈20fps)
-        const temporizador = setInterval(function () {
-            valorActual = Math.min(valorActual + incremento, valorFinal);
+        function paso(ahora) {
+            const transcurrido = ahora - inicio;
+            const progreso = Math.min(transcurrido / duracion, 1);
+            // Easing ease-out cubic
+            const ease = 1 - Math.pow(1 - progreso, 3);
+            const valorActual = Math.round(ease * valorFinal);
             elemento.textContent = valorActual;
-
-            // Cuando llegamos al número final, detenemos el timer
-            if (valorActual >= valorFinal) {
-                clearInterval(temporizador);
-            }
-        }, 50);
+            if (progreso < 1) requestAnimationFrame(paso);
+            else elemento.textContent = valorFinal;
+        }
+        requestAnimationFrame(paso);
     }
 
 
