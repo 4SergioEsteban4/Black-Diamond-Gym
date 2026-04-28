@@ -667,6 +667,15 @@ app.get('/api/log', auth, async (req, res) => {
     } catch(e){ res.status(500).json({ error: e.message }); }
 });
 
+/* ── 404 ────────────────────────────────────────────────────── */
+app.use((req, res) => {
+    if (!req.path.startsWith('/api')) {
+        res.status(404).sendFile(path.join(__dirname, '..', '404.html'));
+    } else {
+        res.status(404).json({ error: 'Ruta no encontrada' });
+    }
+});
+
 /* ── Keep-alive Supabase ────────────────────────────────────── */
 setInterval(async () => {
     try {
