@@ -1220,7 +1220,7 @@ nav {
 
 .info-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+       grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     max-width: 1100px;
     margin: 0 auto 60px;
@@ -1483,7 +1483,7 @@ nav {
     .carousel-3d-track { width: 280px; height: 420px; }
     .price-card-3d { width: 260px; height: 400px; padding: 24px 18px; }
 
-    .info-cards { grid-template-columns: 1fr 1fr; }
+    .info-cards { grid-template-columns: repeat(2, 1fr); }
 
     .footer-inner { grid-template-columns: 1fr; gap: 30px; padding: 50px 6% 40px; }
 
@@ -1494,7 +1494,7 @@ nav {
     .hero-section h1 { font-size: 3.2rem; }
     .hero-badges { flex-direction: column; align-items: center; }
     .stats-row { grid-template-columns: 1fr; gap: 16px; }
-    .info-cards { grid-template-columns: 1fr; }
+    .info-cards {  grid-template-columns: 1fr; }
     .amenities-strip { flex-direction: column; }
     .photo-grid { grid-template-columns: 1fr; }
 }
@@ -1850,6 +1850,7 @@ nav {
     position: absolute;
     top: 12px; left: 12px;
     background: var(--red);
+       z-index: 1;
     color: var(--white);
     font-size: .6rem;
     font-weight: 700;
@@ -2491,7 +2492,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2;
+    z-index: 3;
     transition: background .2s;
 }
 .cslide-arrow:hover { background: #e31c25; }
