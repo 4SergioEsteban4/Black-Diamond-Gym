@@ -34,6 +34,18 @@
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,900;1,300&display=swap"
         rel="stylesheet">
     <link rel="icon" id="site-favicon" href="/favicon.ico" type="image/x-icon">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <!-- QR Code generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <link rel="stylesheet" href="CSS.css">
 </head>
 
@@ -544,6 +556,13 @@
                         <h4>HORARIO HOY</h4>
                         <div id="horario-hoy" class="horario-hoy-text">—</div>
                     </div>
+                    <div class="info-card" style="align-items:center;text-align:center">
+                        <div class="info-icon">📲</div>
+                        <h4>ÚNETE AL GYM</h4>
+                        <p style="font-size:.75rem;color:#555;margin-bottom:12px;text-transform:none">Escanea para inscribirte</p>
+                        <div id="qr-unete" style="background:#fff;padding:10px;border-radius:10px;display:inline-block"></div>
+                        <p style="font-size:.65rem;color:#333;margin-top:8px;letter-spacing:1px">black-diamond-gym.onrender.com/unete</p>
+                    </div>
                 </div>
                 <div class="map-form-grid sr-target">
                     <div class="map-wrap">
@@ -644,6 +663,21 @@
 
     <!-- Archivo JavaScript externo con toda la lógica del sitio -->
     <script src="javascript.js"></script>
-</body>
 
+    <!-- Generar QR de /unete -->
+    <script>
+        (function() {
+            var el = document.getElementById('qr-unete');
+            if (!el || typeof QRCode === 'undefined') return;
+            new QRCode(el, {
+                text: window.location.origin + '/unete',
+                width: 120,
+                height: 120,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        })();
+    </script>
+</body>
 </html>
