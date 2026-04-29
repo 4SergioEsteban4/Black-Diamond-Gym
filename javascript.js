@@ -987,14 +987,24 @@ async function cargarCatalogo() {
             const formatCOP = (n) => n > 0 ? '$' + n.toLocaleString('es-CO') : 'CONSULTAR';
             const precio = formatCOP(p.precio);
             const stockTxt = p.stock > 0 ? `Stock: ${p.stock}` : '—';
-            const img = p.imagen_url
-                ? `<img src="${p.imagen_url}" alt="${p.nombre}" loading="lazy">`
-                : `<div class="catalogo-no-img">🥊</div>`;
+
+            // Slider con múltiples imágenes
+            const imgs = p.imagenes && p.imagenes.length ? p.imagenes : (p.imagen_url ? [p.imagen_url] : []);
+            const slides = imgs.length
+                ? imgs.map(url => `<div class="cslide"><img src="${url}" alt="${p.nombre}" loading="lazy"></div>`).join('')
+                : `<div class="cslide"><div class="catalogo-no-img">🥊</div></div>`;
+
             return `
             <div class="catalogo-card sr-target">
-                <div class="catalogo-img-wrap">
-                    ${img}
-                    ${p.categoria ? `<span class="catalogo-badge">${p.categoria}</span>` : ''}
+                <div class="catalogo-img-outer">
+                    ${imgs.length > 1 ? `
+                    <button class="cslide-arrow cslide-prev" onclick="cSlide(this,-1)" aria-label="Anterior">&#8592;</button>
+                    <button class="cslide-arrow cslide-next" onclick="cSlide(this,1)" aria-label="Siguiente">&#8594;</button>
+                    <div class="cslide-dots">${imgs.map((_,i) => `<span class="csdot${i===0?' active':''}" data-i="${i}"></span>`).join('')}</div>` : ''}
+                    <div class="catalogo-img-wrap">
+                        <div class="cslide-track" data-idx="0">${slides}</div>
+                        ${p.categoria ? `<span class="catalogo-badge">${p.categoria}</span>` : ''}
+                    </div>
                 </div>
                 <div class="catalogo-body">
                     <span class="catalogo-cat">${p.categoria || 'Producto'}</span>
@@ -1327,6 +1337,22 @@ async function cargarTextosSitio() {
     }, 2000);
 })();
 
+/* ── MODO CLARO / OSCURO ── */
+(function() {
+    var btn = document.getElementById('themeToggle');
+    if (!btn) return;
+    var saved = localStorage.getItem('bdg_theme');
+    if (saved === 'light') {
+        document.body.classList.add('light-mode');
+        btn.textContent = '☀️';
+    }
+    btn.addEventListener('click', function() {
+        var isLight = document.body.classList.toggle('light-mode');
+        btn.textContent = isLight ? '☀️' : '🌙';
+        localStorage.setItem('bdg_theme', isLight ? 'light' : 'dark');
+    });
+})();
+
 /* Favicon dinamico desde API */
 (function() {
     var API = window.location.origin;
@@ -1344,10 +1370,10 @@ async function cargarTextosSitio() {
 
 /* ── CATÁLOGO SLIDER ── */
 function cSlide(btn, dir) {
-    var wrap   = btn.closest('.catalogo-img-wrap');
-    var track  = wrap.querySelector('.cslide-track');
+    var outer  = btn.closest('.catalogo-img-outer');
+    var track  = outer.querySelector('.cslide-track');
     var slides = track.querySelectorAll('.cslide');
-    var dots   = wrap.querySelectorAll('.csdot');
+    var dots   = outer.querySelectorAll('.csdot');
     var total  = slides.length;
     if (total < 2) return;
     var current = parseInt(track.dataset.idx) || 0;
