@@ -107,6 +107,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
         .badge-fb{background:rgba(24,119,242,.2);color:#1877f2}
         #badge-nuevas{display:none;background:var(--red);color:#fff;font-size:.55rem;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:4px;vertical-align:middle;animation:badgePop .3s ease}
         @keyframes badgePop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+        @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
         /* PLANES GRID */
         .planes-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -219,90 +220,91 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
     <div class="tab-panel active" id="tab-dashboard">
         <div class="panel-body">
 
-            <!-- Header -->
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+            <!-- Header bienvenida -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid #1a1a1a">
                 <div>
-                    <p style="font-size:.6rem;letter-spacing:4px;color:#333;text-transform:uppercase;margin-bottom:4px">PANEL DE CONTROL</p>
-                    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;color:#fff;line-height:1">BLACK DIAMOND <span style="color:#e31c25">GYM</span></h1>
+                    <p style="font-size:.55rem;letter-spacing:4px;color:#333;text-transform:uppercase;margin-bottom:6px">▶ PANEL DE CONTROL</p>
+                    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;color:#fff;line-height:1">BLACK DIAMOND <span style="color:#e31c25">GYM</span></h1>
                 </div>
                 <div style="text-align:right">
-                    <p style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase" id="ds-fecha-hoy"></p>
-                    <p style="font-size:.72rem;color:#444;margin-top:3px">Bienvenido, <span id="ds-nombre" style="color:#e31c25;font-weight:700"></span></p>
+                    <p style="font-size:.65rem;letter-spacing:2px;color:#333;text-transform:uppercase;margin-bottom:4px" id="ds-fecha-hoy"></p>
+                    <p style="font-size:.78rem;color:#555">Hola, <strong style="color:#e31c25" id="ds-nombre"></strong> 👋</p>
+                    <p style="font-size:.6rem;color:#222;margin-top:3px;letter-spacing:1px">Black Diamond Gym · Panel Admin</p>
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px">
-                <div style="background:linear-gradient(135deg,#1a0000,#2d0808);border:1px solid rgba(227,28,37,.35);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;cursor:pointer" onclick="scrollToSols()">
+            <!-- Stats grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:24px">
+
+                <div onclick="scrollToSols()" style="background:linear-gradient(135deg,#1a0000,#2d0808);border:1px solid rgba(227,28,37,.35);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📩</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#e31c25;text-transform:uppercase;margin-bottom:6px">NUEVAS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-nuevas">—</p>
-                    <p style="font-size:.65rem;color:#555" id="ds-sol-sub">cargando...</p>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                        <span style="width:6px;height:6px;background:#e31c25;border-radius:50%;display:inline-block;animation:blink 1.5s infinite"></span>
+                        <p style="font-size:.5rem;letter-spacing:3px;color:#e31c25;text-transform:uppercase">SIN LEER</p>
+                    </div>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-nuevas">—</p>
+                    <p style="font-size:.62rem;color:#555" id="ds-sol-sub">cargando...</p>
                 </div>
-                <div style="background:linear-gradient(135deg,#001a0a,#002d14);border:1px solid rgba(37,211,102,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+
+                <div style="background:linear-gradient(135deg,#001a0a,#002d14);border:1px solid rgba(37,211,102,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📋</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#25d366;text-transform:uppercase;margin-bottom:6px">TOTAL SOLS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-total">—</p>
-                    <p style="font-size:.65rem;color:#555">historial</p>
+                    <p style="font-size:.5rem;letter-spacing:3px;color:#25d366;text-transform:uppercase;margin-bottom:8px">TOTAL SOLS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-sol-total">—</p>
+                    <p style="font-size:.62rem;color:#555">historial completo</p>
                 </div>
-                <div style="background:linear-gradient(135deg,#00091a,#001433);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+
+                <div style="background:linear-gradient(135deg,#00091a,#001433);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">🛍️</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#3b82f6;text-transform:uppercase;margin-bottom:6px">PRODUCTOS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-productos">—</p>
-                    <p style="font-size:.65rem;color:#555">activos</p>
+                    <p style="font-size:.5rem;letter-spacing:3px;color:#3b82f6;text-transform:uppercase;margin-bottom:8px">PRODUCTOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-productos">—</p>
+                    <p style="font-size:.62rem;color:#555">catálogo activo</p>
                 </div>
-                <div style="background:linear-gradient(135deg,#0d0a00,#1a1400);border:1px solid rgba(245,158,11,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+
+                <div style="background:linear-gradient(135deg,#0d0a00,#1a1400);border:1px solid rgba(245,158,11,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📷</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#f59e0b;text-transform:uppercase;margin-bottom:6px">GALERÍA</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-galeria">—</p>
-                    <p style="font-size:.65rem;color:#555">fotos</p>
+                    <p style="font-size:.5rem;letter-spacing:3px;color:#f59e0b;text-transform:uppercase;margin-bottom:8px">GALERÍA</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-galeria">—</p>
+                    <p style="font-size:.62rem;color:#555">fotos activas</p>
                 </div>
-                <div style="background:linear-gradient(135deg,#0d0014,#1a0028);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+
+                <div style="background:linear-gradient(135deg,#0d0014,#1a0028);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">▶</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#a855f7;text-transform:uppercase;margin-bottom:6px">VIDEOS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-videos">—</p>
-                    <p style="font-size:.65rem;color:#555">activos</p>
+                    <p style="font-size:.5rem;letter-spacing:3px;color:#a855f7;text-transform:uppercase;margin-bottom:8px">VIDEOS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-videos">—</p>
+                    <p style="font-size:.62rem;color:#555">destacados</p>
                 </div>
-                <div style="background:linear-gradient(135deg,#001a1a,#002d2d);border:1px solid rgba(20,184,166,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden">
+
+                <div style="background:linear-gradient(135deg,#001a1a,#002d2d);border:1px solid rgba(20,184,166,.2);border-radius:14px;padding:18px 16px;position:relative;overflow:hidden;transition:transform .2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
                     <div style="position:absolute;top:-8px;right:-8px;font-size:3rem;opacity:.08">📰</div>
-                    <p style="font-size:.55rem;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;margin-bottom:6px">NOTICIAS</p>
-                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-noticias">—</p>
-                    <p style="font-size:.65rem;color:#555">publicadas</p>
-                </div>
-            </div>
-
-            <!-- Gráfico planes + tabla resumen -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-
-                <!-- Gráfico de barras planes más pedidos -->
-                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:22px 24px">
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#444;text-transform:uppercase;margin-bottom:16px">PLANES MÁS SOLICITADOS</p>
-                    <div id="ds-chart-planes" style="display:flex;flex-direction:column;gap:10px">
-                        <p style="color:#333;font-size:.78rem">Cargando...</p>
-                    </div>
-                </div>
-
-                <!-- Resumen estado solicitudes -->
-                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:22px 24px">
-                    <p style="font-size:.6rem;letter-spacing:3px;color:#444;text-transform:uppercase;margin-bottom:16px">ESTADO DE SOLICITUDES</p>
-                    <div style="display:flex;flex-direction:column;gap:14px" id="ds-estado-wrap">
-                        <p style="color:#333;font-size:.78rem">Cargando...</p>
-                    </div>
+                    <p style="font-size:.5rem;letter-spacing:3px;color:#14b8a6;text-transform:uppercase;margin-bottom:8px">NOTICIAS</p>
+                    <p style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#fff;line-height:1;margin-bottom:3px" id="ds-noticias">—</p>
+                    <p style="font-size:.62rem;color:#555">publicadas</p>
                 </div>
 
             </div>
 
-            <!-- ══ SOLICITUDES COMPLETAS ══ -->
-            <div id="ds-sols-section" style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:24px 28px">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap">
-                    <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:#fff">SOLICITUDES</span>
+            <!-- Gráfico + estado -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:20px 22px">
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#333;text-transform:uppercase;margin-bottom:14px">📊 PLANES MÁS PEDIDOS</p>
+                    <div id="ds-chart-planes"><p style="color:#222;font-size:.75rem">Cargando...</p></div>
+                </div>
+                <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:20px 22px">
+                    <p style="font-size:.55rem;letter-spacing:3px;color:#333;text-transform:uppercase;margin-bottom:14px">✅ ESTADO DE ATENCIÓN</p>
+                    <div id="ds-estado-wrap"><p style="color:#222;font-size:.75rem">Cargando...</p></div>
+                </div>
+            </div>
+
+            <!-- Solicitudes completas -->
+            <div id="ds-sols-section" style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:14px;padding:22px 24px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+                    <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:#fff">📩 SOLICITUDES</span>
                     <span id="badge-nuevas" style="display:none">0</span>
                     <span style="flex:1"></span>
-                    <!-- Filtros -->
                     <select id="filtro-estado" onchange="filtrarSols()" style="background:#111;border:1px solid #222;color:#888;padding:6px 12px;border-radius:8px;font-size:.72rem;font-family:'Montserrat',sans-serif">
                         <option value="todas">Todas</option>
-                        <option value="nuevas">Solo nuevas</option>
-                        <option value="leidas">Solo leídas</option>
+                        <option value="nuevas">Sin leer</option>
+                        <option value="leidas">Leídas</option>
                     </select>
                     <select id="filtro-plan" onchange="filtrarSols()" style="background:#111;border:1px solid #222;color:#888;padding:6px 12px;border-radius:8px;font-size:.72rem;font-family:'Montserrat',sans-serif">
                         <option value="">Todos los planes</option>
@@ -312,7 +314,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
                         <option>Plan Día</option>
                         <option>Quiero más información</option>
                     </select>
-                    <button onclick="cargarDashboard()" style="background:none;border:1px solid #222;color:#555;padding:6px 14px;border-radius:8px;font-size:.72rem;cursor:pointer;font-family:'Montserrat',sans-serif">↺ Refrescar</button>
+                    <button onclick="cargarDashboard()" style="background:rgba(227,28,37,.1);border:1px solid rgba(227,28,37,.2);color:#e31c25;padding:6px 14px;border-radius:8px;font-size:.72rem;cursor:pointer;font-family:'Montserrat',sans-serif;transition:.2s" onmouseover="this.style.background='rgba(227,28,37,.2)'" onmouseout="this.style.background='rgba(227,28,37,.1)'">↺ Refrescar</button>
                 </div>
                 <div id="solicitudesContainer"><p class="no-data">Cargando...</p></div>
             </div>
