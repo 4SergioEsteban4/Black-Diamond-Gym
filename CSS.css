@@ -1461,6 +1461,13 @@ nav {
     .nav-links, .btn-whatsapp { display: none; }
     .hamburger { display: flex; }
 
+    /* Toggle luna al lado del hamburger en móvil */
+    .theme-toggle {
+        margin-left: auto;
+        order: 2;
+    }
+    .hamburger { order: 3; margin-left: 8px; }
+
     .hero-section h1 { font-size: 4rem; }
     .hero-btns { flex-direction: column; align-items: center; }
 
@@ -1468,7 +1475,7 @@ nav {
     .nosotros-content { flex-direction: column; gap: 40px; }
     .nosotros-visual { max-width: 100%; }
     .img-badge { bottom: -10px; right: 10px; }
-    .stats-row { grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .stat-item .stat-num { font-size: 2.8rem; }
 
     .servicios-section, .categorias-section, .gallery-section,
@@ -1479,7 +1486,17 @@ nav {
     .schedule-inner { flex-direction: column; }
     .schedule-left { padding: 60px 6%; }
     .schedule-right { min-height: 350px; }
-    .cta-overlay { left: 20px; right: 20px; bottom: 20px; }
+
+    /* CTA overlay en móvil — reemplazar por banner simple */
+    .cta-overlay {
+        left: 0; right: 0; bottom: 0;
+        padding: 20px;
+        background: rgba(0,0,0,.82);
+        border-radius: 0;
+        text-align: center;
+    }
+    .cta-overlay h3 { font-size: 1.1rem; }
+    .cta-overlay p { font-size: .72rem; margin-bottom: 10px; }
 
     .video-grid { grid-template-columns: 1fr; }
 
@@ -1497,7 +1514,9 @@ nav {
 @media (max-width: 480px) {
     .hero-section h1 { font-size: 3.2rem; }
     .hero-badges { flex-direction: column; align-items: center; }
-    .stats-row { grid-template-columns: 1fr; gap: 16px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-item .stat-num { font-size: 2rem; }
+    .stat-item .stat-label { font-size: .6rem; }
     .info-cards { grid-template-columns: 1fr; }
     .info-card:nth-child(4), .info-card:nth-child(5) { grid-column: auto; justify-self: stretch; }
     .amenities-strip { flex-direction: column; }
@@ -2561,10 +2580,13 @@ body.light-mode #site-header {
     background: rgba(245,245,245,.97);
     border-bottom: 1px solid #ddd;
     box-shadow: 0 1px 0 #ddd, 0 8px 32px rgba(0,0,0,.08);
+    width: 100%;
+    left: 0;
+    right: 0;
 }
 body.light-mode #site-header::before { display: none; }
 body.light-mode #site-header.scrolled {
-    background: rgba(245,245,245,.99);
+    background: rgba(245,245,245,.99) !important;
     box-shadow: 0 4px 20px rgba(0,0,0,.1);
     border-bottom-color: #ccc;
 }
