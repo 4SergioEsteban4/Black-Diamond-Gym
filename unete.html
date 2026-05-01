@@ -147,9 +147,9 @@
             <h1 class="u-title">FORJA TU<br><span class="line-red">CAMPEÓN</span><br>INTERIOR</h1>
             <p class="u-desc">¿Listo para dar el primer paso? Déjanos tus datos y uno de nuestros instructores te contacta. Sin excusas.</p>
             <div class="u-stats">
-                <div class="u-stat"><div class="u-stat-num">15+</div><div class="u-stat-label">Años</div></div>
-                <div class="u-stat"><div class="u-stat-num">3</div><div class="u-stat-label">Disciplinas</div></div>
-                <div class="u-stat"><div class="u-stat-num">3</div><div class="u-stat-label">Categorías</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-anos">15+</div><div class="u-stat-label">Años</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-disc">3</div><div class="u-stat-label">Disciplinas</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-cats">3</div><div class="u-stat-label">Categorías</div></div>
             </div>
             <p class="u-planes-label">Selecciona tu plan</p>
             <div class="u-planes" id="u-planes">
@@ -209,6 +209,13 @@
     <script>
         const API = window.location.origin;
         fetch(API + '/api/imagenes').then(r=>r.json()).then(imgs=>{const fav=imgs.find(i=>i.clave==='favicon');if(fav&&fav.url)document.getElementById('site-favicon').href=fav.url;}).catch(()=>{});
+
+        // Cargar stats dinámicos desde textos_sitio
+        fetch(API + '/api/textos').then(r=>r.json()).then(t=>{
+            if(t['unete-anos'])         document.getElementById('stat-anos').textContent    = t['unete-anos'];
+            if(t['unete-disciplinas'])  document.getElementById('stat-disc').textContent    = t['unete-disciplinas'];
+            if(t['unete-categorias'])   document.getElementById('stat-cats').textContent    = t['unete-categorias'];
+        }).catch(()=>{});
 
         function seleccionarPlan(el, nombre) {
             document.querySelectorAll('.u-plan').forEach(p=>{p.classList.remove('selected');p.querySelector('.u-plan-check').textContent='';});

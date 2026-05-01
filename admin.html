@@ -560,6 +560,29 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
                     Los textos se cargan automáticamente al abrir esta pestaña.
                 </p>
             </div>
+
+            <!-- PÁGINA /UNETE -->
+            <div class="card">
+                <h3 class="card-title">🥊 PÁGINA /ÚNETE — ESTADÍSTICAS</h3>
+                <p class="sec-desc" style="margin-bottom:16px">Edita los números que aparecen en la página de inscripción (/unete).</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Años de experiencia</label>
+                        <input type="text" id="txt-unete-anos" placeholder="15+">
+                    </div>
+                    <div class="form-group">
+                        <label>Disciplinas</label>
+                        <input type="text" id="txt-unete-disciplinas" placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Categorías de edad</label>
+                        <input type="text" id="txt-unete-categorias" placeholder="3">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('unete')">💾 GUARDAR ÚNETE</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1541,6 +1564,9 @@ const TEXTOS_DEFAULTS = {
     'con-ig':       'https://www.instagram.com/gym_blackdiamond_boxing_center/',
     'con-tk':       'https://www.tiktok.com/@gymblackdiamondboxingcen',
     'con-footer':   '© 2025 Black Diamond Gym · Boxing Center · Bosa, Bogotá',
+    'unete-anos':          '15+',
+    'unete-disciplinas':   '3',
+    'unete-categorias':    '3',
 };
 
 async function cargarTextos() {
@@ -1569,6 +1595,7 @@ async function guardarTextos(seccion) {
         nosotros: ['nos-titulo','est-año','nos-p1','nos-p2','nos-s1','nos-s1-suf','nos-s1-label','nos-s2','nos-s2-suf','nos-s2-label','nos-s3','nos-s3-suf','nos-s3-label'],
         horarios: ['hor-titulo','hor-lv','hor-sa','hor-do','hor-fe','hor-cta-title','hor-cta-sub'],
         contacto: ['con-dir','con-wa','con-ig','con-tk','con-footer'],
+        unete:    ['unete-anos','unete-disciplinas','unete-categorias'],
     };
     const payload = {};
     (claves[seccion] || []).forEach(k => {
