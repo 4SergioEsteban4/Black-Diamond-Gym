@@ -597,7 +597,7 @@ if (hamburger && mobileMenu) {
 ================================================================ */
 
 // URL de la API en producción
-const API_BASE = 'https://black-diamond-gym-5d2h.onrender.com';
+const API_BASE = 'http://18.119.11.37:3000';
 
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
 async function cargarNoticia() {
