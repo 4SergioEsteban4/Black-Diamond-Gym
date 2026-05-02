@@ -2602,26 +2602,16 @@ body.light-mode .hero-section {
     filter: brightness(.85);
 }
 
-/* Hero — todo siempre blanco sin excepción */
+/* Hero — todo siempre blanco */
 body.light-mode .hero-section h1,
 body.light-mode .hero-section h1 *,
 body.light-mode .hero-section p,
-body.light-mode .hero-section span,
 body.light-mode .hero-title,
 body.light-mode .hero-sub,
-body.light-mode .hero-badge,
-body.light-mode .hero-eyebrow { color: #fff !important; }
+body.light-mode .hero-badge { color: #fff !important; }
 
-/* Precios — mantener fondo y colores oscuros originales */
-body.light-mode .precios-section { background: #0a0a0a !important; }
-body.light-mode .precios-section h1,
-body.light-mode .precios-section h2,
-body.light-mode .precios-section h3,
-body.light-mode .precios-section p,
-body.light-mode .precios-section span,
-body.light-mode .precios-section .section-title,
-body.light-mode .precios-section .section-sub,
-body.light-mode .precios-section .section-label { color: inherit !important; }
+/* CAMPEÓN siempre rojo */
+body.light-mode .hero-accent { color: var(--red) !important; }
 
 /* Secciones con fondo claro */
 body.light-mode .nosotros-section,
@@ -2632,6 +2622,13 @@ body.light-mode .contacto-section,
 body.light-mode .noticias-section,
 body.light-mode .catalogo-section,
 body.light-mode .galeria-videos-section { background: var(--bg); }
+
+/* Precios — fondo y colores oscuros siempre */
+body.light-mode .pricing-section { background: #0a0a0a !important; }
+body.light-mode .pricing-section *,
+body.light-mode .pricing-section .section-title,
+body.light-mode .pricing-section .section-sub,
+body.light-mode .pricing-section .section-label { color: inherit !important; }
 
 /* Textos generales — solo en secciones de fondo claro */
 body.light-mode .section-title { color: #111; }
