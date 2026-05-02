@@ -2618,17 +2618,14 @@ body.light-mode .noticias-section,
 body.light-mode .catalogo-section,
 body.light-mode .galeria-videos-section { background: var(--bg); }
 
-/* Textos generales */
-body.light-mode .section-title,
+/* Textos generales — solo en secciones de fondo claro */
+body.light-mode .section-title { color: #111; }
 body.light-mode .section-sub,
-body.light-mode h1, body.light-mode h2,
-body.light-mode h3, body.light-mode h4 { color: var(--text); }
-body.light-mode p,
 body.light-mode .cat-note,
 body.light-mode .section-sub { color: var(--text2); }
 body.light-mode .section-label { color: #888; }
 
-/* Tarjetas */
+/* Tarjetas en modo claro */
 body.light-mode .info-card,
 body.light-mode .cat-card,
 body.light-mode .servicio-card,
@@ -2638,13 +2635,27 @@ body.light-mode .horario-card,
 body.light-mode .plan-card {
     background: var(--card-bg);
     border-color: var(--border);
-    color: var(--text);
 }
 body.light-mode .info-card h4,
+body.light-mode .info-card p,
 body.light-mode .servicio-card h3,
-body.light-mode .cat-card h3 { color: var(--text); }
+body.light-mode .servicio-card p,
+body.light-mode .cat-card h3,
+body.light-mode .cat-card p,
+body.light-mode .cat-list li,
+body.light-mode .cat-note,
+body.light-mode .catalogo-nombre,
+body.light-mode .catalogo-cat,
+body.light-mode .catalogo-desc,
+body.light-mode .noticia-card h3,
+body.light-mode .noticia-card p,
+body.light-mode .horario-card h3,
+body.light-mode .horario-card p { color: #111; }
 body.light-mode .horario-card p,
-body.light-mode .info-card p { color: var(--text2); }
+body.light-mode .info-card p,
+body.light-mode .servicio-card p,
+body.light-mode .cat-note,
+body.light-mode .catalogo-desc { color: #555; }
 
 /* CTA overlay (¿Listo para entrenar?) — siempre oscuro */
 body.light-mode .cta-overlay {
@@ -2653,36 +2664,48 @@ body.light-mode .cta-overlay {
 body.light-mode .cta-overlay h3,
 body.light-mode .cta-overlay p { color: #fff !important; }
 
-/* Nosotros texto */
+/* Nosotros */
+body.light-mode .nosotros-text h2,
+body.light-mode .nosotros-text h3 { color: #111; }
 body.light-mode .nosotros-text p,
-body.light-mode .nosotros-lead { color: var(--text2); }
-body.light-mode .stat-label { color: #888; }
+body.light-mode .nosotros-lead { color: #555; }
+body.light-mode .stat-num { color: var(--red); }
+body.light-mode .stat-label { color: #666; }
 
-/* Servicio emoji wrap */
-body.light-mode .servicio-emoji-wrap { background: #f0f0f0; }
+/* Precios / planes */
+body.light-mode .plan-card h3,
+body.light-mode .plan-card .price-amount,
+body.light-mode .plan-card .price-period { color: #111; }
+body.light-mode .plan-card li { color: #555; }
+body.light-mode .plan-card.featured h3,
+body.light-mode .plan-card.featured li { color: #fff; }
+
+/* Catálogo */
+body.light-mode .catalogo-stock { color: #888; }
+body.light-mode .catalogo-precio { color: var(--red); }
+
+/* Noticias */
+body.light-mode .noticia-fecha { color: #888; }
+
+/* Formulario contacto */
+body.light-mode .cf-label { color: #444; }
+body.light-mode .cf-hint { color: #888; }
 
 /* Galería y videos */
-body.light-mode .videos-header h2,
-body.light-mode .tab-btn { color: var(--text); }
+body.light-mode .videos-header h2 { color: #111; }
+body.light-mode .tab-btn { color: #555; }
 body.light-mode .tab-btn.active { border-color: var(--red); color: var(--red); }
 body.light-mode .tab-btn:not(.active) { border-color: #ddd; }
 body.light-mode .video-thumb-wrap { background: #ddd; }
-
-/* Formulario contacto */
-body.light-mode .cf-input,
-body.light-mode .cf-select,
-body.light-mode .cf-textarea {
-    background: #fff;
-    border-color: #ddd;
-    color: #111;
-}
+body.light-mode .video-title { color: #333; }
 
 /* Footer */
-body.light-mode footer { background: #e8e8e8; color: #333; }
+body.light-mode footer { background: #e8e8e8; }
 body.light-mode .footer-copy { color: #555; }
 body.light-mode .footer-links a { color: #444; }
+body.light-mode .footer-links a:hover { color: var(--red); }
 
-/* Amenities strip */
+/* Amenities */
 body.light-mode .amenities-strip { background: #eee; }
 body.light-mode .amenity { color: #444; }
 
