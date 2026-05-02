@@ -2602,17 +2602,32 @@ body.light-mode .hero-section {
     filter: brightness(.85);
 }
 
-/* Hero texto siempre blanco (el fondo es la imagen) */
+/* Hero — todo siempre blanco sin excepción */
+body.light-mode .hero-section h1,
+body.light-mode .hero-section h1 *,
+body.light-mode .hero-section p,
+body.light-mode .hero-section span,
 body.light-mode .hero-title,
 body.light-mode .hero-sub,
-body.light-mode .hero-badge { color: #fff !important; }
+body.light-mode .hero-badge,
+body.light-mode .hero-eyebrow { color: #fff !important; }
 
-/* Secciones */
+/* Precios — mantener fondo y colores oscuros originales */
+body.light-mode .precios-section { background: #0a0a0a !important; }
+body.light-mode .precios-section h1,
+body.light-mode .precios-section h2,
+body.light-mode .precios-section h3,
+body.light-mode .precios-section p,
+body.light-mode .precios-section span,
+body.light-mode .precios-section .section-title,
+body.light-mode .precios-section .section-sub,
+body.light-mode .precios-section .section-label { color: inherit !important; }
+
+/* Secciones con fondo claro */
 body.light-mode .nosotros-section,
 body.light-mode .servicios-section,
 body.light-mode .categorias-section,
 body.light-mode .horarios-section,
-body.light-mode .precios-section,
 body.light-mode .contacto-section,
 body.light-mode .noticias-section,
 body.light-mode .catalogo-section,
