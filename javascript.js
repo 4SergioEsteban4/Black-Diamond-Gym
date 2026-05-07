@@ -1259,7 +1259,40 @@ async function cargarTextosSitio() {
         const ctaH3 = document.querySelector('.cta-overlay h3');
         if (ctaH3 && t['hor-cta-title']) ctaH3.textContent = t['hor-cta-title'];
         const ctaP = document.querySelector('.cta-overlay p');
-        if (ctaP && t['hor-cta-sub']) ctaP.textContent = t['hor-cta-sub'];
+        if (ctaP && t['hor-cta-desc']) ctaP.textContent = t['hor-cta-desc'];
+
+        // ── SERVICIOS ─────────────────────────────────────────
+        const servClaves = ['serv-titulo','serv-sub','serv1-titulo','serv1-desc','serv1-tag',
+            'serv2-titulo','serv2-desc','serv2-tag','serv3-titulo','serv3-desc','serv3-tag',
+            'serv-amenity1','serv-amenity2'];
+        servClaves.forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
+        });
+
+        // ── CATEGORÍAS ────────────────────────────────────────
+        const catClaves = ['cat-titulo','cat1-titulo','cat1-item1','cat1-item2','cat1-item3','cat1-desc',
+            'cat2-titulo','cat2-item1','cat2-item2','cat2-item3','cat2-desc',
+            'cat3-titulo','cat3-desc','cat3-btn'];
+        catClaves.forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
+        });
+
+        // ── NOSOTROS extra ────────────────────────────────────
+        ['nos-titulo','nos-est-ano','nos-btn','nos-stat1-suf','nos-stat1-label',
+         'nos-stat2-suf','nos-stat2-label','nos-stat3-suf','nos-stat3-label'].forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k] !== undefined) el.textContent = t[k]; });
+        });
+
+        // ── PRECIOS extra ─────────────────────────────────────
+        ['precio-titulo','precio-sub','precio-footer'].forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
+        });
+
+        // ── GALERÍA y CONTACTO extra ──────────────────────────
+        ['gal-titulo','gal-sub','cont-titulo','cont-sub','cont-form-titulo','cont-form-sub','cont-promo',
+         'cat-dep-titulo','cat-dep-sub'].forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
+        });
 
         // ── CONTACTO / FOOTER ─────────────────────────────────
         if (t['con-wa']) {
