@@ -2602,33 +2602,21 @@ body.light-mode .hero-section {
     filter: brightness(.85);
 }
 
-/* Hero — todo siempre blanco */
-body.light-mode .hero-section h1,
-body.light-mode .hero-section h1 *,
-body.light-mode .hero-section p,
+/* Hero texto siempre blanco (el fondo es la imagen) */
 body.light-mode .hero-title,
 body.light-mode .hero-sub,
 body.light-mode .hero-badge { color: #fff !important; }
 
-/* CAMPEÓN siempre rojo */
-body.light-mode .hero-accent { color: var(--red) !important; }
-
-/* Secciones con fondo claro */
+/* Secciones */
 body.light-mode .nosotros-section,
 body.light-mode .servicios-section,
 body.light-mode .categorias-section,
 body.light-mode .horarios-section,
+body.light-mode .precios-section,
 body.light-mode .contacto-section,
 body.light-mode .noticias-section,
 body.light-mode .catalogo-section,
 body.light-mode .galeria-videos-section { background: var(--bg); }
-
-/* Precios — fondo y colores oscuros siempre */
-body.light-mode .pricing-section { background: #0a0a0a !important; }
-body.light-mode .pricing-section *,
-body.light-mode .pricing-section .section-title,
-body.light-mode .pricing-section .section-sub,
-body.light-mode .pricing-section .section-label { color: inherit !important; }
 
 /* Textos generales — solo en secciones de fondo claro */
 body.light-mode .section-title { color: #111; }
@@ -2748,3 +2736,245 @@ body, header, nav, section, footer, .info-card, .cat-card,
 .servicio-card, .catalogo-card, .noticia-card, .plan-card {
     transition: background .3s ease, color .3s ease, border-color .3s ease;
 }
+/* ════════════════════════════════════════
+   EDITOR VISUAL INLINE
+════════════════════════════════════════ */
+
+/* Toolbar flotante */
+#edit-toolbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 99998;
+    background: linear-gradient(135deg, #1a0000, #0d0d0d);
+    border-bottom: 2px solid #e31c25;
+    padding: 10px 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.6);
+}
+.edit-tb-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+.edit-tb-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    color: #e31c25;
+    white-space: nowrap;
+}
+.edit-tb-hint {
+    font-size: .65rem;
+    color: #444;
+    letter-spacing: 1px;
+    flex: 1;
+}
+.edit-tb-actions { display: flex; gap: 8px; margin-left: auto; }
+.edit-tb-btn {
+    font-family: 'Montserrat', sans-serif;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: .2s;
+}
+.edit-tb-galeria { background: #1a1a1a; color: #ccc; border: 1px solid #333; }
+.edit-tb-galeria:hover { border-color: #555; color: #fff; }
+.edit-tb-exit { background: rgba(227,28,37,.15); color: #e31c25; border: 1px solid rgba(227,28,37,.3); }
+.edit-tb-exit:hover { background: rgba(227,28,37,.25); }
+
+/* Offset del header cuando toolbar está activo */
+body.edit-mode { padding-top: 48px; }
+body.edit-mode #site-header { top: 48px; }
+
+/* Elementos editables en modo edición */
+body.edit-mode [data-editable] {
+    position: relative;
+    cursor: pointer !important;
+    outline: 2px dashed transparent;
+    outline-offset: 4px;
+    transition: outline-color .2s;
+    border-radius: 4px;
+}
+body.edit-mode [data-editable]:hover {
+    outline-color: #e31c25;
+}
+body.edit-mode [data-editable]::after {
+    content: '✏️ EDITAR';
+    position: absolute;
+    top: 4px; right: 4px;
+    background: #e31c25;
+    color: #fff;
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    z-index: 10;
+}
+body.edit-mode [data-editable="texto"]::after { content: '✏️ EDITAR'; }
+body.edit-mode [data-editable="imagen"]::after { content: '🖼️ CAMBIAR'; }
+body.edit-mode [data-editable]:hover::after { opacity: 1; }
+body.edit-mode [data-editable="texto"]::after { content: '✏️ EDITAR'; }
+body.edit-mode [data-editable="imagen"]::after { content: '🖼️ CAMBIAR'; }
+body.edit-mode [data-editable]:hover::after { opacity: 1; }
+
+/* Foto galería editable */
+body.edit-mode .photo-card {
+    outline: 2px dashed transparent;
+    outline-offset: 3px;
+    transition: outline-color .2s;
+    cursor: pointer !important;
+}
+body.edit-mode .photo-card:hover { outline-color: #e31c25; }
+
+/* Modales del editor */
+.edit-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0,0,0,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.edit-modal-box {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 28px 32px;
+    width: 90%;
+    max-width: 480px;
+    position: relative;
+}
+.edit-modal-wide { max-width: 780px; }
+.edit-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    color: #fff;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #1a1a1a;
+    padding-bottom: 12px;
+}
+.edit-modal-textarea {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .85rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+    outline: none;
+    resize: vertical;
+    transition: border-color .2s;
+    text-transform: none;
+    line-height: 1.6;
+}
+.edit-modal-textarea:focus { border-color: #e31c25; }
+.edit-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+.edit-modal-cancel {
+    background: none;
+    border: 1px solid #222;
+    color: #555;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+.edit-modal-cancel:hover { border-color: #444; color: #ccc; }
+.edit-modal-save {
+    background: #e31c25;
+    border: none;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+.edit-modal-save:hover { background: #ff2d37; }
+
+/* Galería editor grid */
+.edit-galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.edit-galeria-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+.edit-galeria-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.edit-galeria-del {
+    position: absolute;
+    top: 4px; right: 4px;
+    background: rgba(227,28,37,.9);
+    border: none;
+    color: #fff;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: .7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.edit-galeria-item:hover .edit-galeria-del { opacity: 1; }
+
+/* Toast del editor */
+.edit-toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #111;
+    border: 1px solid #25d366;
+    color: #25d366;
+    font-family: 'Montserrat', sans-serif;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    opacity: 0;
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+    z-index: 99999;
+    white-space: nowrap;
+}
+.edit-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

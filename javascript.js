@@ -597,7 +597,8 @@ if (hamburger && mobileMenu) {
 ================================================================ */
 
 // URL de la API en producción
-const API_BASE = 'https://black-diamond-gym-5d2h.onrender.com';
+const API_BASE = window.location.origin;
+window.API_BASE = API_BASE;
 
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
 async function cargarNoticia() {
@@ -1382,3 +1383,192 @@ function cSlide(btn, dir) {
     track.style.transform = 'translateX(-' + (current * 100) + '%)';
     dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
 }
+
+/* ════════════════════════════════════════════════════════════
+   EDITOR VISUAL INLINE — Black Diamond Gym
+   Activa con: activarModoEdicion(token)
+   Disponible desde admin.html via postMessage o URL param
+════════════════════════════════════════════════════════════ */
+(function() {
+    var _editToken = null;
+    var _editClave = null;
+    var _editEl    = null;
+    var _toast     = null;
+
+    // ── Crear toast ──
+    function crearToast() {
+        if (_toast) return;
+        _toast = document.createElement('div');
+        _toast.className = 'edit-toast';
+        document.body.appendChild(_toast);
+    }
+
+    function mostrarEditToast(msg, tipo) {
+        crearToast();
+        _toast.textContent = msg;
+        _toast.style.borderColor = tipo === 'err' ? '#e31c25' : '#25d366';
+        _toast.style.color       = tipo === 'err' ? '#e31c25' : '#25d366';
+        _toast.classList.add('show');
+        setTimeout(() => _toast.classList.remove('show'), 2500);
+    }
+
+    // ── Activar modo edición ──
+    window.activarModoEdicion = function(token) {
+        _editToken = token;
+        document.getElementById('edit-toolbar').style.display = 'block';
+        document.body.classList.add('edit-mode');
+
+        // Click en elementos editables
+        document.querySelectorAll('[data-editable]').forEach(function(el) {
+            el.addEventListener('click', onEditClick, true);
+        });
+    };
+
+    // ── Salir modo edición ──
+    window.salirModoEdicion = function() {
+        _editToken = null;
+        document.getElementById('edit-toolbar').style.display = 'none';
+        document.body.classList.remove('edit-mode');
+        document.querySelectorAll('[data-editable]').forEach(function(el) {
+            el.removeEventListener('click', onEditClick, true);
+        });
+    };
+
+    // ── Click en elemento editable ──
+    function onEditClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var el   = this;
+        var tipo = el.dataset.editable;
+        var clave = el.dataset.clave;
+
+        if (tipo === 'texto') {
+            _editClave = clave;
+            _editEl    = el;
+            var modal  = document.getElementById('edit-text-modal');
+            var area   = document.getElementById('edit-text-area');
+            area.value = el.innerText.trim();
+            modal.style.display = 'flex';
+        } else if (tipo === 'imagen') {
+            _editClave = clave;
+            _editEl    = el;
+            var inp = document.getElementById('edit-file-input');
+            inp.onchange = function() { subirImagenEdit(inp.files[0]); };
+            inp.value = '';
+            inp.click();
+        }
+    }
+
+    // ── Cerrar modal texto ──
+    window.cerrarEditModal = function() {
+        document.getElementById('edit-text-modal').style.display = 'none';
+        _editClave = null; _editEl = null;
+    };
+
+    // ── Guardar texto ──
+    window.guardarTextoEdit = function() {
+        var valor = document.getElementById('edit-text-area').value.trim();
+        if (!valor || !_editClave || !_editToken) return;
+        var payload = {};
+        payload[_editClave] = valor;
+        fetch(window.API_BASE + '/api/textos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
+            body: JSON.stringify(payload)
+        }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
+            if (_editEl) _editEl.innerText = valor;
+            cerrarEditModal();
+            mostrarEditToast('✅ Texto guardado');
+        }).catch(function() { mostrarEditToast('❌ Error al guardar', 'err'); });
+    };
+
+    // ── Subir imagen ──
+    function subirImagenEdit(file) {
+        if (!file || !_editClave || !_editToken) return;
+        mostrarEditToast('⏳ Subiendo imagen...');
+        var fd = new FormData();
+        fd.append('imagen', file);
+        fetch(window.API_BASE + '/api/imagenes/' + _editClave, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + _editToken },
+            body: fd
+        }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
+            if (_editEl) _editEl.src = d.url;
+            mostrarEditToast('✅ Imagen actualizada');
+        }).catch(function() { mostrarEditToast('❌ Error al subir', 'err'); });
+    }
+
+    // ── Galería editor ──
+    window.abrirGaleriaEditor = function() {
+        var modal = document.getElementById('edit-galeria-modal');
+        modal.style.display = 'flex';
+        cargarGaleriaEditor();
+    };
+
+    window.cerrarGaleriaEditor = function() {
+        document.getElementById('edit-galeria-modal').style.display = 'none';
+    };
+
+    function cargarGaleriaEditor() {
+        var grid = document.getElementById('edit-galeria-grid');
+        grid.innerHTML = '<p style="color:#333;font-size:.8rem">Cargando...</p>';
+        fetch(window.API_BASE + '/api/galeria').then(function(r) { return r.json(); }).then(function(fotos) {
+            if (!fotos.length) { grid.innerHTML = '<p style="color:#333;font-size:.8rem">Sin fotos aún.</p>'; return; }
+            grid.innerHTML = fotos.map(function(f) {
+                return '<div class="edit-galeria-item">' +
+                    '<img src="' + f.url + '" alt="' + (f.titulo||'') + '" loading="lazy">' +
+                    '<button class="edit-galeria-del" onclick="eliminarFotoEditor(' + f.id + ')">✕</button>' +
+                '</div>';
+            }).join('');
+        }).catch(function() { grid.innerHTML = '<p style="color:#e31c25">Error al cargar</p>'; });
+    }
+
+    window.eliminarFotoEditor = function(id) {
+        if (!_editToken) return;
+        if (!confirm('¿Eliminar esta foto?')) return;
+        fetch(window.API_BASE + '/api/galeria/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + _editToken }
+        }).then(function() {
+            mostrarEditToast('✅ Foto eliminada');
+            cargarGaleriaEditor();
+            cargarGaleria && cargarGaleria();
+        });
+    };
+
+    window.subirFotoGaleria = function(input) {
+        var file = input.files[0];
+        if (!file || !_editToken) return;
+        mostrarEditToast('⏳ Subiendo foto...');
+        var fd = new FormData();
+        fd.append('imagen', file);
+        fd.append('titulo', '');
+        fetch(window.API_BASE + '/api/galeria', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + _editToken },
+            body: fd
+        }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
+            mostrarEditToast('✅ Foto añadida');
+            cargarGaleriaEditor();
+            cargarGaleria && cargarGaleria();
+        }).catch(function() { mostrarEditToast('❌ Error al subir', 'err'); });
+    };
+
+    // ── Recibir token desde admin vía postMessage ──
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.tipo === 'bdg-edit-mode' && e.data.token) {
+            window.activarModoEdicion(e.data.token);
+        }
+    });
+
+    // ── Activar si viene en sessionStorage (desde admin) ──
+    var storedToken = sessionStorage.getItem('bdg_edit_token');
+    if (storedToken) {
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() { window.activarModoEdicion(storedToken); }, 800);
+        });
+    }
+})();

@@ -201,6 +201,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <span class="panel-nav-title">🥊 ADMIN</span>
             <span class="panel-nav-user" id="navUser"></span>
             <a href="/" target="_blank" style="font-size:.68rem;letter-spacing:1.5px;color:#444;text-transform:uppercase;font-weight:700;padding:6px 14px;border:1px solid #222;border-radius:20px;transition:.2s;white-space:nowrap;text-decoration:none" onmouseover="this.style.color='#fff';this.style.borderColor='#444'" onmouseout="this.style.color='#444';this.style.borderColor='#222'">🌐 Ver sitio</a>
+            <button onclick="abrirEditorVisual()" style="font-size:.68rem;letter-spacing:1.5px;color:#e31c25;text-transform:uppercase;font-weight:700;padding:6px 14px;border:1px solid rgba(227,28,37,.3);border-radius:20px;transition:.2s;white-space:nowrap;background:rgba(227,28,37,.08);cursor:pointer" onmouseover="this.style.background='rgba(227,28,37,.18)'" onmouseout="this.style.background='rgba(227,28,37,.08)'">✏️ Editor visual</button>
             <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
         </div>
         <div class="tabs">
@@ -921,6 +922,13 @@ function tab(n,b){
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
     document.getElementById('tab-'+n).classList.add('active'); b.classList.add('active');
+}
+
+/* ── EDITOR VISUAL ── */
+function abrirEditorVisual() {
+    sessionStorage.setItem('bdg_edit_token', token);
+    window.open('/', '_blank');
+    toast('✅ Abriendo editor visual en nueva pestaña', 'ok');
 }
 
 /* ════════════ DASHBOARD + SOLICITUDES ════════════ */

@@ -55,7 +55,8 @@
     <header id="site-header">
         <nav>
             <a href="#" class="nav-logo">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Black Diamond Gym" id="img-logo_icono">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Black Diamond Gym" id="img-logo_icono"
+                     data-editable="imagen" data-clave="logo_icono">
                 <span class="nav-logo-text">BLACK<br><span class="nav-logo-sub">DIAMOND</span></span>
             </a>
             <ul class="nav-links">
@@ -107,7 +108,7 @@
             <div class="hero-content">
                 <p class="hero-eyebrow"><span class="dot-pulse"></span> BOXING CENTER · BOSA · BOGOTÁ</p>
                 <h1>FORJA TU<br><span class="hero-accent">CAMPEÓN</span><br>INTERIOR</h1>
-                <p class="hero-sub">Entrena como campeón. Conviértete en campeón.<br>Boxeo · Musculación · Funcional ·
+                <p class="hero-sub" data-editable="texto" data-clave="hero-sub">Entrena como campeón. Conviértete en campeón.<br>Boxeo · Musculación · Funcional ·
                     Para todas las edades.</p>
                 <div class="hero-btns">
                     <a href="https://wa.me/573133737590" target="_blank"
@@ -206,17 +207,18 @@
             <div class="nosotros-content">
                 <div class="nosotros-visual sr-target">
                     <div class="img-wrapper">
-                        <img src="" alt="Boxeador" class="boxer-image" id="img-historia">
+                        <img src="" alt="Boxeador" class="boxer-image" id="img-historia"
+                             data-editable="imagen" data-clave="historia">
                         <div class="img-badge">EST.<br><strong id="txt-est-año">2010</strong></div>
                     </div>
                 </div>
                 <div class="nosotros-text sr-target">
                     <p class="eyebrow-label"><span class="red-dot">●</span> NUESTRA HISTORIA</p>
                     <h2>DONDE LA PASIÓN<br>COBRA FUERZA</h2>
-                    <p>Black Diamond Gym es más que un gimnasio — es el epicentro del boxeo en Bosa, Bogotá. Un espacio
+                    <p data-editable="texto" data-clave="nos-p1">Black Diamond Gym es más que un gimnasio — es el epicentro del boxeo en Bosa, Bogotá. Un espacio
                         donde boxeadores y entusiastas del fitness convergen para alcanzar sus metas, sin importar la
                         edad ni el nivel.</p>
-                    <p>Nuestra filosofía se basa en la disciplina, el trabajo duro y la superación constante. Cada
+                    <p data-editable="texto" data-clave="nos-p2">Nuestra filosofía se basa en la disciplina, el trabajo duro y la superación constante. Cada
                         entrenamiento está diseñado para llevar tu cuerpo y mente al siguiente nivel.</p>
                     <div class="stats-row">
                         <div class="stat-item">
@@ -405,7 +407,8 @@
                 </div>
                 <div class="schedule-right sr-target">
                     <div class="cta-image-card">
-                        <img src="" alt="Boxeo en el gym" id="img-mike">
+                        <img src="" alt="Boxeo en el gym" id="img-mike"
+                             data-editable="imagen" data-clave="mike">
                         <div class="cta-overlay">
                             <h3>¿LISTO PARA<br>ENTRENAR?</h3>
                             <p>Escríbenos y te contamos todo sobre nuestros planes</p>
@@ -680,5 +683,48 @@
             });
         })();
     </script>
+
+    <!-- ══ EDITOR VISUAL ══ -->
+    <!-- Toolbar flotante (solo visible si es admin) -->
+    <div id="edit-toolbar" style="display:none">
+        <div class="edit-tb-inner">
+            <span class="edit-tb-logo">✏️ MODO EDICIÓN</span>
+            <span class="edit-tb-hint">Haz clic en cualquier texto o imagen para editar</span>
+            <div class="edit-tb-actions">
+                <button class="edit-tb-btn edit-tb-galeria" onclick="abrirGaleriaEditor()">🖼️ Galería</button>
+                <button class="edit-tb-btn edit-tb-exit" onclick="salirModoEdicion()">✕ Salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input oculto para subir imágenes -->
+    <input type="file" id="edit-file-input" accept="image/*" style="display:none">
+
+    <!-- Modal de edición de texto -->
+    <div id="edit-text-modal" class="edit-modal" style="display:none">
+        <div class="edit-modal-box">
+            <h3 class="edit-modal-title">✏️ EDITAR TEXTO</h3>
+            <textarea id="edit-text-area" class="edit-modal-textarea" rows="4"></textarea>
+            <div class="edit-modal-actions">
+                <button class="edit-modal-cancel" onclick="cerrarEditModal()">Cancelar</button>
+                <button class="edit-modal-save" onclick="guardarTextoEdit()">💾 GUARDAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de galería editor -->
+    <div id="edit-galeria-modal" class="edit-modal" style="display:none">
+        <div class="edit-modal-box edit-modal-wide">
+            <h3 class="edit-modal-title">🖼️ EDITAR GALERÍA</h3>
+            <div id="edit-galeria-grid" class="edit-galeria-grid"></div>
+            <div style="margin-top:16px;text-align:center">
+                <button class="edit-modal-save" onclick="document.getElementById('edit-galeria-input').click()">➕ AÑADIR FOTO</button>
+                <input type="file" id="edit-galeria-input" accept="image/*" style="display:none" onchange="subirFotoGaleria(this)">
+            </div>
+            <div class="edit-modal-actions" style="margin-top:12px">
+                <button class="edit-modal-cancel" onclick="cerrarGaleriaEditor()">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
