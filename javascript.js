@@ -1290,7 +1290,11 @@ async function cargarTextosSitio() {
 
         // ── GALERÍA y CONTACTO extra ──────────────────────────
         ['gal-titulo','gal-sub','cont-titulo','cont-sub','cont-form-titulo','cont-form-sub','cont-promo',
-         'cat-dep-titulo','cat-dep-sub'].forEach(k => {
+         'cat-dep-titulo','cat-dep-sub','gal-social-txt','gal-social-nombre',
+         'cont-ubicacion-dir','cont-ubicacion-barrio','cont-ubicacion-ciudad','cont-wa-txt',
+         'footer-tagline','footer-dir','hero-eyebrow','hero-btn1','hero-btn2',
+         'nos-stat1-num','nos-stat2-num','nos-stat3-num',
+         'plan-boxeo-label','plan-gym-label','plan-valera-label','plan-dia-titulo','plan-dia-desc'].forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
