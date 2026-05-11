@@ -249,8 +249,9 @@
             <p class="section-sub sr-target" data-editable="texto" data-clave="serv-sub">Programas diseñados para todos los niveles</p>
             <div class="servicios-grid" id="servicios-grid">
                 <div class="servicio-card sr-target">
-                    <div class="servicio-icon-wrap servicio-emoji-wrap">
-                        <span class="servicio-emoji">🥊</span>
+                    <div class="servicio-icon-wrap">
+                        <img src="" alt="Boxeo" class="servicio-imagen" id="img-servicio_boxeo"
+                             data-editable="imagen" data-clave="servicio_boxeo">
                     </div>
                     <h3 data-editable="texto" data-clave="serv1-titulo">CLASES DE BOXEO</h3>
                     <p data-editable="texto" data-clave="serv1-desc">Entrenamiento técnico y táctico con instructores certificados. Aprende desde cero o perfecciona
@@ -258,8 +259,9 @@
                     <div class="card-tag" data-editable="texto" data-clave="serv1-tag">Funcional · Recreativo · Competitivo</div>
                 </div>
                 <div class="servicio-card sr-target" style="--delay:.1s">
-                    <div class="servicio-icon-wrap servicio-emoji-wrap">
-                        <span class="servicio-emoji">💪</span>
+                    <div class="servicio-icon-wrap">
+                        <img src="" alt="Fitness" class="servicio-imagen" id="img-servicio_fitness"
+                             data-editable="imagen" data-clave="servicio_fitness">
                     </div>
                     <h3 data-editable="texto" data-clave="serv2-titulo">ACONDICIONAMIENTO FÍSICO</h3>
                     <p data-editable="texto" data-clave="serv2-desc">Musculación y entrenamiento funcional para mejorar tu resistencia, fuerza y agilidad. Para
@@ -267,8 +269,9 @@
                     <div class="card-tag" data-editable="texto" data-clave="serv2-tag">Musculación · Funcional</div>
                 </div>
                 <div class="servicio-card sr-target" style="--delay:.2s">
-                    <div class="servicio-icon-wrap servicio-emoji-wrap">
-                        <span class="servicio-emoji">🏋️</span>
+                    <div class="servicio-icon-wrap">
+                        <img src="" alt="Personal" class="servicio-imagen" id="img-servicio_personal"
+                             data-editable="imagen" data-clave="servicio_personal">
                     </div>
                     <h3 data-editable="texto" data-clave="serv3-titulo">ENTRENAMIENTO PERSONAL</h3>
                     <p data-editable="texto" data-clave="serv3-desc">Sesiones individuales con entrenadores expertos que diseñarán un programa según tus objetivos y
@@ -277,9 +280,21 @@
                 </div>
             </div>
             <div class="amenities-strip sr-target">
-                <div class="amenity"><span>🚿</span> <span data-editable="texto" data-clave="serv-amenity1">Duchas</span></div>
+                <div class="amenity">
+                    <img src="" alt="Duchas" class="amenity-img" id="img-amenity_duchas"
+                         data-editable="imagen" data-clave="amenity_duchas"
+                         onerror="this.style.display='none';this.nextSibling.style.display='inline'">
+                    <span style="display:none">🚿</span>
+                    <span data-editable="texto" data-clave="serv-amenity1">Duchas</span>
+                </div>
                 <div class="amenity-sep">·</div>
-                <div class="amenity"><span>🚲</span> <span data-editable="texto" data-clave="serv-amenity2">Biciparqueadero</span></div>
+                <div class="amenity">
+                    <img src="" alt="Biciparqueadero" class="amenity-img" id="img-amenity_bici"
+                         data-editable="imagen" data-clave="amenity_bici"
+                         onerror="this.style.display='none';this.nextSibling.style.display='inline'">
+                    <span style="display:none">🚲</span>
+                    <span data-editable="texto" data-clave="serv-amenity2">Biciparqueadero</span>
+                </div>
             </div>
         </section>
 
@@ -289,7 +304,11 @@
             <h2 class="section-title sr-target" data-editable="texto" data-clave="cat-titulo">CATEGORÍAS Y MODALIDADES</h2>
             <div class="cat-grid">
                 <div class="cat-card sr-target">
-                    <div class="cat-emoji-wrap">👊</div>
+                    <div class="cat-img-wrap">
+                        <img src="" alt="Por edad" class="cat-img" id="img-cat_edad"
+                             data-editable="imagen" data-clave="cat_edad"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22%3E%3Crect fill=%22%230d0d0d%22 width=%22400%22 height=%22220%22/%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2260%22%3E👊%3C/text%3E%3C/svg%3E'">
+                    </div>
                     <h3 data-editable="texto" data-clave="cat1-titulo">POR EDAD</h3>
                     <ul class="cat-list">
                         <li><span class="bullet-red">▶</span> <span data-editable="texto" data-clave="cat1-item1">Infantiles</span></li>
@@ -299,7 +318,11 @@
                     <p class="cat-note" data-editable="texto" data-clave="cat1-desc">El boxeo no tiene límite de edad. Tenemos programa para cada etapa de vida.</p>
                 </div>
                 <div class="cat-card cat-featured sr-target" style="--delay:.12s">
-                    <div class="cat-emoji-wrap">🥊</div>
+                    <div class="cat-img-wrap">
+                        <img src="" alt="Modalidades" class="cat-img" id="img-cat_modalidad"
+                             data-editable="imagen" data-clave="cat_modalidad"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 220%22%3E%3Crect fill=%22%230d0d0d%22 width=%22400%22 height=%22220%22/%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2260%22%3E🥊%3C/text%3E%3C/svg%3E'">
+                    </div>
                     <h3 data-editable="texto" data-clave="cat2-titulo">MODALIDADES</h3>
                     <ul class="cat-list">
                         <li><span class="bullet-red">▶</span> <span data-editable="texto" data-clave="cat2-item1">Funcional</span></li>
