@@ -628,15 +628,51 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
 
                 <div class="card-meta">PLAN VALERA</div>
                 <div class="planes-grid" style="margin-bottom:16px">
-                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-valera-1-val" placeholder="Válido por 15 días"></div>
+                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-valera-1-val" placeholder="15 entradas válidas 30 días"></div>
                     <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-valera-2-val" placeholder="Clases de boxeo"></div>
                     <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-valera-3-val" placeholder="Musculación incluida"></div>
-                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-valera-4-val" placeholder="Ideal para comenzar"></div>
-                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-valera-5-val" placeholder="Entrenamiento funcional"></div>
+                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-valera-4-val" placeholder="Accesible cada 15 días"></div>
+                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-valera-5-val" placeholder="Funcional"></div>
+                </div>
+
+                <div class="card-meta" style="color:#a855f7">PLAN EXTRA (NUEVO)</div>
+                <div class="planes-grid" style="margin-bottom:16px">
+                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-extra-1-val" placeholder="Característica 1"></div>
+                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-extra-2-val" placeholder="Característica 2"></div>
+                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-extra-3-val" placeholder="Característica 3"></div>
+                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-extra-4-val" placeholder="Característica 4"></div>
+                    <div class="form-group"><label>Característica 5 ✔</label><input type="text" id="feat-extra-5-val" placeholder="Característica 5"></div>
                 </div>
 
                 <div class="form-actions">
                     <button class="btn-submit" onclick="guardarFeatures()">💾 GUARDAR CARACTERÍSTICAS</button>
+                </div>
+            </div>
+
+            <!-- Sección colaborar -->
+            <div class="card" style="margin-top:28px">
+                <h3 class="card-title">🤝 SECCIÓN "¿QUIERES COLABORAR?"</h3>
+                <p class="sec-desc" style="margin-bottom:16px">Edita los textos de la sección de colaboración que aparece antes del footer.</p>
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="colab-titulo-val" placeholder="¿QUIERES COLABORAR CON NOSOTROS?">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="colab-desc-val" rows="3" placeholder="Si eres instructor, proveedor..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Botón WhatsApp</label>
+                        <input type="text" id="colab-btn-wa-val" placeholder="Escríbenos por WhatsApp">
+                    </div>
+                    <div class="form-group">
+                        <label>Botón formulario</label>
+                        <input type="text" id="colab-btn-form-val" placeholder="Enviar mensaje">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('colab')">💾 GUARDAR</button>
                 </div>
             </div>
         </div>
@@ -1614,11 +1650,13 @@ async function guardarTextos(seccion) {
         horarios: ['hor-titulo','hor-lv','hor-sa','hor-do','hor-fe','hor-cta-title','hor-cta-sub'],
         contacto: ['con-dir','con-wa','con-ig','con-tk','con-footer'],
         unete:    ['unete-anos','unete-disciplinas','unete-categorias'],
+        colab:    ['colab-titulo','colab-desc','colab-btn-wa','colab-btn-form'],
     };
     const payload = {};
     (claves[seccion] || []).forEach(k => {
-        const el = document.getElementById('txt-' + k);
-        if (el) payload[k] = el.value;
+        // Intentar ID con prefijo txt- o con sufijo -val
+        const el = document.getElementById('txt-' + k) || document.getElementById(k + '-val');
+        if (el) payload[k] = el.value || el.textContent || '';
     });
 
     try {
@@ -1657,8 +1695,13 @@ const FEATURES_DEFAULTS = {
     'feat-valera-1':'Válido por 15 días',
     'feat-valera-2':'Clases de boxeo',
     'feat-valera-3':'Musculación incluida',
-    'feat-valera-4':'Ideal para comenzar',
-    'feat-valera-5':'Entrenamiento funcional',
+    'feat-valera-4':'Accesible cada 15 días',
+    'feat-valera-5':'Funcional',
+    'feat-extra-1': 'Característica 1',
+    'feat-extra-2': 'Característica 2',
+    'feat-extra-3': 'Característica 3',
+    'feat-extra-4': 'Característica 4',
+    'feat-extra-5': 'Característica 5',
 };
 
 async function cargarFeatures() {

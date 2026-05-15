@@ -3002,3 +3002,80 @@ body.edit-mode .photo-card:hover { outline-color: #e31c25; }
     object-fit: contain;
     border-radius: 4px;
 }
+/* ── SECCIÓN COLABORAR ── */
+.colaborar-section {
+    background: linear-gradient(135deg, #0d0d0d, #111);
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 80px 8%;
+}
+.colaborar-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+    flex-wrap: wrap;
+}
+.colaborar-titulo {
+    font-family: var(--font-h);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 16px;
+    color: #fff;
+}
+.colaborar-desc {
+    font-size: .88rem;
+    color: #555;
+    line-height: 1.8;
+    max-width: 480px;
+    text-transform: none;
+}
+.colaborar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+}
+.btn-colab-wa {
+    background: #25d366;
+    color: #fff;
+    font-family: var(--font-h);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 16px rgba(37,211,102,.3);
+    white-space: nowrap;
+}
+.btn-colab-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,.45); }
+.btn-colab-form {
+    background: transparent;
+    color: #555;
+    font-family: var(--font-h);
+    font-size: .9rem;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    border: 1px solid #222;
+    transition: color .2s, border-color .2s;
+    white-space: nowrap;
+}
+.btn-colab-form:hover { color: #fff; border-color: #444; }
+
+@media (max-width: 768px) {
+    .colaborar-inner { flex-direction: column; text-align: center; }
+    .colaborar-desc { max-width: 100%; }
+    .colaborar-actions { width: 100%; }
+}
+
+/* ── LIGHT MODE COLABORAR ── */
+body.light-mode .colaborar-section { background: #f0f0f0; border-color: #ddd; }
+body.light-mode .colaborar-titulo { color: #111; }

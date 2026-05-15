@@ -761,31 +761,60 @@ async function cargarPrecios() {
         if (!res.ok) return;
         const planes = await res.json();
         planes.forEach(({ clave, nombre, descripcion, precio, periodo }) => {
-            // Formato COP: 120000 → num="$120" dec=".000" | 75000 → "$75" ".000"
             const formatPartes = (n) => {
-                const s = n.toLocaleString('es-CO'); // ej: "120.000"
+                const s = n.toLocaleString('es-CO');
                 const dot = s.lastIndexOf('.');
-                if (dot !== -1) {
-                    return { num: '$' + s.slice(0, dot), dec: '.' + s.slice(dot + 1) };
-                }
+                if (dot !== -1) return { num: '$' + s.slice(0, dot), dec: '.' + s.slice(dot + 1) };
                 return { num: '$' + s, dec: '' };
             };
 
-            // Planes con price-tag partido (boxeo, gym, valera)
+            // Plan extra — mostrar/ocultar tarjeta
+            if (clave === 'extra') {
+                const card = document.getElementById('card-plan-extra');
+                if (card) {
+                    card.style.display = 'block';
+                    const labelEl = document.getElementById('plan-extra-label');
+                    const nomEl   = document.getElementById('plan-extra-nombre');
+                    const desEl   = document.getElementById('plan-extra-desc');
+                    const priceWrap = document.getElementById('precio-extra-num');
+                    if (labelEl) labelEl.textContent = periodo || 'NUEVO PLAN';
+                    if (nomEl && nombre) nomEl.textContent = nombre;
+                    if (desEl && descripcion) desEl.textContent = descripcion;
+                    // Mostrar precio solo si es mayor a 0
+                    if (priceWrap) {
+                        if (precio > 0) {
+                            const { num, dec } = formatPartes(precio);
+                            priceWrap.style.display = 'block';
+                            priceWrap.firstChild.textContent = num;
+                            const decEl = document.getElementById('precio-extra-dec');
+                            if (decEl) decEl.innerHTML = `${dec}<small>${periodo}</small>`;
+                        } else {
+                            priceWrap.style.display = 'none';
+                        }
+                    }
+                    // Reiniciar carrusel para incluir la nueva tarjeta
+                    if (window._reiniciarCarrusel) window._reiniciarCarrusel();
+                }
+                return;
+            }
+
             const numEl = document.getElementById(`precio-${clave}-num`);
             const decEl = document.getElementById(`precio-${clave}-dec`);
             if (numEl && decEl) {
-                const { num, dec } = formatPartes(precio);
-numEl.firstChild.textContent = num;                decEl.innerHTML   = `${dec}<small id="precio-${clave}-per">${periodo}</small>`;
+                if (precio > 0) {
+                    const { num, dec } = formatPartes(precio);
+                    numEl.style.display = 'block';
+                    numEl.firstChild.textContent = num;
+                    decEl.innerHTML = `${dec}<small id="precio-${clave}-per">${periodo}</small>`;
+                } else {
+                    numEl.style.display = 'none';
+                }
             }
-            // Planes día (span directo)
             const diaEl = document.getElementById(`precio-${clave}`);
-            if (diaEl) {
-                diaEl.textContent = '$' + precio.toLocaleString('es-CO');
-            }
+            if (diaEl) diaEl.textContent = precio > 0 ? '$' + precio.toLocaleString('es-CO') : 'CONSULTAR';
             const nomEl = document.getElementById(`plan-${clave}-nombre`);
             const desEl = document.getElementById(`plan-${clave}-desc`);
-            if (nomEl && nombre)      nomEl.textContent = nombre;
+            if (nomEl && nombre) nomEl.textContent = nombre;
             if (desEl && descripcion) desEl.textContent = descripcion;
         });
     } catch(e) { console.warn('Precios dinámicos:', e.message); }
@@ -1242,10 +1271,16 @@ async function cargarTextosSitio() {
             'feat-boxeo-1','feat-boxeo-2','feat-boxeo-3','feat-boxeo-4','feat-boxeo-5',
             'feat-gym-1',  'feat-gym-2',  'feat-gym-3',  'feat-gym-4',  'feat-gym-5',
             'feat-valera-1','feat-valera-2','feat-valera-3','feat-valera-4','feat-valera-5',
+            'feat-extra-1','feat-extra-2','feat-extra-3','feat-extra-4','feat-extra-5',
         ];
         featKeys.forEach(k => {
             const el = document.getElementById(k);
             if (el && t[k]) el.textContent = t[k];
+        });
+
+        // ── COLABORAR ─────────────────────────────────────────
+        ['colab-titulo','colab-desc','colab-btn-wa','colab-btn-form'].forEach(k => {
+            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
         // ── HORARIOS ──────────────────────────────────────────
