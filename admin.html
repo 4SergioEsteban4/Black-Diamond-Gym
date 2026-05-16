@@ -213,7 +213,6 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
             <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
             <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
-            <button class="tab-btn"        onclick="tab('cafeteria',this)">☕ Cafetería</button>
             <button class="tab-btn"        onclick="tab('admins',this)">👤 Admins</button>
         </div>
     </nav>
@@ -601,54 +600,22 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
     <div class="tab-panel" id="tab-precios">
         <div class="panel-body">
             <h1 class="sec-title">PLANES Y PRECIOS</h1>
-            <p class="sec-desc">Edita precio y descripción de cada plan. El valor en pesos colombianos sin puntos (ej: 120000).</p>
-            <div id="preciosContainer"><p class="no-data">Cargando planes...</p></div>
+            <p class="sec-desc">Gestiona las 3 secciones de planes (BOX, GYM, BOX+GYM) y las tarjetas dentro de cada una.</p>
 
-            <!-- Features editables -->
-            <div class="card" style="margin-top:28px">
-                <h3 class="card-title">✅ CARACTERÍSTICAS DE LOS PLANES</h3>
-                <p class="sec-desc">Edita los textos de cada beneficio (✔) o exclusión (✘) que aparecen en las tarjetas de precios.</p>
-
-                <div class="card-meta">PLAN BOXEO</div>
-                <div class="planes-grid" style="margin-bottom:16px">
-                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-boxeo-1-val" placeholder="Clases de boxeo técnico"></div>
-                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-boxeo-2-val" placeholder="Musculación incluida"></div>
-                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-boxeo-3-val" placeholder="Entrenamiento funcional"></div>
-                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-boxeo-4-val" placeholder="Acceso completo al gym"></div>
-                    <div class="form-group"><label>Característica 5 ✔</label><input type="text" id="feat-boxeo-5-val" placeholder="Instructores certificados"></div>
+            <!-- Agregar sección -->
+            <div class="card" style="margin-bottom:24px">
+                <h3 class="card-title">➕ NUEVA SECCIÓN DE PLANES</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Nombre</label><input type="text" id="secNombre" placeholder="Ej: CROSSFIT"></div>
+                    <div class="form-group"><label>Ícono</label><input type="text" id="secIcono" placeholder="🏋️" maxlength="4" style="width:80px"></div>
+                    <div class="form-group"><label>Orden</label><input type="number" id="secOrden" value="4" min="1" style="width:80px"></div>
                 </div>
-
-                <div class="card-meta">PLAN GYM</div>
-                <div class="planes-grid" style="margin-bottom:16px">
-                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-gym-1-val" placeholder="Entrenamiento de musculación"></div>
-                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-gym-2-val" placeholder="Funcional incluido"></div>
-                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-gym-3-val" placeholder="Acceso ilimitado al gym"></div>
-                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-gym-4-val" placeholder="Equipamiento completo"></div>
-                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-gym-5-val" placeholder="Clases de boxeo"></div>
-                </div>
-
-                <div class="card-meta">PLAN VALERA</div>
-                <div class="planes-grid" style="margin-bottom:16px">
-                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-valera-1-val" placeholder="15 entradas válidas 30 días"></div>
-                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-valera-2-val" placeholder="Clases de boxeo"></div>
-                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-valera-3-val" placeholder="Musculación incluida"></div>
-                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-valera-4-val" placeholder="Accesible cada 15 días"></div>
-                    <div class="form-group"><label>Característica 5 ✘</label><input type="text" id="feat-valera-5-val" placeholder="Funcional"></div>
-                </div>
-
-                <div class="card-meta" style="color:#a855f7">PLAN EXTRA (NUEVO)</div>
-                <div class="planes-grid" style="margin-bottom:16px">
-                    <div class="form-group"><label>Característica 1 ✔</label><input type="text" id="feat-extra-1-val" placeholder="Característica 1"></div>
-                    <div class="form-group"><label>Característica 2 ✔</label><input type="text" id="feat-extra-2-val" placeholder="Característica 2"></div>
-                    <div class="form-group"><label>Característica 3 ✔</label><input type="text" id="feat-extra-3-val" placeholder="Característica 3"></div>
-                    <div class="form-group"><label>Característica 4 ✔</label><input type="text" id="feat-extra-4-val" placeholder="Característica 4"></div>
-                    <div class="form-group"><label>Característica 5 ✔</label><input type="text" id="feat-extra-5-val" placeholder="Característica 5"></div>
-                </div>
-
-                <div class="form-actions">
-                    <button class="btn-submit" onclick="guardarFeatures()">💾 GUARDAR CARACTERÍSTICAS</button>
-                </div>
+                <button class="btn-submit" onclick="crearSeccion()">➕ CREAR SECCIÓN</button>
             </div>
+
+            <div id="planesSeccAdmin"><p class="no-data">Cargando...</p></div>
+        </div>
+    </div>
 
             <!-- Sección colaborar -->
             <div class="card" style="margin-top:28px">
@@ -809,63 +776,70 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
 
 </div><!-- /panel -->
 
-<!-- ☕ CAFETERÍA -->
-<div class="tab-panel" id="tab-cafeteria">
-    <h2 class="section-title">☕ CAFETERÍA</h2>
-    <div class="form-card">
-        <h3 class="form-card-title">AGREGAR PRODUCTO</h3>
+<!-- MODAL editar sección de planes -->
+<div class="modal-bg" id="modalSec" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalSec').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR SECCIÓN</h3>
+        <input type="hidden" id="mSecId">
         <div class="form-row">
-            <div class="form-group"><label>Nombre</label><input type="text" id="cfNombre" placeholder="Ej: Proteína de chocolate"></div>
-            <div class="form-group"><label>Categoría</label><input type="text" id="cfCat" placeholder="Ej: Bebidas, Snacks, Suplementos"></div>
+            <div class="form-group"><label>Nombre</label><input type="text" id="mSecNombre"></div>
+            <div class="form-group"><label>Ícono</label><input type="text" id="mSecIcono" maxlength="4" style="width:80px"></div>
+            <div class="form-group"><label>Orden</label><input type="number" id="mSecOrden" style="width:80px"></div>
         </div>
-        <div class="form-group"><label>Descripción</label><textarea id="cfDesc" rows="2" placeholder="Descripción breve del producto"></textarea></div>
-        <div class="form-row">
-            <div class="form-group"><label>Precio (COP)</label><input type="number" id="cfPrecio" min="0" placeholder="0"></div>
+        <div class="form-group"><label>Estado</label>
+            <select id="mSecActivo"><option value="true">✅ Activa</option><option value="false">❌ Inactiva</option></select>
         </div>
-        <div class="form-group"><label>Imagen (opcional)</label>
-            <label class="img-upload-label" for="cfImg">
-                <span class="upload-icon">📷</span>
-                <span class="upload-text"><strong>Subir imagen</strong>JPG · PNG · WEBP</span>
-                <input type="file" id="cfImg" accept="image/*" onchange="prevImg(this,'cfPrev')">
-            </label>
-            <img id="cfPrev" class="img-preview" src="" alt="">
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarSeccion()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalSec').style.display='none'">Cancelar</button>
         </div>
-        <button class="btn-submit" onclick="crearProductoCafe()">➕ AGREGAR PRODUCTO</button>
     </div>
-    <div id="cafeteriaContainer"><p class="no-data">Cargando...</p></div>
 </div>
 
-<!-- MODAL editar producto cafetería -->
-<div class="modal-bg" id="modalCafe" style="display:none">
+<!-- MODAL crear/editar tarjeta de planes -->
+<div class="modal-bg" id="modalTar" style="display:none">
     <div class="modal">
-        <button class="modal-close" onclick="document.getElementById('modalCafe').style.display='none'">✕</button>
-        <h3 class="modal-title">EDITAR PRODUCTO CAFETERÍA</h3>
-        <input type="hidden" id="mCafeId">
+        <button class="modal-close" onclick="document.getElementById('modalTar').style.display='none'">✕</button>
+        <h3 class="modal-title">TARJETA DE PLAN</h3>
+        <input type="hidden" id="mTarId">
         <div class="form-row">
-            <div class="form-group"><label>Nombre</label><input type="text" id="mCafeNombre"></div>
-            <div class="form-group"><label>Categoría</label><input type="text" id="mCafeCat"></div>
+            <div class="form-group"><label>Nombre del plan</label><input type="text" id="mTarNombre" placeholder="BLACK DIAMOND ÉLITE"></div>
+            <div class="form-group"><label>Etiqueta</label><input type="text" id="mTarEtiqueta" placeholder="BOXEO MENSUAL"></div>
         </div>
-        <div class="form-group"><label>Descripción</label><textarea id="mCafeDesc" rows="2"></textarea></div>
+        <div class="form-group"><label>Descripción corta</label><input type="text" id="mTarDesc" placeholder="Boxeo + Musculación + Funcional"></div>
         <div class="form-row">
-            <div class="form-group"><label>Precio (COP)</label><input type="number" id="mCafePrecio" min="0"></div>
-            <div class="form-group"><label>Estado</label>
-                <select id="mCafeActivo">
-                    <option value="true">✅ Activo</option>
-                    <option value="false">❌ Inactivo</option>
+            <div class="form-group"><label>Precio (COP)</label><input type="number" id="mTarPrecio" min="0"></div>
+            <div class="form-group"><label>Período</label><input type="text" id="mTarPeriodo" placeholder="/mes"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Color</label>
+                <select id="mTarColor">
+                    <option value="dark">⬛ Oscuro (default)</option>
+                    <option value="red">🔴 Rojo</option>
+                    <option value="white">⬜ Blanco</option>
+                </select>
+            </div>
+            <div class="form-group"><label>¿Destacado?</label>
+                <select id="mTarDestacado">
+                    <option value="false">No</option>
+                    <option value="true">⭐ Sí (badge "MÁS POPULAR")</option>
                 </select>
             </div>
         </div>
-        <div class="form-group"><label>Nueva imagen (opcional)</label>
-            <label class="img-upload-label" for="mCafeImg">
-                <span class="upload-icon">📷</span>
-                <span class="upload-text"><strong>Reemplazar imagen</strong>Dejar vacío para mantener la actual</span>
-                <input type="file" id="mCafeImg" accept="image/*" onchange="prevImg(this,'mCafePrev')">
-            </label>
-            <img id="mCafePrev" class="img-preview" src="" alt="">
+        <div class="form-group">
+            <label>Características (una por línea)</label>
+            <textarea id="mTarCaract" rows="5" placeholder="Clases de boxeo técnico&#10;Musculación incluida&#10;Funcional&#10;Cardiovascular"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Orden</label><input type="number" id="mTarOrden" min="0"></div>
+            <div class="form-group"><label>Estado</label>
+                <select id="mTarActivo"><option value="true">✅ Activa</option><option value="false">❌ Inactiva</option></select>
+            </div>
         </div>
         <div class="form-actions">
-            <button class="btn-submit" onclick="guardarProductoCafe()">💾 GUARDAR</button>
-            <button class="btn-secondary" onclick="document.getElementById('modalCafe').style.display='none'">Cancelar</button>
+            <button class="btn-submit" onclick="guardarTarjeta()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalTar').style.display='none'">Cancelar</button>
         </div>
     </div>
 </div>
@@ -1015,7 +989,7 @@ function mostrarPanel(){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('panelWrap').style.display='block';
     document.getElementById('navUser').textContent=localStorage.getItem('bdg_nombre')||'Admin';
-    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarFeatures(); cargarVids(); cargarCat(); cargarSols(); cargarTextos(); cargarCafeteria();
+    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarVids(); cargarCat(); cargarSols(); cargarTextos();
     cargarDashboard(); cargarAdmins(); cargarLog();
 }
 function cerrarSesion(){
@@ -1416,50 +1390,168 @@ async function borrarFoto(id){
 }
 
 /* ════════════ PRECIOS ════════════ */
-async function cargarPlan(){
-    try{const r=await fetch(`${API}/api/planes`); if(!r.ok) return;
-        const planes=await r.json();
-        const princ=planes.filter(p=>['boxeo','gym','valera'].includes(p.clave));
-        const dia=planes.filter(p=>p.clave.startsWith('dia_'));
-        document.getElementById('preciosContainer').innerHTML=`
-        <div class="planes-grid">${princ.map(p=>`
-            <div class="plan-card">
-                <div class="plan-card-header"><span class="plan-card-name">${esc(p.nombre)}</span><span class="plan-price-display">${fmt(p.precio)}</span></div>
-                <div class="form-group"><label>Nombre</label><input type="text" id="pnom-${p.clave}" value="${esc(p.nombre)}"></div>
-                <div class="form-group"><label>Descripción</label><input type="text" id="pdes-${p.clave}" value="${esc(p.descripcion||'')}"></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Precio (COP)</label><input type="number" id="ppre-${p.clave}" value="${p.precio}" min="0"></div>
-                    <div class="form-group"><label>Período</label><input type="text" id="pper-${p.clave}" value="${esc(p.periodo)}"></div>
+/* ════════════ PLANES — SECCIONES Y TARJETAS ════════════ */
+async function cargarPlan() { await cargarPlanesSeccAdmin(); }
+
+async function cargarPlanesSeccAdmin(){
+    const cont = document.getElementById('planesSeccAdmin');
+    if (!cont) return;
+    try {
+        const r = await fetch(`${API}/api/planes-secciones/admin`, { headers: { Authorization: 'Bearer ' + token } });
+        const secciones = await r.json();
+        if (!secciones.length) { cont.innerHTML = '<p class="no-data">Sin secciones. Crea la primera arriba.</p>'; return; }
+        cont.innerHTML = secciones.map(sec => `
+        <div class="card" style="margin-bottom:24px" id="sec-${sec.id}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+                <h3 class="card-title" style="margin:0">${sec.icono} ${esc(sec.nombre)} ${!sec.activo?'<span style="color:#555;font-size:.7rem">(inactiva)</span>':''}</h3>
+                <div style="display:flex;gap:6px">
+                    <button class="btn-icon" onclick="abrirEditSec(${sec.id},'${esc(sec.nombre)}','${sec.icono}',${sec.orden},${sec.activo})">✏️ Editar sección</button>
+                    <button class="btn-icon danger" onclick="borrarSeccion(${sec.id})">🗑️ Eliminar</button>
                 </div>
-                <div class="form-actions"><button class="btn-submit" onclick="guardarPlan('${p.clave}',this)">💾 GUARDAR</button></div>
-            </div>`).join('')}
-        </div>
-        <div class="card" style="margin-top:20px">
-            <h3 class="card-title">PLAN DÍA</h3>
-            <div class="planes-grid">${dia.map(p=>`
-            <div class="plan-card">
-                <div class="plan-card-header"><span class="plan-card-name" style="font-size:.9rem">${esc(p.nombre)}</span><span class="plan-price-display" style="font-size:1.3rem">${fmt(p.precio)}</span></div>
-                <div class="form-group"><label>Precio (COP)</label><input type="number" id="ppre-${p.clave}" value="${p.precio}" min="0"></div>
-                <div class="form-group"><label>Descripción</label><input type="text" id="pdes-${p.clave}" value="${esc(p.descripcion||'')}"></div>
-                <div class="form-actions"><button class="btn-submit" onclick="guardarPlan('${p.clave}',this)">💾</button></div>
-            </div>`).join('')}
             </div>
-        </div>`;
-    }catch(e){console.warn(e);}
+            <div class="catalogo-grid" style="margin-bottom:14px">
+                ${sec.tarjetas.map(t => `
+                <div class="plan-card" id="tar-${t.id}" style="${!t.activo?'opacity:.4':''}">
+                    <div class="plan-card-header">
+                        <span class="plan-card-name">${esc(t.nombre)}</span>
+                        <span class="plan-price-display">$${Number(t.precio).toLocaleString('es-CO')}</span>
+                    </div>
+                    <p style="font-size:.7rem;color:#555;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">${esc(t.etiqueta||'')} · ${esc(t.periodo||'')} · ${t.color}</p>
+                    <div style="display:flex;gap:6px">
+                        <button class="btn-icon" onclick="abrirEditTarjeta(${t.id},${sec.id})">✏️ Editar</button>
+                        <button class="btn-icon danger" onclick="borrarTarjeta(${t.id})">🗑️</button>
+                    </div>
+                </div>`).join('')}
+            </div>
+            <button class="btn-icon" style="width:100%;justify-content:center;padding:10px" onclick="abrirNuevaTarjeta(${sec.id})">➕ Agregar tarjeta a esta sección</button>
+        </div>`).join('');
+    } catch(e) { cont.innerHTML = '<p class="no-data">Error al cargar.</p>'; }
 }
-async function guardarPlan(clave,btn){
-    const precio=parseInt(document.getElementById('ppre-'+clave)?.value||0);
-    const nombre=document.getElementById('pnom-'+clave)?.value||undefined;
-    const desc=document.getElementById('pdes-'+clave)?.value||undefined;
-    const per=document.getElementById('pper-'+clave)?.value||undefined;
-    btn.innerHTML='<span class="btn-spinner"></span>'; btn.disabled=true;
-    try{const r=await fetch(`${API}/api/planes/${clave}`,{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({precio,nombre,descripcion:desc,periodo:per})});
-        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
-        toast('✅ Plan actualizado','ok');
-        const disp=btn.closest('.plan-card')?.querySelector('.plan-price-display');
-        if(disp) disp.textContent=fmt(precio);
-    }catch(e){authErr(e);}finally{btn.innerHTML='💾 GUARDAR';btn.disabled=false;}
+
+function abrirEditSec(id, nombre, icono, orden, activo) {
+    document.getElementById('mSecId').value = id;
+    document.getElementById('mSecNombre').value = nombre;
+    document.getElementById('mSecIcono').value = icono;
+    document.getElementById('mSecOrden').value = orden;
+    document.getElementById('mSecActivo').value = activo ? 'true' : 'false';
+    document.getElementById('modalSec').style.display = 'flex';
 }
+async function guardarSeccion() {
+    const id = document.getElementById('mSecId').value;
+    const body = {
+        nombre: document.getElementById('mSecNombre').value,
+        icono:  document.getElementById('mSecIcono').value,
+        orden:  document.getElementById('mSecOrden').value,
+        activo: document.getElementById('mSecActivo').value
+    };
+    try {
+        const r = await fetch(`${API}/api/planes-secciones/${id}`, { method:'PUT', headers:{'Content-Type':'application/json',Authorization:'Bearer '+token}, body:JSON.stringify(body) });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Sección actualizada','ok');
+        document.getElementById('modalSec').style.display = 'none';
+        cargarPlanesSeccAdmin();
+    } catch(e) { authErr(e); }
+}
+async function crearSeccion() {
+    const nombre = document.getElementById('secNombre').value.trim();
+    if (!nombre) return toast('Nombre requerido','err');
+    const body = { nombre, icono: document.getElementById('secIcono').value||'🏋️', orden: document.getElementById('secOrden').value };
+    try {
+        const r = await fetch(`${API}/api/planes-secciones`, { method:'POST', headers:{'Content-Type':'application/json',Authorization:'Bearer '+token}, body:JSON.stringify(body) });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Sección creada','ok');
+        document.getElementById('secNombre').value = '';
+        cargarPlanesSeccAdmin();
+    } catch(e) { authErr(e); }
+}
+async function borrarSeccion(id) {
+    if (!confirm('¿Eliminar esta sección y todas sus tarjetas?')) return;
+    try {
+        const r = await fetch(`${API}/api/planes-secciones/${id}`, { method:'DELETE', headers:{Authorization:'Bearer '+token} });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('Sección eliminada','ok'); cargarPlanesSeccAdmin();
+    } catch(e) { authErr(e); }
+}
+
+// Almacena el seccion_id activo para nueva tarjeta
+let _tarjetaSecId = null;
+let _tarjetaEditId = null;
+
+function abrirNuevaTarjeta(secId) {
+    _tarjetaSecId = secId; _tarjetaEditId = null;
+    document.getElementById('mTarId').value = '';
+    document.getElementById('mTarNombre').value = '';
+    document.getElementById('mTarEtiqueta').value = '';
+    document.getElementById('mTarDesc').value = '';
+    document.getElementById('mTarPrecio').value = '';
+    document.getElementById('mTarPeriodo').value = '/mes';
+    document.getElementById('mTarColor').value = 'dark';
+    document.getElementById('mTarDestacado').value = 'false';
+    document.getElementById('mTarCaract').value = '';
+    document.getElementById('mTarOrden').value = '0';
+    document.getElementById('mTarActivo').value = 'true';
+    document.getElementById('modalTar').style.display = 'flex';
+}
+
+async function abrirEditTarjeta(id, secId) {
+    _tarjetaSecId = secId; _tarjetaEditId = id;
+    try {
+        const r = await fetch(`${API}/api/planes-secciones/admin`, { headers: { Authorization: 'Bearer ' + token } });
+        const secs = await r.json();
+        let t = null;
+        for (const s of secs) { t = s.tarjetas.find(x => x.id === id); if (t) break; }
+        if (!t) return toast('Tarjeta no encontrada','err');
+        document.getElementById('mTarId').value = t.id;
+        document.getElementById('mTarNombre').value = t.nombre;
+        document.getElementById('mTarEtiqueta').value = t.etiqueta||'';
+        document.getElementById('mTarDesc').value = t.descripcion||'';
+        document.getElementById('mTarPrecio').value = t.precio;
+        document.getElementById('mTarPeriodo').value = t.periodo||'/mes';
+        document.getElementById('mTarColor').value = t.color||'dark';
+        document.getElementById('mTarDestacado').value = t.destacado ? 'true' : 'false';
+        document.getElementById('mTarCaract').value = t.caracteristicas||'';
+        document.getElementById('mTarOrden').value = t.orden||0;
+        document.getElementById('mTarActivo').value = t.activo ? 'true' : 'false';
+        document.getElementById('modalTar').style.display = 'flex';
+    } catch(e) { authErr(e); }
+}
+
+async function guardarTarjeta() {
+    const id = document.getElementById('mTarId').value;
+    const body = {
+        seccion_id:     _tarjetaSecId,
+        nombre:         document.getElementById('mTarNombre').value,
+        etiqueta:       document.getElementById('mTarEtiqueta').value,
+        descripcion:    document.getElementById('mTarDesc').value,
+        precio:         document.getElementById('mTarPrecio').value,
+        periodo:        document.getElementById('mTarPeriodo').value,
+        color:          document.getElementById('mTarColor').value,
+        destacado:      document.getElementById('mTarDestacado').value,
+        caracteristicas:document.getElementById('mTarCaract').value,
+        orden:          document.getElementById('mTarOrden').value,
+        activo:         document.getElementById('mTarActivo').value
+    };
+    try {
+        const url    = id ? `${API}/api/planes-tarjetas/${id}` : `${API}/api/planes-tarjetas`;
+        const method = id ? 'PUT' : 'POST';
+        const r = await fetch(url, { method, headers:{'Content-Type':'application/json',Authorization:'Bearer '+token}, body:JSON.stringify(body) });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast(id ? '✅ Tarjeta actualizada' : '✅ Tarjeta creada','ok');
+        document.getElementById('modalTar').style.display = 'none';
+        cargarPlanesSeccAdmin();
+    } catch(e) { authErr(e); }
+}
+
+async function borrarTarjeta(id) {
+    if (!confirm('¿Eliminar esta tarjeta?')) return;
+    try {
+        const r = await fetch(`${API}/api/planes-tarjetas/${id}`, { method:'DELETE', headers:{Authorization:'Bearer '+token} });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('Tarjeta eliminada','ok'); cargarPlanesSeccAdmin();
+    } catch(e) { authErr(e); }
+}
+
+
 
 /* ════════════ VIDEOS ════════════ */
 async function cargarVids(){
@@ -1619,86 +1711,6 @@ async function borrarProducto(id){
     }catch(e){authErr(e);}
 }
 
-/* ════════════ CAFETERÍA ════════════ */
-async function cargarCafeteria(){
-    const cont=document.getElementById('cafeteriaContainer');
-    try{
-        const r=await fetch(`${API}/api/cafeteria/admin`,{headers:{Authorization:'Bearer '+token}});
-        const productos=await r.json();
-        if(!productos.length){ cont.innerHTML='<p class="no-data">Sin productos aún. Agrega el primero arriba.</p>'; return; }
-        cont.innerHTML=`<div class="catalogo-grid">${productos.map(p=>`
-        <div class="catalogo-card" id="cafe-${p.id}" style="${!p.activo?'opacity:.45':''}">
-            <div class="catalogo-img-wrap">
-                ${p.imagen_url ? `<img src="${esc(p.imagen_url)}" alt="${esc(p.nombre)}" style="width:100%;height:100%;object-fit:cover">` : `<div class="catalogo-no-img">☕</div>`}
-                ${p.categoria ? `<span class="catalogo-badge">${esc(p.categoria)}</span>` : ''}
-                ${!p.activo ? `<span class="catalogo-badge" style="top:auto;bottom:10px;background:#333">Inactivo</span>` : ''}
-            </div>
-            <div class="catalogo-body">
-                <span class="catalogo-cat">${esc(p.categoria||'')}</span>
-                <h3 class="catalogo-nombre">${esc(p.nombre)}</h3>
-                <p class="catalogo-desc">${esc(p.descripcion||'')}</p>
-                <div class="catalogo-footer">
-                    <span class="catalogo-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>
-                </div>
-                <div style="display:flex;gap:6px;margin-top:10px">
-                    <button class="btn-icon" onclick="abrirEditCafe(${p.id},'${esc(p.nombre)}','${esc(p.categoria||'')}','${esc(p.descripcion||'')}',${p.precio},${p.activo})">✏️ Editar</button>
-                    <button class="btn-icon danger" onclick="borrarProductoCafe(${p.id})">🗑️ Borrar</button>
-                </div>
-            </div>
-        </div>`).join('')}</div>`;
-    }catch(e){cont.innerHTML='<p class="no-data">Error al cargar productos.</p>';}
-}
-async function crearProductoCafe(){
-    const nombre=document.getElementById('cfNombre').value.trim();
-    const precio=document.getElementById('cfPrecio').value;
-    if(!nombre||precio==='') return toast('Nombre y precio requeridos','err');
-    const fd=new FormData();
-    fd.append('nombre',nombre); fd.append('descripcion',document.getElementById('cfDesc').value);
-    fd.append('precio',precio); fd.append('categoria',document.getElementById('cfCat').value);
-    const img=document.getElementById('cfImg').files[0]; if(img) fd.append('imagen',img);
-    try{const r=await fetch(`${API}/api/cafeteria`,{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
-        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
-        toast('✅ Producto creado','ok');
-        document.getElementById('cfNombre').value=''; document.getElementById('cfDesc').value='';
-        document.getElementById('cfPrecio').value=''; document.getElementById('cfCat').value='';
-        document.getElementById('cfImg').value='';
-        const p=document.getElementById('cfPrev'); p.src=''; p.style.display='none';
-        cargarCafeteria();
-    }catch(e){authErr(e);}
-}
-function abrirEditCafe(id,nombre,cat,desc,precio,activo){
-    document.getElementById('mCafeId').value=id; document.getElementById('mCafeNombre').value=nombre;
-    document.getElementById('mCafeCat').value=cat; document.getElementById('mCafeDesc').value=desc;
-    document.getElementById('mCafePrecio').value=precio;
-    document.getElementById('mCafeActivo').value=activo?'true':'false';
-    document.getElementById('mCafeImg').value='';
-    const p=document.getElementById('mCafePrev'); p.src=''; p.style.display='none';
-    document.getElementById('modalCafe').style.display='flex';
-}
-async function guardarProductoCafe(){
-    const id=document.getElementById('mCafeId').value;
-    const fd=new FormData();
-    fd.append('nombre',document.getElementById('mCafeNombre').value);
-    fd.append('descripcion',document.getElementById('mCafeDesc').value);
-    fd.append('precio',document.getElementById('mCafePrecio').value);
-    fd.append('categoria',document.getElementById('mCafeCat').value);
-    fd.append('activo',document.getElementById('mCafeActivo').value);
-    const img=document.getElementById('mCafeImg').files[0]; if(img) fd.append('imagen',img);
-    try{const r=await fetch(`${API}/api/cafeteria/${id}`,{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
-        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
-        toast('✅ Producto actualizado','ok');
-        document.getElementById('modalCafe').style.display='none';
-        cargarCafeteria();
-    }catch(e){authErr(e);}
-}
-async function borrarProductoCafe(id){
-    if(!confirm('¿Eliminar este producto de la cafetería?')) return;
-    try{const r=await fetch(`${API}/api/cafeteria/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
-        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
-        toast('Producto eliminado','ok'); cargarCafeteria();
-    }catch(e){authErr(e);}
-}
-
 /* ════════════ SOLICITUDES ════════════ */
 async function cargarSols(){ await cargarDashboard(); }
 function abrirEditSol(id,nombre,wa,email,plan,msg){
@@ -1846,41 +1858,6 @@ const FEATURES_DEFAULTS = {
     'feat-extra-5': 'Característica 5',
 };
 
-async function cargarFeatures() {
-    try {
-        const r = await fetch(`${API}/api/textos`);
-        const data = r.ok ? await r.json() : {};
-        const vals = { ...FEATURES_DEFAULTS, ...data };
-        Object.entries(vals).forEach(([k, v]) => {
-            const el = document.getElementById(k + '-val');
-            if (el) el.value = v;
-        });
-    } catch(e) {
-        Object.entries(FEATURES_DEFAULTS).forEach(([k, v]) => {
-            const el = document.getElementById(k + '-val');
-            if (el) el.value = v;
-        });
-    }
-}
-
-async function guardarFeatures() {
-    const payload = {};
-    Object.keys(FEATURES_DEFAULTS).forEach(k => {
-        const el = document.getElementById(k + '-val');
-        if (el) payload[k] = el.value;
-    });
-    try {
-        const r = await fetch(`${API}/api/textos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-            body: JSON.stringify(payload)
-        });
-        if (!r.ok) throw new Error((await r.json()).error || 'Error');
-        toast('✅ Características guardadas · Recarga la web para verlas', 'ok');
-    } catch(e) {
-        authErr(e);
-    }
-}
 /* ════════════ GESTIÓN DE ADMINS ════════════ */
 async function cargarAdmins() {
     try {

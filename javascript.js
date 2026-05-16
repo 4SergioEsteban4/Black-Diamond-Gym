@@ -316,122 +316,151 @@ document.addEventListener('DOMContentLoaded', function () {
        - Convertimos ese ángulo a coordenadas X y Z usando seno y coseno
        - A mayor distancia angular del frente → menor escala y opacidad
     ============================================================ */
-    (function iniciarCarrusel3D() {
+    /* ============================================================
+       PLANES — 3 carruseles 3D dinámicos desde API
+    ============================================================ */
+    async function cargarPlanesSecciones() {
+        const tabsEl = document.getElementById('planesTabs');
+        const secEl  = document.getElementById('planesSecciones');
+        if (!secEl) return;
 
-        const pista   = document.getElementById('carousel3d');
-        const btnPrev = document.getElementById('prevPlan');
-        const btnNext = document.getElementById('nextPlan');
-        const nombre  = document.getElementById('planName');
-        const puntos  = document.getElementById('dots3d');
+        try {
+            const r = await fetch(API_BASE + '/api/planes-secciones');
+            if (!r.ok) throw new Error('Sin datos');
+            const secciones = await r.json();
+            if (!secciones.length) { secEl.innerHTML = ''; tabsEl.innerHTML = ''; return; }
 
-        // Si no existe el carrusel en esta página, salir
+            // Construir tabs
+            tabsEl.innerHTML = secciones.map((s, i) =>
+                `<button class="planes-tab-btn${i===0?' active':''}" onclick="switchPlanesTab(${i})" data-sec="${s.id}">
+                    ${s.icono} ${s.nombre}
+                </button>`
+            ).join('');
+
+            // Construir carruseles
+            secEl.innerHTML = secciones.map((s, si) => {
+                const cards = s.tarjetas.map(t => {
+                    const precio = '$' + Number(t.precio).toLocaleString('es-CO');
+                    const feats  = (t.caracteristicas||'').split('\n').filter(Boolean);
+                    const colorCls = t.color === 'red' ? 'card-red' : t.color === 'white' ? 'card-white' : 'card-dark';
+                    return `
+                    <div class="price-card-3d ${colorCls}${t.destacado?' card-destacado':''}">
+                        ${t.destacado ? '<div class="popular-badge">MÁS POPULAR</div>' : ''}
+                        <div class="card-top">
+                            <span class="plan-label">${t.etiqueta||''}</span>
+                            <h3>${t.nombre}</h3>
+                            ${t.descripcion ? `<p class="plan-desc">${t.descripcion}</p>` : ''}
+                        </div>
+                        <div class="price-tag">${precio}<span><small>${t.periodo||'/mes'}</small></span></div>
+                        <ul class="features-3d">
+                            ${feats.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                        <a href="https://wa.me/${window._waNumber||'573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color==='red'?'outline-white':'red'}">QUIERO ESTE PLAN</a>
+                    </div>`;
+                }).join('');
+
+                const names = s.tarjetas.map(t => t.nombre);
+                return `
+                <div class="planes-seccion${si===0?'':' planes-seccion-hidden'}" data-sec-idx="${si}">
+                    <div class="carousel-3d-scene">
+                        <div class="carousel-3d-track" id="carousel3d-${si}">${cards}</div>
+                    </div>
+                    <div class="carousel-3d-controls">
+                        <button class="ctrl-btn" id="prevPlan-${si}">&#8592;</button>
+                        <span class="plan-indicator" id="planName-${si}">${names[0]||''}</span>
+                        <button class="ctrl-btn" id="nextPlan-${si}">&#8594;</button>
+                    </div>
+                    <div class="carousel-3d-dots" id="dots3d-${si}"></div>
+                </div>`;
+            }).join('');
+
+            // Iniciar cada carrusel
+            secciones.forEach((s, si) => iniciarCarrusel3D(si, s.tarjetas.map(t => t.nombre)));
+
+        } catch(e) {
+            console.warn('Error cargando planes:', e);
+            secEl.innerHTML = '<p style="text-align:center;color:#555;padding:40px">No se pudieron cargar los planes.</p>';
+        }
+    }
+
+    window.switchPlanesTab = function(idx) {
+        document.querySelectorAll('.planes-tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+        document.querySelectorAll('.planes-seccion').forEach((s,i) => {
+            s.classList.toggle('planes-seccion-hidden', i!==idx);
+        });
+    };
+
+    function iniciarCarrusel3D(si, nombres) {
+        const pista   = document.getElementById('carousel3d-' + si);
+        const btnPrev = document.getElementById('prevPlan-' + si);
+        const btnNext = document.getElementById('nextPlan-' + si);
+        const nombre  = document.getElementById('planName-' + si);
+        const puntos  = document.getElementById('dots3d-' + si);
         if (!pista) return;
 
-        const tarjetas    = Array.from(pista.querySelectorAll('.price-card-3d'));
-        const total       = tarjetas.length;
-        const nombrePlanes = ['BOXEO MENSUAL', 'GYM MENSUAL', 'VALERA 15 DÍAS', 'PLAN DÍA'];
-        let   actual      = 0;    // Índice de la tarjeta al frente
-        let   animando    = false; // Bandera para evitar clics dobles
-        const RADIO       = 560;  // Radio del círculo imaginario en píxeles
+        const tarjetas = Array.from(pista.querySelectorAll('.price-card-3d'));
+        const total    = tarjetas.length;
+        let actual     = 0;
+        let animando   = false;
+        const RADIO    = 560;
 
-        /* -- Posicionar todas las tarjetas en el círculo 3D -- */
         function posicionar() {
-            const paso = 360 / total; // Ángulo entre cada tarjeta
-
-            tarjetas.forEach(function (tarjeta, i) {
-                // Ángulo de esta tarjeta relativo a la que está al frente
-                const angulo = (i - actual) * paso;
-                const rad    = angulo * (Math.PI / 180); // Convertir a radianes
-
-                // Posición X: seno del ángulo × radio
-                // Posición Z: coseno del ángulo × radio (profundidad)
-                const tx = Math.sin(rad) * RADIO;
-                const tz = Math.cos(rad) * RADIO - RADIO;
-
-                // Calcular qué tan lejos está del frente (0=frente, 1=fondo)
-                const anguloAbs  = Math.abs(((angulo % 360) + 360) % 360);
-                const anguloNorm = anguloAbs > 180 ? 360 - anguloAbs : anguloAbs;
-                const t          = anguloNorm / 180; // Normalizado 0-1
-
-                // Aplicar transform, opacidad y escala según la distancia
-                tarjeta.style.transform = 'translateX(' + tx + 'px) translateZ(' + tz + 'px) rotateY(' + (-angulo) + 'deg)';
-                tarjeta.style.opacity   = 1 - t * 0.7;   // 1 al frente, 0.3 atrás
+            const paso = 360 / total;
+            tarjetas.forEach(function(tarjeta, i) {
+                const angulo    = (i - actual) * paso;
+                const rad       = angulo * (Math.PI / 180);
+                const tx        = Math.sin(rad) * RADIO;
+                const tz        = Math.cos(rad) * RADIO - RADIO;
+                const anguloAbs = Math.abs(((angulo % 360) + 360) % 360);
+                const anguloNorm= anguloAbs > 180 ? 360 - anguloAbs : anguloAbs;
+                const t         = anguloNorm / 180;
+                tarjeta.style.transform = 'translateX('+tx+'px) translateZ('+tz+'px) rotateY('+(-angulo)+'deg)';
+                tarjeta.style.opacity   = 1 - t * 0.7;
                 tarjeta.style.zIndex    = Math.round((1 - t) * 10);
-                tarjeta.style.scale     = 1 - t * 0.42;  // 1 al frente, 0.58 atrás
-
-                // Marcar visualmente cuál es la activa
+                tarjeta.style.scale     = 1 - t * 0.42;
                 tarjeta.classList.toggle('is-active', i === actual);
             });
-
-            // Actualizar el texto del indicador de plan
-            if (nombre) nombre.textContent = nombrePlanes[actual];
-
-            // Actualizar los puntos de navegación
-            puntos.querySelectorAll('.dot-3d').forEach(function (punto, i) {
+            if (nombre) nombre.textContent = nombres[actual] || '';
+            puntos.querySelectorAll('.dot-3d').forEach(function(punto, i) {
                 punto.classList.toggle('active', i === actual);
             });
         }
 
-        /* -- Ir a una tarjeta específica por índice -- */
         function irA(indice) {
-            if (animando) return; // Ignorar si ya hay animación en curso
+            if (animando) return;
             animando = true;
-
-            // Módulo circular: permite ir del último al primero y viceversa
             actual = ((indice % total) + total) % total;
             posicionar();
-
-            // Desbloquear después de que termine la transición CSS (0.82s)
-            setTimeout(function () { animando = false; }, 820);
+            setTimeout(function() { animando = false; }, 820);
         }
 
-        /* -- Crear los puntos de navegación dinámicamente -- */
         for (let i = 0; i < total; i++) {
             const punto = document.createElement('button');
             punto.className = 'dot-3d' + (i === 0 ? ' active' : '');
-            punto.setAttribute('aria-label', 'Ver plan ' + nombrePlanes[i]);
-
-            // Cada punto lleva directamente a su tarjeta correspondiente
-            punto.addEventListener('click', function () { irA(i); });
+            punto.setAttribute('aria-label', 'Ver plan ' + (nombres[i]||i));
+            punto.addEventListener('click', function() { irA(i); });
             puntos.appendChild(punto);
         }
 
-        /* -- Botones de flecha izquierda/derecha -- */
-        if (btnPrev) btnPrev.addEventListener('click', function () { irA(actual - 1); });
-        if (btnNext) btnNext.addEventListener('click', function () { irA(actual + 1); });
+        if (btnPrev) btnPrev.addEventListener('click', function() { irA(actual - 1); });
+        if (btnNext) btnNext.addEventListener('click', function() { irA(actual + 1); });
 
-        /* -- Soporte de swipe táctil para móviles -- */
         let touchInicioX = 0;
-
-        pista.addEventListener('touchstart', function (e) {
-            // Guardar la posición X donde empezó el toque
-            touchInicioX = e.touches[0].clientX;
+        pista.addEventListener('touchstart', function(e) { touchInicioX = e.touches[0].clientX; });
+        pista.addEventListener('touchend', function(e) {
+            const dif = touchInicioX - e.changedTouches[0].clientX;
+            if (Math.abs(dif) > 40) irA(actual + (dif > 0 ? 1 : -1));
+        });
+        tarjetas.forEach(function(tarjeta, i) {
+            tarjeta.addEventListener('click', function() { if (i !== actual) irA(i); });
         });
 
-        pista.addEventListener('touchend', function (e) {
-            // Calcular la distancia horizontal del swipe
-            const diferencia = touchInicioX - e.changedTouches[0].clientX;
-
-            // Solo actuar si el swipe fue de más de 40px (evita clics accidentales)
-            if (Math.abs(diferencia) > 40) {
-                irA(actual + (diferencia > 0 ? 1 : -1));
-                // diferencia > 0 = swipe hacia la izquierda = siguiente tarjeta
-                // diferencia < 0 = swipe hacia la derecha  = tarjeta anterior
-            }
-        });
-
-        /* -- Clic en tarjeta lateral para seleccionarla directamente -- */
-        tarjetas.forEach(function (tarjeta, i) {
-            tarjeta.addEventListener('click', function () {
-                if (i !== actual) irA(i);
-                // Solo actúa si se clickeó una tarjeta que NO es la activa
-            });
-        });
-
-        /* -- Posicionar al cargar la página -- */
         posicionar();
+    }
 
-    })(); // IIFE: se ejecuta inmediatamente y no contamina el scope global
+    cargarPlanesSecciones();
+
+ 
 
 
     /* ============================================================
@@ -585,7 +614,7 @@ if (hamburger && mobileMenu) {
     });
 }
 
-}); // Fin del DOMContentLoaded
+}); // AL ELIMINARLO NO MUESTRA ERROR
 
 
 /* ================================================================

@@ -182,20 +182,6 @@ nav {
 .nav-links li a:hover::after { left: 12px; right: 12px; }
 .nav-links li a.nav-active { color: var(--white) !important; }
 
-/* Botón cafetería en nav */
-.nav-cafe-link {
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 6px 14px !important;
-    border-radius: 20px;
-    color: var(--white) !important;
-    transition: background .2s, border-color .2s;
-    white-space: nowrap;
-}
-.nav-cafe-link:hover { background: rgba(255,255,255,0.13) !important; border-color: rgba(255,255,255,0.3) !important; }
-.nav-cafe-link::after { display: none !important; }
-.mob-cafe { color: #e8c97a !important; }
-
 .btn-whatsapp {
     background: var(--red);
     color: var(--white);
@@ -1052,6 +1038,49 @@ nav {
     box-shadow: 0 8px 28px rgba(227,28,37,0.55);
 }
 .btn-wa-overlay:hover { background: #1da851; transform: scale(1.04); }
+
+/* ── Tabs de secciones de planes ── */
+.planes-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+.planes-tab-btn {
+    background: rgba(255,255,255,.05);
+    border: 1.5px solid rgba(255,255,255,.1);
+    color: var(--gray);
+    font-family: var(--font-h);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .25s;
+}
+.planes-tab-btn:hover { border-color: rgba(255,255,255,.3); color: var(--white); }
+.planes-tab-btn.active { background: var(--red); border-color: var(--red); color: var(--white); }
+.planes-tab-loading { color: var(--gray); font-size: .8rem; letter-spacing: 2px; padding: 20px; text-align: center; }
+.planes-seccion-hidden { display: none !important; }
+
+/* ── Variantes de color de tarjeta ── */
+.price-card-3d.card-red { background: var(--red); border-color: #ff3a42; }
+.price-card-3d.card-red h3,
+.price-card-3d.card-red .plan-label,
+.price-card-3d.card-red .price-tag,
+.price-card-3d.card-red .features-3d li { color: var(--white); }
+.price-card-3d.card-red .features-3d li::before { color: rgba(255,255,255,.7); }
+.price-card-3d.card-white { background: var(--white); border-color: #ddd; }
+.price-card-3d.card-white h3,
+.price-card-3d.card-white .price-tag { color: #111; }
+.price-card-3d.card-white .plan-label { color: var(--red); }
+.price-card-3d.card-white .features-3d li { color: #333; }
+.price-card-3d.card-white .features-3d li::before { color: var(--red); }
+.price-card-3d.card-dark { background: #1a1a1a; border-color: rgba(255,255,255,.12); }
+.btn-plan.outline-white { border: 2px solid rgba(255,255,255,.6); color: var(--white); background: transparent; }
+.btn-plan.outline-white:hover { background: rgba(255,255,255,.15); border-color: var(--white); }
 
 /* ============================================================
    PRECIOS — CARRUSEL 3D

@@ -263,6 +263,154 @@ app.put('/api/planes/:clave', auth, async (req, res) => {
 });
 
 /* ================================================================
+   PLANES — SECCIONES Y TARJETAS (3 carruseles editables)
+================================================================ */
+
+// Migración automática
+(async () => {
+    try {
+        await query(`
+            CREATE TABLE IF NOT EXISTS planes_secciones (
+                id      SERIAL PRIMARY KEY,
+                nombre  VARCHAR(100) NOT NULL,
+                icono   VARCHAR(10)  DEFAULT '🥊',
+                orden   INT          NOT NULL DEFAULT 0,
+                activo  BOOLEAN      NOT NULL DEFAULT TRUE
+            )`);
+        await query(`
+            CREATE TABLE IF NOT EXISTS planes_tarjetas (
+                id           SERIAL PRIMARY KEY,
+                seccion_id   INT NOT NULL REFERENCES planes_secciones(id) ON DELETE CASCADE,
+                nombre       VARCHAR(120) NOT NULL,
+                etiqueta     VARCHAR(80)  DEFAULT '',
+                descripcion  VARCHAR(200) DEFAULT '',
+                precio       INT          NOT NULL DEFAULT 0,
+                periodo      VARCHAR(40)  DEFAULT '/mes',
+                color        VARCHAR(20)  DEFAULT 'default',
+                destacado    BOOLEAN      NOT NULL DEFAULT FALSE,
+                caracteristicas TEXT      DEFAULT '',
+                orden        INT          NOT NULL DEFAULT 0,
+                activo       BOOLEAN      NOT NULL DEFAULT TRUE
+            )`);
+        // Datos iniciales si no existen
+        const { rows } = await query('SELECT COUNT(*) FROM planes_secciones');
+        if (rows[0].count === '0') {
+            await query(`INSERT INTO planes_secciones (nombre, icono, orden) VALUES
+                ('BOX', '🥊', 1), ('GYM', '💪', 2), ('BOX + GYM', '⚡', 3)`);
+            const { rows: secs } = await query('SELECT id, nombre FROM planes_secciones ORDER BY orden');
+            const boxId = secs.find(s => s.nombre === 'BOX').id;
+            const gymId = secs.find(s => s.nombre === 'GYM').id;
+            const ambId = secs.find(s => s.nombre === 'BOX + GYM').id;
+            await query(`INSERT INTO planes_tarjetas (seccion_id,nombre,etiqueta,precio,periodo,color,destacado,caracteristicas,orden) VALUES
+                (${boxId},'BLACK DIAMOND ÉLITE','BOXEO MENSUAL',120000,'/mes','red',true,'Clases de boxeo técnico\nMusculación incluida\nFuncional\nCardiovascular',1),
+                (${boxId},'BLACK DIAMOND START','QUINCENAL',60000,'/15 días','dark',false,'Boxeo técnico\nMusculación\nFuncional\nCardiovascular',2),
+                (${gymId},'BLACK DIAMOND PRO','GYM MENSUAL',75000,'/mes','white',true,'Musculación\nFuncional\nCardiovascular\nAcceso completo',1),
+                (${gymId},'PLAN DÚO','GYM DÚO',25000,'/mes','dark',false,'Musculación\nFuncional',2),
+                (${ambId},'BLACK DIAMOND ÉLITE','COMPLETO',120000,'/mes','red',true,'Boxeo técnico\nMusculación\nFuncional\nCardiovascular\nInstructores certificados',1),
+                (${ambId},'BLACK DIAMOND PRO','GYM',75000,'/mes','white',false,'Musculación\nFuncional\nCardiovascular',2)
+            `);
+        }
+    } catch(e) { console.warn('Migración planes_secciones:', e.message); }
+})();
+
+// GET público — todas las secciones con sus tarjetas
+app.get('/api/planes-secciones', async (req, res) => {
+    try {
+        const { rows: secs } = await query(
+            'SELECT id,nombre,icono,orden FROM planes_secciones WHERE activo=true ORDER BY orden'
+        );
+        for (const sec of secs) {
+            const { rows: tarjetas } = await query(
+                'SELECT id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,orden FROM planes_tarjetas WHERE seccion_id=$1 AND activo=true ORDER BY orden',
+                [sec.id]
+            );
+            sec.tarjetas = tarjetas;
+        }
+        res.json(secs);
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// GET admin — todas (incluyendo inactivas)
+app.get('/api/planes-secciones/admin', auth, async (req, res) => {
+    try {
+        const { rows: secs } = await query('SELECT * FROM planes_secciones ORDER BY orden');
+        for (const sec of secs) {
+            const { rows: tarjetas } = await query(
+                'SELECT * FROM planes_tarjetas WHERE seccion_id=$1 ORDER BY orden', [sec.id]
+            );
+            sec.tarjetas = tarjetas;
+        }
+        res.json(secs);
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// POST — crear sección
+app.post('/api/planes-secciones', auth, async (req, res) => {
+    const { nombre, icono, orden } = req.body;
+    if (!nombre) return res.status(400).json({ error:'Nombre requerido' });
+    try {
+        const { rows } = await query(
+            'INSERT INTO planes_secciones (nombre,icono,orden) VALUES($1,$2,$3) RETURNING id',
+            [nombre, icono||'🏋️', Number(orden)||0]
+        );
+        res.status(201).json({ id: rows[0].id });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// PUT — editar sección
+app.put('/api/planes-secciones/:id', auth, async (req, res) => {
+    const { nombre, icono, orden, activo } = req.body;
+    try {
+        await query(
+            'UPDATE planes_secciones SET nombre=$1,icono=$2,orden=$3,activo=$4 WHERE id=$5',
+            [nombre, icono||'🏋️', Number(orden)||0, activo!==false, req.params.id]
+        );
+        res.json({ mensaje:'Sección actualizada' });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// DELETE — eliminar sección
+app.delete('/api/planes-secciones/:id', auth, async (req, res) => {
+    try {
+        await query('DELETE FROM planes_secciones WHERE id=$1', [req.params.id]);
+        res.json({ mensaje:'Sección eliminada' });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// POST — crear tarjeta
+app.post('/api/planes-tarjetas', auth, async (req, res) => {
+    const { seccion_id, nombre, etiqueta, descripcion, precio, periodo, color, destacado, caracteristicas, orden } = req.body;
+    if (!seccion_id || !nombre) return res.status(400).json({ error:'seccion_id y nombre requeridos' });
+    try {
+        const { rows } = await query(
+            'INSERT INTO planes_tarjetas (seccion_id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,orden) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id',
+            [seccion_id, nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', Number(orden)||0]
+        );
+        res.status(201).json({ id: rows[0].id });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// PUT — editar tarjeta
+app.put('/api/planes-tarjetas/:id', auth, async (req, res) => {
+    const { nombre, etiqueta, descripcion, precio, periodo, color, destacado, caracteristicas, orden, activo } = req.body;
+    try {
+        await query(
+            'UPDATE planes_tarjetas SET nombre=$1,etiqueta=$2,descripcion=$3,precio=$4,periodo=$5,color=$6,destacado=$7,caracteristicas=$8,orden=$9,activo=$10 WHERE id=$11',
+            [nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', Number(orden)||0, activo!==false&&activo!=='false', req.params.id]
+        );
+        res.json({ mensaje:'Tarjeta actualizada' });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+// DELETE — eliminar tarjeta
+app.delete('/api/planes-tarjetas/:id', auth, async (req, res) => {
+    try {
+        await query('DELETE FROM planes_tarjetas WHERE id=$1', [req.params.id]);
+        res.json({ mensaje:'Tarjeta eliminada' });
+    } catch(e) { res.status(500).json({ error:e.message }); }
+});
+
+/* ================================================================
    SOLICITUDES
 ================================================================ */
 app.post('/api/solicitudes', solicitudesLimiter, async (req, res) => {
@@ -705,82 +853,6 @@ app.delete('/api/catalogo/:id/imagenes/:imgId', auth, async (req, res) => {
 /* ── Ruta /unete ────────────────────────────────────────────── */
 app.get('/unete', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'unete.html'));
-});
-
-app.get('/cafeteria', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'cafeteria.html'));
-});
-
-/* ── CAFETERÍA ───────────────────────────────────────────────── */
-
-// GET público — lista de productos activos
-app.get('/api/cafeteria', async (req, res) => {
-    try {
-        const { rows } = await query(
-            'SELECT id,nombre,descripcion,precio,imagen_url,categoria FROM cafeteria_menu WHERE activo=true ORDER BY categoria,nombre'
-        );
-        rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
-        res.json(rows);
-    } catch(e) { res.status(500).json({ error: e.message }); }
-});
-
-// GET admin — todos los productos
-app.get('/api/cafeteria/admin', auth, async (req, res) => {
-    try {
-        const { rows } = await query(
-            'SELECT id,nombre,descripcion,precio,imagen_url,categoria,activo FROM cafeteria_menu ORDER BY categoria,nombre'
-        );
-        rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
-        res.json(rows);
-    } catch(e) { res.status(500).json({ error: e.message }); }
-});
-
-// POST — crear producto
-app.post('/api/cafeteria', auth, upload.single('imagen'), async (req, res) => {
-    try {
-        const { nombre, descripcion, precio, categoria } = req.body;
-        if (!nombre || precio === undefined) return res.status(400).json({ error: 'Nombre y precio requeridos' });
-        let imagen_url = '';
-        if (req.file) imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/cafeteria');
-        const { rows } = await query(
-            'INSERT INTO cafeteria_menu (nombre,descripcion,precio,imagen_url,categoria) VALUES($1,$2,$3,$4,$5) RETURNING id',
-            [nombre, descripcion || '', parseInt(precio), imagen_url, categoria || '']
-        );
-        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: nuevo producto', nombre);
-        res.status(201).json({ id: rows[0].id, mensaje: 'Producto creado' });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-});
-
-// PUT — editar producto
-app.put('/api/cafeteria/:id', auth, upload.single('imagen'), async (req, res) => {
-    try {
-        const { nombre, descripcion, precio, categoria, activo } = req.body;
-        const { rows } = await query('SELECT imagen_url FROM cafeteria_menu WHERE id=$1', [req.params.id]);
-        if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
-        let imagen_url = rows[0].imagen_url;
-        if (req.file) {
-            if (imagen_url) await eliminarDeCloudinary(imagen_url);
-            imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/cafeteria');
-        }
-        await query(
-            'UPDATE cafeteria_menu SET nombre=$1,descripcion=$2,precio=$3,imagen_url=$4,categoria=$5,activo=$6 WHERE id=$7',
-            [nombre, descripcion || '', parseInt(precio), imagen_url, categoria || '', activo !== 'false', req.params.id]
-        );
-        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: editó producto', nombre);
-        res.json({ mensaje: 'Producto actualizado' });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-});
-
-// DELETE — eliminar producto
-app.delete('/api/cafeteria/:id', auth, async (req, res) => {
-    try {
-        const { rows } = await query('SELECT imagen_url,nombre FROM cafeteria_menu WHERE id=$1', [req.params.id]);
-        if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
-        if (rows[0].imagen_url) await eliminarDeCloudinary(rows[0].imagen_url);
-        await query('DELETE FROM cafeteria_menu WHERE id=$1', [req.params.id]);
-        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: eliminó producto', rows[0].nombre);
-        res.json({ mensaje: 'Producto eliminado' });
-    } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 /* ── 404 ────────────────────────────────────────────────────── */
