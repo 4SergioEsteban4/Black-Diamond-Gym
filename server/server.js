@@ -707,6 +707,82 @@ app.get('/unete', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'unete.html'));
 });
 
+app.get('/cafeteria', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'cafeteria.html'));
+});
+
+/* ── CAFETERÍA ───────────────────────────────────────────────── */
+
+// GET público — lista de productos activos
+app.get('/api/cafeteria', async (req, res) => {
+    try {
+        const { rows } = await query(
+            'SELECT id,nombre,descripcion,precio,imagen_url,categoria FROM cafeteria_menu WHERE activo=true ORDER BY categoria,nombre'
+        );
+        rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
+        res.json(rows);
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET admin — todos los productos
+app.get('/api/cafeteria/admin', auth, async (req, res) => {
+    try {
+        const { rows } = await query(
+            'SELECT id,nombre,descripcion,precio,imagen_url,categoria,activo FROM cafeteria_menu ORDER BY categoria,nombre'
+        );
+        rows.forEach(r => r.imagen_url = fullUrl(req, r.imagen_url));
+        res.json(rows);
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST — crear producto
+app.post('/api/cafeteria', auth, upload.single('imagen'), async (req, res) => {
+    try {
+        const { nombre, descripcion, precio, categoria } = req.body;
+        if (!nombre || precio === undefined) return res.status(400).json({ error: 'Nombre y precio requeridos' });
+        let imagen_url = '';
+        if (req.file) imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/cafeteria');
+        const { rows } = await query(
+            'INSERT INTO cafeteria_menu (nombre,descripcion,precio,imagen_url,categoria) VALUES($1,$2,$3,$4,$5) RETURNING id',
+            [nombre, descripcion || '', parseInt(precio), imagen_url, categoria || '']
+        );
+        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: nuevo producto', nombre);
+        res.status(201).json({ id: rows[0].id, mensaje: 'Producto creado' });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT — editar producto
+app.put('/api/cafeteria/:id', auth, upload.single('imagen'), async (req, res) => {
+    try {
+        const { nombre, descripcion, precio, categoria, activo } = req.body;
+        const { rows } = await query('SELECT imagen_url FROM cafeteria_menu WHERE id=$1', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
+        let imagen_url = rows[0].imagen_url;
+        if (req.file) {
+            if (imagen_url) await eliminarDeCloudinary(imagen_url);
+            imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/cafeteria');
+        }
+        await query(
+            'UPDATE cafeteria_menu SET nombre=$1,descripcion=$2,precio=$3,imagen_url=$4,categoria=$5,activo=$6 WHERE id=$7',
+            [nombre, descripcion || '', parseInt(precio), imagen_url, categoria || '', activo !== 'false', req.params.id]
+        );
+        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: editó producto', nombre);
+        res.json({ mensaje: 'Producto actualizado' });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE — eliminar producto
+app.delete('/api/cafeteria/:id', auth, async (req, res) => {
+    try {
+        const { rows } = await query('SELECT imagen_url,nombre FROM cafeteria_menu WHERE id=$1', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
+        if (rows[0].imagen_url) await eliminarDeCloudinary(rows[0].imagen_url);
+        await query('DELETE FROM cafeteria_menu WHERE id=$1', [req.params.id]);
+        registrarLog(req.admin?.id, req.admin?.usuario, 'Cafetería: eliminó producto', rows[0].nombre);
+        res.json({ mensaje: 'Producto eliminado' });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 /* ── 404 ────────────────────────────────────────────────────── */
 app.use((req, res) => {
     if (!req.path.startsWith('/api')) {

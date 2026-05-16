@@ -213,6 +213,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
             <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
             <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
+            <button class="tab-btn"        onclick="tab('cafeteria',this)">☕ Cafetería</button>
             <button class="tab-btn"        onclick="tab('admins',this)">👤 Admins</button>
         </div>
     </nav>
@@ -808,6 +809,67 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
 
 </div><!-- /panel -->
 
+<!-- ☕ CAFETERÍA -->
+<div class="tab-panel" id="tab-cafeteria">
+    <h2 class="section-title">☕ CAFETERÍA</h2>
+    <div class="form-card">
+        <h3 class="form-card-title">AGREGAR PRODUCTO</h3>
+        <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="cfNombre" placeholder="Ej: Proteína de chocolate"></div>
+            <div class="form-group"><label>Categoría</label><input type="text" id="cfCat" placeholder="Ej: Bebidas, Snacks, Suplementos"></div>
+        </div>
+        <div class="form-group"><label>Descripción</label><textarea id="cfDesc" rows="2" placeholder="Descripción breve del producto"></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Precio (COP)</label><input type="number" id="cfPrecio" min="0" placeholder="0"></div>
+        </div>
+        <div class="form-group"><label>Imagen (opcional)</label>
+            <label class="img-upload-label" for="cfImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Subir imagen</strong>JPG · PNG · WEBP</span>
+                <input type="file" id="cfImg" accept="image/*" onchange="prevImg(this,'cfPrev')">
+            </label>
+            <img id="cfPrev" class="img-preview" src="" alt="">
+        </div>
+        <button class="btn-submit" onclick="crearProductoCafe()">➕ AGREGAR PRODUCTO</button>
+    </div>
+    <div id="cafeteriaContainer"><p class="no-data">Cargando...</p></div>
+</div>
+
+<!-- MODAL editar producto cafetería -->
+<div class="modal-bg" id="modalCafe" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalCafe').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR PRODUCTO CAFETERÍA</h3>
+        <input type="hidden" id="mCafeId">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre</label><input type="text" id="mCafeNombre"></div>
+            <div class="form-group"><label>Categoría</label><input type="text" id="mCafeCat"></div>
+        </div>
+        <div class="form-group"><label>Descripción</label><textarea id="mCafeDesc" rows="2"></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Precio (COP)</label><input type="number" id="mCafePrecio" min="0"></div>
+            <div class="form-group"><label>Estado</label>
+                <select id="mCafeActivo">
+                    <option value="true">✅ Activo</option>
+                    <option value="false">❌ Inactivo</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group"><label>Nueva imagen (opcional)</label>
+            <label class="img-upload-label" for="mCafeImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Reemplazar imagen</strong>Dejar vacío para mantener la actual</span>
+                <input type="file" id="mCafeImg" accept="image/*" onchange="prevImg(this,'mCafePrev')">
+            </label>
+            <img id="mCafePrev" class="img-preview" src="" alt="">
+        </div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarProductoCafe()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalCafe').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL editar foto galería -->
 <div class="modal-bg" id="modalFoto" style="display:none">
     <div class="modal">
@@ -953,7 +1015,7 @@ function mostrarPanel(){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('panelWrap').style.display='block';
     document.getElementById('navUser').textContent=localStorage.getItem('bdg_nombre')||'Admin';
-    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarFeatures(); cargarVids(); cargarCat(); cargarSols(); cargarTextos();
+    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarFeatures(); cargarVids(); cargarCat(); cargarSols(); cargarTextos(); cargarCafeteria();
     cargarDashboard(); cargarAdmins(); cargarLog();
 }
 function cerrarSesion(){
@@ -1554,6 +1616,86 @@ async function borrarProducto(id){
     try{const r=await fetch(`${API}/api/catalogo/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
         const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
         toast('Producto eliminado','ok'); cargarCat();
+    }catch(e){authErr(e);}
+}
+
+/* ════════════ CAFETERÍA ════════════ */
+async function cargarCafeteria(){
+    const cont=document.getElementById('cafeteriaContainer');
+    try{
+        const r=await fetch(`${API}/api/cafeteria/admin`,{headers:{Authorization:'Bearer '+token}});
+        const productos=await r.json();
+        if(!productos.length){ cont.innerHTML='<p class="no-data">Sin productos aún. Agrega el primero arriba.</p>'; return; }
+        cont.innerHTML=`<div class="catalogo-grid">${productos.map(p=>`
+        <div class="catalogo-card" id="cafe-${p.id}" style="${!p.activo?'opacity:.45':''}">
+            <div class="catalogo-img-wrap">
+                ${p.imagen_url ? `<img src="${esc(p.imagen_url)}" alt="${esc(p.nombre)}" style="width:100%;height:100%;object-fit:cover">` : `<div class="catalogo-no-img">☕</div>`}
+                ${p.categoria ? `<span class="catalogo-badge">${esc(p.categoria)}</span>` : ''}
+                ${!p.activo ? `<span class="catalogo-badge" style="top:auto;bottom:10px;background:#333">Inactivo</span>` : ''}
+            </div>
+            <div class="catalogo-body">
+                <span class="catalogo-cat">${esc(p.categoria||'')}</span>
+                <h3 class="catalogo-nombre">${esc(p.nombre)}</h3>
+                <p class="catalogo-desc">${esc(p.descripcion||'')}</p>
+                <div class="catalogo-footer">
+                    <span class="catalogo-precio">$${Number(p.precio).toLocaleString('es-CO')}</span>
+                </div>
+                <div style="display:flex;gap:6px;margin-top:10px">
+                    <button class="btn-icon" onclick="abrirEditCafe(${p.id},'${esc(p.nombre)}','${esc(p.categoria||'')}','${esc(p.descripcion||'')}',${p.precio},${p.activo})">✏️ Editar</button>
+                    <button class="btn-icon danger" onclick="borrarProductoCafe(${p.id})">🗑️ Borrar</button>
+                </div>
+            </div>
+        </div>`).join('')}</div>`;
+    }catch(e){cont.innerHTML='<p class="no-data">Error al cargar productos.</p>';}
+}
+async function crearProductoCafe(){
+    const nombre=document.getElementById('cfNombre').value.trim();
+    const precio=document.getElementById('cfPrecio').value;
+    if(!nombre||precio==='') return toast('Nombre y precio requeridos','err');
+    const fd=new FormData();
+    fd.append('nombre',nombre); fd.append('descripcion',document.getElementById('cfDesc').value);
+    fd.append('precio',precio); fd.append('categoria',document.getElementById('cfCat').value);
+    const img=document.getElementById('cfImg').files[0]; if(img) fd.append('imagen',img);
+    try{const r=await fetch(`${API}/api/cafeteria`,{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Producto creado','ok');
+        document.getElementById('cfNombre').value=''; document.getElementById('cfDesc').value='';
+        document.getElementById('cfPrecio').value=''; document.getElementById('cfCat').value='';
+        document.getElementById('cfImg').value='';
+        const p=document.getElementById('cfPrev'); p.src=''; p.style.display='none';
+        cargarCafeteria();
+    }catch(e){authErr(e);}
+}
+function abrirEditCafe(id,nombre,cat,desc,precio,activo){
+    document.getElementById('mCafeId').value=id; document.getElementById('mCafeNombre').value=nombre;
+    document.getElementById('mCafeCat').value=cat; document.getElementById('mCafeDesc').value=desc;
+    document.getElementById('mCafePrecio').value=precio;
+    document.getElementById('mCafeActivo').value=activo?'true':'false';
+    document.getElementById('mCafeImg').value='';
+    const p=document.getElementById('mCafePrev'); p.src=''; p.style.display='none';
+    document.getElementById('modalCafe').style.display='flex';
+}
+async function guardarProductoCafe(){
+    const id=document.getElementById('mCafeId').value;
+    const fd=new FormData();
+    fd.append('nombre',document.getElementById('mCafeNombre').value);
+    fd.append('descripcion',document.getElementById('mCafeDesc').value);
+    fd.append('precio',document.getElementById('mCafePrecio').value);
+    fd.append('categoria',document.getElementById('mCafeCat').value);
+    fd.append('activo',document.getElementById('mCafeActivo').value);
+    const img=document.getElementById('mCafeImg').files[0]; if(img) fd.append('imagen',img);
+    try{const r=await fetch(`${API}/api/cafeteria/${id}`,{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Producto actualizado','ok');
+        document.getElementById('modalCafe').style.display='none';
+        cargarCafeteria();
+    }catch(e){authErr(e);}
+}
+async function borrarProductoCafe(id){
+    if(!confirm('¿Eliminar este producto de la cafetería?')) return;
+    try{const r=await fetch(`${API}/api/cafeteria/${id}`,{method:'DELETE',headers:{Authorization:'Bearer '+token}});
+        const d=await r.json(); if(!r.ok) throw new Error(d.error||'Error');
+        toast('Producto eliminado','ok'); cargarCafeteria();
     }catch(e){authErr(e);}
 }
 
