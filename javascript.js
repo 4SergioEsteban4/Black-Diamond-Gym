@@ -345,6 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const colorCls = t.color === 'red' ? 'card-red' : t.color === 'white' ? 'card-white' : 'card-dark';
                     return `
                     <div class="price-card-3d ${colorCls}${t.destacado?' card-destacado':''}">
+                        ${t.imagen_url ? `<img class="card-bg-img" src="${t.imagen_url}" alt="">` : ''}
                         ${t.destacado ? '<div class="popular-badge">MÁS POPULAR</div>' : ''}
                         <div class="card-top">
                             <span class="plan-label">${t.etiqueta||''}</span>

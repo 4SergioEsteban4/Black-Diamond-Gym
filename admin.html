@@ -593,6 +593,29 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
                     <button class="btn-submit" onclick="guardarTextos('unete')">💾 GUARDAR ÚNETE</button>
                 </div>
             </div>
+
+            <!-- Sección colaborar -->
+            <div class="card">
+                <h3 class="card-title">🤝 SECCIÓN "¿QUIERES COLABORAR?"</h3>
+                <p class="sec-desc" style="margin-bottom:16px">Textos de la sección de colaboración que aparece antes del footer.</p>
+                <div class="form-group"><label>Título</label>
+                    <input type="text" id="colab-titulo-val" placeholder="¿QUIERES COLABORAR CON NOSOTROS?">
+                </div>
+                <div class="form-group"><label>Descripción</label>
+                    <textarea id="colab-desc-val" rows="3" placeholder="Si eres instructor, proveedor..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Botón WhatsApp</label>
+                        <input type="text" id="colab-btn-wa-val" placeholder="Escríbenos por WhatsApp">
+                    </div>
+                    <div class="form-group"><label>Botón formulario</label>
+                        <input type="text" id="colab-btn-form-val" placeholder="Enviar mensaje">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="guardarTextos('colab')">💾 GUARDAR</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -614,35 +637,6 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             </div>
 
             <div id="planesSeccAdmin"><p class="no-data">Cargando...</p></div>
-        </div>
-    </div>
-
-            <!-- Sección colaborar -->
-            <div class="card" style="margin-top:28px">
-                <h3 class="card-title">🤝 SECCIÓN "¿QUIERES COLABORAR?"</h3>
-                <p class="sec-desc" style="margin-bottom:16px">Edita los textos de la sección de colaboración que aparece antes del footer.</p>
-                <div class="form-group">
-                    <label>Título</label>
-                    <input type="text" id="colab-titulo-val" placeholder="¿QUIERES COLABORAR CON NOSOTROS?">
-                </div>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <textarea id="colab-desc-val" rows="3" placeholder="Si eres instructor, proveedor..."></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Botón WhatsApp</label>
-                        <input type="text" id="colab-btn-wa-val" placeholder="Escríbenos por WhatsApp">
-                    </div>
-                    <div class="form-group">
-                        <label>Botón formulario</label>
-                        <input type="text" id="colab-btn-form-val" placeholder="Enviar mensaje">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-submit" onclick="guardarTextos('colab')">💾 GUARDAR</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -826,6 +820,15 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
                     <option value="true">⭐ Sí (badge "MÁS POPULAR")</option>
                 </select>
             </div>
+        </div>
+        <div class="form-group">
+            <label>Imagen de fondo (opcional)</label>
+            <label class="img-upload-label" for="mTarImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Subir imagen</strong>Se verá de fondo semitransparente en la tarjeta</span>
+                <input type="file" id="mTarImg" accept="image/*" onchange="prevImg(this,'mTarPrev')">
+            </label>
+            <img id="mTarPrev" class="img-preview" src="" alt="">
         </div>
         <div class="form-group">
             <label>Características (una por línea)</label>
@@ -1518,26 +1521,29 @@ async function abrirEditTarjeta(id, secId) {
 
 async function guardarTarjeta() {
     const id = document.getElementById('mTarId').value;
-    const body = {
-        seccion_id:     _tarjetaSecId,
-        nombre:         document.getElementById('mTarNombre').value,
-        etiqueta:       document.getElementById('mTarEtiqueta').value,
-        descripcion:    document.getElementById('mTarDesc').value,
-        precio:         document.getElementById('mTarPrecio').value,
-        periodo:        document.getElementById('mTarPeriodo').value,
-        color:          document.getElementById('mTarColor').value,
-        destacado:      document.getElementById('mTarDestacado').value,
-        caracteristicas:document.getElementById('mTarCaract').value,
-        orden:          document.getElementById('mTarOrden').value,
-        activo:         document.getElementById('mTarActivo').value
-    };
+    const fd = new FormData();
+    fd.append('seccion_id',      _tarjetaSecId);
+    fd.append('nombre',          document.getElementById('mTarNombre').value);
+    fd.append('etiqueta',        document.getElementById('mTarEtiqueta').value);
+    fd.append('descripcion',     document.getElementById('mTarDesc').value);
+    fd.append('precio',          document.getElementById('mTarPrecio').value);
+    fd.append('periodo',         document.getElementById('mTarPeriodo').value);
+    fd.append('color',           document.getElementById('mTarColor').value);
+    fd.append('destacado',       document.getElementById('mTarDestacado').value);
+    fd.append('caracteristicas', document.getElementById('mTarCaract').value);
+    fd.append('orden',           document.getElementById('mTarOrden').value);
+    fd.append('activo',          document.getElementById('mTarActivo').value);
+    const img = document.getElementById('mTarImg').files[0];
+    if (img) fd.append('imagen', img);
     try {
         const url    = id ? `${API}/api/planes-tarjetas/${id}` : `${API}/api/planes-tarjetas`;
         const method = id ? 'PUT' : 'POST';
-        const r = await fetch(url, { method, headers:{'Content-Type':'application/json',Authorization:'Bearer '+token}, body:JSON.stringify(body) });
+        const r = await fetch(url, { method, headers:{ Authorization:'Bearer '+token }, body:fd });
         const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
         toast(id ? '✅ Tarjeta actualizada' : '✅ Tarjeta creada','ok');
         document.getElementById('modalTar').style.display = 'none';
+        document.getElementById('mTarImg').value = '';
+        const p = document.getElementById('mTarPrev'); p.src=''; p.style.display='none';
         cargarPlanesSeccAdmin();
     } catch(e) { authErr(e); }
 }

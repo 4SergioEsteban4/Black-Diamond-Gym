@@ -289,6 +289,7 @@ app.put('/api/planes/:clave', auth, async (req, res) => {
                 color        VARCHAR(20)  DEFAULT 'default',
                 destacado    BOOLEAN      NOT NULL DEFAULT FALSE,
                 caracteristicas TEXT      DEFAULT '',
+                imagen_url   VARCHAR(400) DEFAULT '',
                 orden        INT          NOT NULL DEFAULT 0,
                 activo       BOOLEAN      NOT NULL DEFAULT TRUE
             )`);
@@ -321,7 +322,7 @@ app.get('/api/planes-secciones', async (req, res) => {
         );
         for (const sec of secs) {
             const { rows: tarjetas } = await query(
-                'SELECT id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,orden FROM planes_tarjetas WHERE seccion_id=$1 AND activo=true ORDER BY orden',
+                'SELECT id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,imagen_url,orden FROM planes_tarjetas WHERE seccion_id=$1 AND activo=true ORDER BY orden',
                 [sec.id]
             );
             sec.tarjetas = tarjetas;
@@ -378,25 +379,34 @@ app.delete('/api/planes-secciones/:id', auth, async (req, res) => {
 });
 
 // POST — crear tarjeta
-app.post('/api/planes-tarjetas', auth, async (req, res) => {
+app.post('/api/planes-tarjetas', auth, upload.single('imagen'), async (req, res) => {
     const { seccion_id, nombre, etiqueta, descripcion, precio, periodo, color, destacado, caracteristicas, orden } = req.body;
     if (!seccion_id || !nombre) return res.status(400).json({ error:'seccion_id y nombre requeridos' });
     try {
+        let imagen_url = '';
+        if (req.file) imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/planes');
         const { rows } = await query(
-            'INSERT INTO planes_tarjetas (seccion_id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,orden) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id',
-            [seccion_id, nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', Number(orden)||0]
+            'INSERT INTO planes_tarjetas (seccion_id,nombre,etiqueta,descripcion,precio,periodo,color,destacado,caracteristicas,imagen_url,orden) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id',
+            [seccion_id, nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', imagen_url, Number(orden)||0]
         );
         res.status(201).json({ id: rows[0].id });
     } catch(e) { res.status(500).json({ error:e.message }); }
 });
 
 // PUT — editar tarjeta
-app.put('/api/planes-tarjetas/:id', auth, async (req, res) => {
+app.put('/api/planes-tarjetas/:id', auth, upload.single('imagen'), async (req, res) => {
     const { nombre, etiqueta, descripcion, precio, periodo, color, destacado, caracteristicas, orden, activo } = req.body;
     try {
+        const { rows: cur } = await query('SELECT imagen_url FROM planes_tarjetas WHERE id=$1', [req.params.id]);
+        if (!cur.length) return res.status(404).json({ error:'Tarjeta no encontrada' });
+        let imagen_url = cur[0].imagen_url || '';
+        if (req.file) {
+            if (imagen_url) await eliminarDeCloudinary(imagen_url);
+            imagen_url = await subirACloudinary(req.file.buffer, 'blackdiamond/planes');
+        }
         await query(
-            'UPDATE planes_tarjetas SET nombre=$1,etiqueta=$2,descripcion=$3,precio=$4,periodo=$5,color=$6,destacado=$7,caracteristicas=$8,orden=$9,activo=$10 WHERE id=$11',
-            [nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', Number(orden)||0, activo!==false&&activo!=='false', req.params.id]
+            'UPDATE planes_tarjetas SET nombre=$1,etiqueta=$2,descripcion=$3,precio=$4,periodo=$5,color=$6,destacado=$7,caracteristicas=$8,orden=$9,activo=$10,imagen_url=$11 WHERE id=$12',
+            [nombre, etiqueta||'', descripcion||'', Number(precio)||0, periodo||'/mes', color||'default', destacado===true||destacado==='true', caracteristicas||'', Number(orden)||0, activo!==false&&activo!=='false', imagen_url, req.params.id]
         );
         res.json({ mensaje:'Tarjeta actualizada' });
     } catch(e) { res.status(500).json({ error:e.message }); }
