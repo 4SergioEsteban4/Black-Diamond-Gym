@@ -213,6 +213,7 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <button class="tab-btn"        onclick="tab('precios',this)">💰 Precios</button>
             <button class="tab-btn"        onclick="tab('videos',this)">▶ Videos</button>
             <button class="tab-btn"        onclick="tab('catalogo',this)">🛍️ Catálogo</button>
+            <button class="tab-btn"        onclick="tab('cafeteria',this)">☕ Cafetería</button>
             <button class="tab-btn"        onclick="tab('admins',this)">👤 Admins</button>
         </div>
     </nav>
@@ -703,6 +704,59 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
 
     <!-- solicitudes integradas en dashboard -->
 
+    <!-- ══ CAFETERÍA ══ -->
+    <div class="tab-panel" id="tab-cafeteria">
+        <div class="panel-body">
+            <h1 class="sec-title">CAFETERÍA</h1>
+            <p class="sec-desc">Gestiona el menú de la cafetería del gym. Los productos aparecerán en la sección Cafetería del sitio web.</p>
+
+            <!-- Agregar producto -->
+            <div class="card">
+                <h3 class="card-title">➕ AGREGAR ÍTEM AL MENÚ</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>Nombre *</label>
+                        <input type="text" id="cfNombre" placeholder="Ej: Batido de Proteína"></div>
+                    <div class="form-group"><label>Categoría</label>
+                        <select id="cfCategoria">
+                            <option value="Bebidas">🥤 Bebidas</option>
+                            <option value="Batidos">🥛 Batidos</option>
+                            <option value="Snacks">🍌 Snacks</option>
+                            <option value="Comidas">🍱 Comidas</option>
+                            <option value="Suplementos">💊 Suplementos</option>
+                            <option value="Otros">📦 Otros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label>Descripción</label>
+                    <textarea id="cfDesc" rows="2" placeholder="Ingredientes, beneficios o detalle del producto..."></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Precio (COP sin puntos) *</label>
+                        <input type="number" id="cfPrecio" placeholder="8000" min="0"></div>
+                    <div class="form-group"><label>Disponible</label>
+                        <select id="cfDisponible">
+                            <option value="true">✅ Sí</option>
+                            <option value="false">❌ No</option>
+                        </select></div>
+                </div>
+                <div class="form-group"><label>Imagen (opcional)</label>
+                    <label class="img-upload-label" for="cfImagen">
+                        <span class="upload-icon">📷</span>
+                        <span class="upload-text"><strong>Seleccionar foto</strong>JPG · PNG · WEBP</span>
+                        <input type="file" id="cfImagen" accept="image/*" onchange="prevImg(this,'prevCafeteria')">
+                    </label>
+                    <img id="prevCafeteria" class="img-preview" src="" alt="">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="agregarItemCafeteria()">☕ AGREGAR AL MENÚ</button>
+                    <button class="btn-secondary" onclick="limpiarCafeteria()">Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Grid de ítems existentes -->
+            <div id="cafeteriaContainer"><p class="no-data">Cargando menú...</p></div>
+        </div>
+    </div>
+
     <!-- ══ ADMINS ══ -->
     <div class="tab-panel" id="tab-admins">
         <div class="panel-body">
@@ -831,11 +885,11 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <img id="mTarPrev" class="img-preview" src="" alt="">
         </div>
         <div class="form-group">
-            <label>Características (una por línea · empieza con <span style="color:#e31c25;font-family:monospace">-</span> para poner ✕ en vez de ✔)</label>
+            <label>Características (una por línea · empieza con <span style="color:#e31c25;font-family:monospace">-</span> para ✕ en vez de ✔)</label>
             <textarea id="mTarCaract" rows="6" placeholder="Clases de boxeo técnico&#10;Musculación incluida&#10;Funcional&#10;Cardiovascular&#10;-Clases personalizadas&#10;-Acceso sauna"></textarea>
-            <p style="font-size:.65rem;color:#555;margin-top:6px;line-height:1.6;text-transform:none">
-                💡 Las líneas normales muestran <strong style="color:#2ecc71">✔</strong> verde.<br>
-                Las que empiezan con <code style="color:#e31c25;background:#1a0000;padding:1px 5px;border-radius:3px">-</code> muestran <strong style="color:#555">✕</strong> gris (lo que <em>no</em> incluye el plan).
+            <p style="font-size:.65rem;color:#555;margin-top:6px;line-height:1.7;text-transform:none">
+                💡 Líneas normales → <strong style="color:#2ecc71">✔</strong> verde &nbsp;|&nbsp;
+                Líneas que empiezan con <code style="color:#e31c25;background:#1a0000;padding:1px 6px;border-radius:3px">-</code> → <strong style="color:#555">✕</strong> gris (lo que <em>no</em> incluye el plan).
             </p>
         </div>
         <div class="form-row">
@@ -968,6 +1022,52 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
     </div>
 </div>
 
+<!-- MODAL editar ítem cafetería -->
+<div class="modal-bg" id="modalCafe" style="display:none">
+    <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modalCafe').style.display='none'">✕</button>
+        <h3 class="modal-title">EDITAR ÍTEM CAFETERÍA</h3>
+        <input type="hidden" id="mCafeId">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre</label>
+                <input type="text" id="mCafeNombre"></div>
+            <div class="form-group"><label>Categoría</label>
+                <select id="mCafeCategoria">
+                    <option value="Bebidas">🥤 Bebidas</option>
+                    <option value="Batidos">🥛 Batidos</option>
+                    <option value="Snacks">🍌 Snacks</option>
+                    <option value="Comidas">🍱 Comidas</option>
+                    <option value="Suplementos">💊 Suplementos</option>
+                    <option value="Otros">📦 Otros</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group"><label>Descripción</label>
+            <textarea id="mCafeDesc" rows="2"></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Precio (COP)</label>
+                <input type="number" id="mCafePrecio" min="0"></div>
+            <div class="form-group"><label>Disponible</label>
+                <select id="mCafeDisponible">
+                    <option value="true">✅ Sí</option>
+                    <option value="false">❌ No</option>
+                </select></div>
+        </div>
+        <div class="form-group"><label>Nueva imagen (opcional)</label>
+            <label class="img-upload-label" for="mCafeImg">
+                <span class="upload-icon">📷</span>
+                <span class="upload-text"><strong>Reemplazar imagen</strong>Dejar vacío para mantener la actual</span>
+                <input type="file" id="mCafeImg" accept="image/*" onchange="prevImg(this,'mCafePrev')">
+            </label>
+            <img id="mCafePrev" class="img-preview" src="" alt="">
+        </div>
+        <div class="form-actions">
+            <button class="btn-submit" onclick="guardarItemCafeteria()">💾 GUARDAR</button>
+            <button class="btn-secondary" onclick="document.getElementById('modalCafe').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -996,7 +1096,7 @@ function mostrarPanel(){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('panelWrap').style.display='block';
     document.getElementById('navUser').textContent=localStorage.getItem('bdg_nombre')||'Admin';
-    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarVids(); cargarCat(); cargarSols(); cargarTextos();
+    cargarNot(); cargarImgs(); cargarGaleriaAdmin(); cargarPlan(); cargarVids(); cargarCat(); cargarCafeteria(); cargarSols(); cargarTextos();
     cargarDashboard(); cargarAdmins(); cargarLog();
 }
 function cerrarSesion(){
@@ -1971,6 +2071,124 @@ async function cargarLog() {
                 </tr>`).join('')}
             </tbody></table></div>`;
     } catch(e) { console.warn(e); }
+}
+/* ════════════ CAFETERÍA ════════════ */
+const CAT_ICONS = { Bebidas:'🥤', Batidos:'🥛', Snacks:'🍌', Comidas:'🍱', Suplementos:'💊', Otros:'📦' };
+
+async function cargarCafeteria() {
+    try {
+        const r = await fetch(`${API}/api/cafeteria`);
+        const items = r.ok ? await r.json() : [];
+        const cont = document.getElementById('cafeteriaContainer');
+        if (!items.length) { cont.innerHTML='<p class="no-data">Menú vacío. Añade el primer ítem arriba.</p>'; return; }
+
+        // Agrupar por categoría
+        const grupos = {};
+        items.forEach(i => {
+            const cat = i.categoria || 'Otros';
+            if (!grupos[cat]) grupos[cat] = [];
+            grupos[cat].push(i);
+        });
+
+        cont.innerHTML = Object.entries(grupos).map(([cat, items]) => `
+            <div style="margin-bottom:24px">
+                <p style="font-size:.62rem;letter-spacing:3px;color:var(--gray);text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1a1a1a">
+                    ${CAT_ICONS[cat]||'📦'} ${cat}
+                </p>
+                <div class="catalogo-admin-grid">${items.map(i => `
+                <div class="catalogo-admin-card" id="cafe-${i.id}" style="${!i.disponible?'opacity:.45':''}">
+                    ${i.imagen_url
+                        ? `<img src="${esc(i.imagen_url)}" class="catalogo-admin-img" alt="${esc(i.nombre)}">`
+                        : `<div class="catalogo-admin-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:#0d0d0d">${CAT_ICONS[i.categoria]||'☕'}</div>`
+                    }
+                    <div class="catalogo-admin-body">
+                        <p class="catalogo-admin-cat">${esc(i.categoria||'')} ${!i.disponible?'· <span style="color:#e31c25">AGOTADO</span>':''}</p>
+                        <p class="catalogo-admin-name">${esc(i.nombre)}</p>
+                        <p class="catalogo-admin-price">$${Number(i.precio).toLocaleString('es-CO')}</p>
+                        ${i.descripcion?`<p style="font-size:.68rem;color:#444;margin-top:4px;text-transform:none;line-height:1.5">${esc(i.descripcion)}</p>`:''}
+                        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+                            <button class="btn-icon" onclick="abrirEditCafeteria(${i.id})">✏️</button>
+                            <button class="btn-icon danger" onclick="borrarItemCafeteria(${i.id})">🗑️</button>
+                        </div>
+                    </div>
+                </div>`).join('')}
+                </div>
+            </div>`).join('');
+    } catch(e) { console.warn('Error cafetería:', e); }
+}
+
+async function agregarItemCafeteria() {
+    const nombre = document.getElementById('cfNombre').value.trim();
+    const precio = document.getElementById('cfPrecio').value;
+    if (!nombre || !precio) { toast('⚠️ Nombre y precio son obligatorios', 'err'); return; }
+    const fd = new FormData();
+    fd.append('nombre', nombre);
+    fd.append('categoria', document.getElementById('cfCategoria').value);
+    fd.append('descripcion', document.getElementById('cfDesc').value);
+    fd.append('precio', precio);
+    fd.append('disponible', document.getElementById('cfDisponible').value);
+    const img = document.getElementById('cfImagen').files[0];
+    if (img) fd.append('imagen', img);
+    try {
+        const r = await fetch(`${API}/api/cafeteria`, { method:'POST', headers:{ Authorization:'Bearer '+token }, body:fd });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Ítem añadido al menú', 'ok');
+        limpiarCafeteria(); cargarCafeteria();
+    } catch(e) { authErr(e); }
+}
+
+function limpiarCafeteria() {
+    ['cfNombre','cfDesc','cfPrecio'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('cfCategoria').value = 'Bebidas';
+    document.getElementById('cfDisponible').value = 'true';
+    document.getElementById('cfImagen').value = '';
+    const p = document.getElementById('prevCafeteria'); p.src=''; p.style.display='none';
+}
+
+async function abrirEditCafeteria(id) {
+    try {
+        const r = await fetch(`${API}/api/cafeteria`);
+        const items = await r.json();
+        const i = items.find(x => x.id === id);
+        if (!i) return toast('Ítem no encontrado', 'err');
+        document.getElementById('mCafeId').value = i.id;
+        document.getElementById('mCafeNombre').value = i.nombre;
+        document.getElementById('mCafeCategoria').value = i.categoria || 'Otros';
+        document.getElementById('mCafeDesc').value = i.descripcion || '';
+        document.getElementById('mCafePrecio').value = i.precio;
+        document.getElementById('mCafeDisponible').value = i.disponible ? 'true' : 'false';
+        document.getElementById('mCafeImg').value = '';
+        const p = document.getElementById('mCafePrev'); p.src=''; p.style.display='none';
+        document.getElementById('modalCafe').style.display = 'flex';
+    } catch(e) { authErr(e); }
+}
+
+async function guardarItemCafeteria() {
+    const id = document.getElementById('mCafeId').value;
+    const fd = new FormData();
+    fd.append('nombre',      document.getElementById('mCafeNombre').value);
+    fd.append('categoria',   document.getElementById('mCafeCategoria').value);
+    fd.append('descripcion', document.getElementById('mCafeDesc').value);
+    fd.append('precio',      document.getElementById('mCafePrecio').value);
+    fd.append('disponible',  document.getElementById('mCafeDisponible').value);
+    const img = document.getElementById('mCafeImg').files[0];
+    if (img) fd.append('imagen', img);
+    try {
+        const r = await fetch(`${API}/api/cafeteria/${id}`, { method:'PUT', headers:{ Authorization:'Bearer '+token }, body:fd });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('✅ Ítem actualizado', 'ok');
+        document.getElementById('modalCafe').style.display = 'none';
+        cargarCafeteria();
+    } catch(e) { authErr(e); }
+}
+
+async function borrarItemCafeteria(id) {
+    if (!confirm('¿Eliminar este ítem del menú?')) return;
+    try {
+        const r = await fetch(`${API}/api/cafeteria/${id}`, { method:'DELETE', headers:{ Authorization:'Bearer '+token } });
+        const d = await r.json(); if (!r.ok) throw new Error(d.error||'Error');
+        toast('Ítem eliminado', 'ok'); cargarCafeteria();
+    } catch(e) { authErr(e); }
 }
 </script>
 </body>

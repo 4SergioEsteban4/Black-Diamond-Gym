@@ -1084,20 +1084,18 @@ nav {
 .price-card-3d.card-red .plan-label { color: rgba(255,255,255,.65); }
 .price-card-3d.card-red .price-tag { color: var(--white); text-shadow: 0 2px 12px rgba(0,0,0,.25); }
 .price-card-3d.card-red .price-tag span,
-.price-card-3d.card-red .price-tag small { color: rgba(255,255,255,.8); }
+.price-card-3d.card-red .price-tag small { color: rgba(255,255,255,.85); }
 .price-card-3d.card-red .plan-desc { color: rgba(255,255,255,.7); }
-.price-card-3d.card-red .features-3d li { color: rgba(255,255,255,.9); }
+.price-card-3d.card-red .features-3d li { color: rgba(255,255,255,.92); }
 .price-card-3d.card-red .features-3d li::before { color: rgba(255,255,255,.95); }
-.price-card-3d.card-red .features-3d li.feat-no { color: rgba(255,255,255,.35); }
-.price-card-3d.card-red .features-3d li.feat-no::before { content: '✕'; color: rgba(255,255,255,.3); }
+.price-card-3d.card-red .features-3d li.feat-no { color: rgba(255,255,255,.3); }
+.price-card-3d.card-red .features-3d li.feat-no::before { content: '✕'; color: rgba(255,255,255,.28); }
 .price-card-3d.card-red .popular-badge {
     background: var(--white);
     color: var(--red);
     font-weight: 900;
-    letter-spacing: 1.5px;
-    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
 }
-
 .price-card-3d.card-white { background: var(--white); border-color: #ddd; }
 .price-card-3d.card-white h3,
 .price-card-3d.card-white .price-tag { color: #111; }
@@ -1106,25 +1104,11 @@ nav {
 .price-card-3d.card-white .features-3d li::before { color: var(--red); }
 .price-card-3d.card-white .features-3d li.feat-no { color: #bbb; }
 .price-card-3d.card-white .features-3d li.feat-no::before { content: '✕'; color: #ccc; }
-
 .price-card-3d.card-dark { background: #1a1a1a; border-color: rgba(255,255,255,.12); }
 .price-card-3d.card-dark .features-3d li.feat-no { color: #444; }
 .price-card-3d.card-dark .features-3d li.feat-no::before { content: '✕'; color: #444; }
-
 .btn-plan.outline-white { border: 2px solid rgba(255,255,255,.6); color: var(--white); background: transparent; }
 .btn-plan.outline-white:hover { background: rgba(255,255,255,.18); border-color: var(--white); }
-
-/* popular-badge siempre visible encima de la tarjeta */
-.popular-badge {
-    position: absolute;
-    top: -14px; left: 50%; transform: translateX(-50%);
-    background: var(--red); color: var(--white);
-    padding: 5px 18px; border-radius: 20px;
-    font-size: .65rem; font-weight: 700; letter-spacing: 1.5px;
-    white-space: nowrap; font-family: var(--font-b);
-    z-index: 20;
-    box-shadow: 0 4px 12px rgba(0,0,0,.35);
-}
 
 /* ============================================================
    PRECIOS — CARRUSEL 3D
@@ -1171,15 +1155,6 @@ nav {
     justify-content: space-between;
     cursor: pointer;
     transition: all .8s cubic-bezier(.25,.46,.45,.94);
-}
-
-/* Inner clip para que el contenido no se salga pero el badge sí */
-.price-card-3d .card-inner-clip {
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    overflow: hidden;
-    pointer-events: none;
 }
 
 /* Imagen de fondo de la tarjeta */
@@ -1267,7 +1242,16 @@ nav {
 .btn-plan.outline { background: transparent; border: 1.5px solid #555; color: var(--white); }
 .btn-plan.red { background: var(--red); color: var(--white); box-shadow: 0 6px 20px rgba(227,28,37,.4); }
 
-/* popular-badge ya definido arriba en variantes de color */
+.popular-badge {
+    position: absolute;
+    top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--red); color: var(--white);
+    padding: 5px 18px; border-radius: 20px;
+    font-size: .65rem; font-weight: 700; letter-spacing: 1.5px;
+    white-space: nowrap; font-family: var(--font-b);
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
 
 /* Plan Día */
 .card-dia .price-tag { display: none; }
