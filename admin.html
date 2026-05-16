@@ -831,8 +831,12 @@ input[type=number]{-moz-appearance:textfield; appearance:textfield}
             <img id="mTarPrev" class="img-preview" src="" alt="">
         </div>
         <div class="form-group">
-            <label>Características (una por línea)</label>
-            <textarea id="mTarCaract" rows="5" placeholder="Clases de boxeo técnico&#10;Musculación incluida&#10;Funcional&#10;Cardiovascular"></textarea>
+            <label>Características (una por línea · empieza con <span style="color:#e31c25;font-family:monospace">-</span> para poner ✕ en vez de ✔)</label>
+            <textarea id="mTarCaract" rows="6" placeholder="Clases de boxeo técnico&#10;Musculación incluida&#10;Funcional&#10;Cardiovascular&#10;-Clases personalizadas&#10;-Acceso sauna"></textarea>
+            <p style="font-size:.65rem;color:#555;margin-top:6px;line-height:1.6;text-transform:none">
+                💡 Las líneas normales muestran <strong style="color:#2ecc71">✔</strong> verde.<br>
+                Las que empiezan con <code style="color:#e31c25;background:#1a0000;padding:1px 5px;border-radius:3px">-</code> muestran <strong style="color:#555">✕</strong> gris (lo que <em>no</em> incluye el plan).
+            </p>
         </div>
         <div class="form-row">
             <div class="form-group"><label>Orden</label><input type="number" id="mTarOrden" min="0"></div>

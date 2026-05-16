@@ -354,7 +354,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                         <div class="price-tag">${precio}<span><small>${t.periodo||'/mes'}</small></span></div>
                         <ul class="features-3d">
-                            ${feats.map(f => `<li>${f}</li>`).join('')}
+                            ${feats.map(f => {
+                                const isNo = f.startsWith('-');
+                                const texto = isNo ? f.slice(1).trim() : f.trim();
+                                return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
+                            }).join('')}
                         </ul>
                         <a href="https://wa.me/${window._waNumber||'573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color==='red'?'outline-white':'red'}">QUIERO ESTE PLAN</a>
                     </div>`;
