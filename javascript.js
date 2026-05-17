@@ -709,7 +709,6 @@ cargarGaleria();
 cargarPrecios();
 cargarVideos();
 cargarCatalogo();
-cargarCafeteria();
 cargarTextosSitio();
 
 
@@ -1096,7 +1095,7 @@ async function cargarCatalogo() {
 
 
 /* ================================================================
-   CAFETERÍA — carga pública desde /api/cafeteria
+   CAFETERÍA — carga pública desde /api/cafeteria (solo en /cafeteria)
 ================================================================ */
 async function cargarCafeteria() {
     const grid = document.getElementById('cafeteriaGrid');
@@ -1110,33 +1109,48 @@ async function cargarCafeteria() {
             grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Menú próximamente disponible.</div>';
             return;
         }
-        grid.innerHTML = items.map(i => {
-            const icono = CAT_ICONS[i.categoria] || '☕';
-            const precio = i.precio > 0 ? '$' + Number(i.precio).toLocaleString('es-CO') : 'CONSULTAR';
-            return `
-            <div class="catalogo-card sr-target">
-                <div class="catalogo-img-outer">
+
+        // Agrupar por categoría — sin repetir
+        const grupos = {};
+        items.forEach(i => {
+            const cat = i.categoria || 'Otros';
+            if (!grupos[cat]) grupos[cat] = [];
+            grupos[cat].push(i);
+        });
+
+        grid.innerHTML = Object.entries(grupos).map(([cat, productos]) => {
+            const icono = CAT_ICONS[cat] || '☕';
+            const cards = productos.map(i => {
+                const precio = i.precio > 0 ? '$' + Number(i.precio).toLocaleString('es-CO') : 'CONSULTAR';
+                return `
+                <div class="catalogo-card sr-target">
                     <div class="catalogo-img-wrap">
                         ${i.imagen_url
-                            ? `<div class="cslide-track" data-idx="0"><div class="cslide"><img src="${i.imagen_url}" alt="${i.nombre}" loading="lazy"></div></div>`
+                            ? `<img src="${i.imagen_url}" alt="${i.nombre}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`
                             : `<div class="catalogo-no-img" style="font-size:3.5rem">${icono}</div>`
                         }
-                        ${!i.disponible ? '<span class="catalogo-badge" style="background:#444">AGOTADO</span>' : ''}
-                        ${i.categoria ? `<span class="catalogo-badge" style="${i.disponible?'':'display:none'}">${icono} ${i.categoria}</span>` : ''}
+                        ${i.categoria ? `<span class="catalogo-badge">${icono} ${i.categoria}</span>` : ''}
                     </div>
-                </div>
-                <div class="catalogo-body">
-                    <span class="catalogo-cat">${icono} ${i.categoria || 'Cafetería'}</span>
-                    <h3 class="catalogo-nombre">${i.nombre}</h3>
-                    <p class="catalogo-desc">${i.descripcion || ''}</p>
-                    <div class="catalogo-footer">
-                        <span class="catalogo-precio">${precio}</span>
-                        <span class="catalogo-stock">${i.disponible ? '✅ Disponible' : '❌ Agotado'}</span>
+                    <div class="catalogo-body">
+                        <h3 class="catalogo-nombre">${i.nombre}</h3>
+                        <p class="catalogo-desc">${i.descripcion || ''}</p>
+                        <div class="catalogo-footer">
+                            <span class="catalogo-precio">${precio}</span>
+                        </div>
+                        <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20quisiera%20pedir:%20${encodeURIComponent(i.nombre)}" target="_blank" class="catalogo-btn">PEDIR AHORA</a>
                     </div>
-                    <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20quisiera%20pedir:%20${encodeURIComponent(i.nombre)}" target="_blank" class="catalogo-btn">PEDIR AHORA</a>
-                </div>
-            </div>`;
+                </div>`;
+            }).join('');
+
+            return `
+            <div style="grid-column:1/-1">
+                <h3 style="font-family:var(--font-h);font-size:1.6rem;letter-spacing:3px;color:var(--white);margin:32px 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)">
+                    ${icono} ${cat.toUpperCase()}
+                </h3>
+            </div>
+            ${cards}`;
         }).join('');
+
     } catch(e) { console.warn('Cafetería:', e.message); }
 }
 
