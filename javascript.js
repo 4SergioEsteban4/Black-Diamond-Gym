@@ -18,10 +18,10 @@
 ================================================================ */
 
 /* ── PANTALLA DE CARGA ── */
-(function() {
+(function () {
     const loader = document.getElementById('pageLoader');
     if (!loader) return;
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
         const msg = loader.querySelector('p:last-child');
         if (msg) msg.textContent = '✅ ¡Listo!';
         setTimeout(() => {
@@ -108,12 +108,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (horarioHoy) {
         // ── Hora actual en Colombia (UTC-5, sin horario de verano) ──
-        const ahora      = new Date();
-        const hoy        = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
-        const anio       = hoy.getFullYear();
-        const mes        = hoy.getMonth() + 1; // 1-12
-        const dia        = hoy.getDate();
-        const diaSemana  = hoy.getDay();       // 0=Dom … 6=Sáb
+        const ahora = new Date();
+        const hoy = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
+        const anio = hoy.getFullYear();
+        const mes = hoy.getMonth() + 1; // 1-12
+        const dia = hoy.getDate();
+        const diaSemana = hoy.getDay();       // 0=Dom … 6=Sáb
 
         // ── Calcular Semana Santa (Pascua) ──────────────────────
         // Algoritmo de Butcher para obtener el domingo de Pascua
@@ -137,8 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return d;
         }
 
-        const domPascua    = pascua(anio);
-        const juevesSanto  = agregarDias(domPascua, -3);
+        const domPascua = pascua(anio);
+        const juevesSanto = agregarDias(domPascua, -3);
         const viernesSanto = agregarDias(domPascua, -2);
 
         // ── Lista de festivos fijos colombianos ─────────────────
@@ -187,8 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const esFestivoMovil = festivosMoviles.some(f => {
             const fm = new Date(f.toLocaleString('en-US', { timeZone: 'America/Bogota' }));
             return fm.getFullYear() === anio &&
-                   (fm.getMonth() + 1) === mes &&
-                   fm.getDate() === dia;
+                (fm.getMonth() + 1) === mes &&
+                fm.getDate() === dia;
         });
 
         const esFestivo = esFestivoFijo || esFestivoMovil;
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Leer el delay personalizado desde la variable CSS --delay
             // Esto permite escalonar la animación de elementos en fila
             const estilos = getComputedStyle(entrada.target);
-            const delay   = parseFloat(estilos.getPropertyValue('--delay')) || 0;
+            const delay = parseFloat(estilos.getPropertyValue('--delay')) || 0;
 
             // Aplicar la animación con el delay correspondiente
             setTimeout(function () {
@@ -317,11 +317,11 @@ document.addEventListener('DOMContentLoaded', function () {
        - A mayor distancia angular del frente → menor escala y opacidad
     ============================================================ */
     /* ============================================================
-       PLANES — 3 carruseles 3D dinámicos desde API
+       PLAplanesTabNES — 3 carruseles 3D dinámicos desde API
     ============================================================ */
     async function cargarPlanesSecciones() {
         const tabsEl = document.getElementById('planesTabs');
-        const secEl  = document.getElementById('planesSecciones');
+        const secEl = document.getElementById('planesSecciones');
         if (!secEl) return;
 
         try {
@@ -332,8 +332,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Construir tabs
             tabsEl.innerHTML = secciones.map((s, i) =>
-                `<button class="planes-tab-btn${i===0?' active':''}" onclick="switchPlanesTab(${i})" data-sec="${s.id}">
-                    ${s.icono} ${s.nombre}
+                `<button class="planes-tab-btn${i === 0 ? ' active' : ''}" onclick="switchPlanesTab(${i})" data-sec="${s.id}">
+                    ${s.nombre}
                 </button>`
             ).join('');
 
@@ -341,38 +341,38 @@ document.addEventListener('DOMContentLoaded', function () {
             secEl.innerHTML = secciones.map((s, si) => {
                 const cards = s.tarjetas.map(t => {
                     const precio = '$' + Number(t.precio).toLocaleString('es-CO');
-                    const feats  = (t.caracteristicas||'').split('\n').filter(Boolean);
+                    const feats = (t.caracteristicas || '').split('\n').filter(Boolean);
                     const colorCls = t.color === 'red' ? 'card-red' : t.color === 'white' ? 'card-white' : 'card-dark';
                     return `
-                    <div class="price-card-3d ${colorCls}${t.destacado?' card-destacado':''}">
+                    <div class="price-card-3d ${colorCls}${t.destacado ? ' card-destacado' : ''}">
                         ${t.imagen_url ? `<img class="card-bg-img" src="${t.imagen_url}" alt="">` : ''}
                         ${t.destacado ? '<div class="popular-badge">MÁS POPULAR</div>' : ''}
                         <div class="card-top">
-                            <span class="plan-label">${t.etiqueta||''}</span>
+                            <span class="plan-label">${t.etiqueta || ''}</span>
                             <h3>${t.nombre}</h3>
                             ${t.descripcion ? `<p class="plan-desc">${t.descripcion}</p>` : ''}
                         </div>
-                        <div class="price-tag">${precio}<span><small>${t.periodo||'/mes'}</small></span></div>
+                        <div class="price-tag">${precio}<span><small>${t.periodo || '/mes'}</small></span></div>
                         <ul class="features-3d">
                             ${feats.map(f => {
-                                const isNo = f.startsWith('-');
-                                const texto = isNo ? f.slice(1).trim() : f.trim();
-                                return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
-                            }).join('')}
+                        const isNo = f.startsWith('-');
+                        const texto = isNo ? f.slice(1).trim() : f.trim();
+                        return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
+                    }).join('')}
                         </ul>
-                        <a href="https://wa.me/${window._waNumber||'573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color==='red'?'outline-white':'red'}">QUIERO ESTE PLAN</a>
+                        <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color === 'red' ? 'outline-white' : 'red'}">QUIERO ESTE PLAN</a>
                     </div>`;
                 }).join('');
 
                 const names = s.tarjetas.map(t => t.nombre);
                 return `
-                <div class="planes-seccion${si===0?'':' planes-seccion-hidden'}" data-sec-idx="${si}">
+                <div class="planes-seccion${si === 0 ? '' : ' planes-seccion-hidden'}" data-sec-idx="${si}">
                     <div class="carousel-3d-scene">
                         <div class="carousel-3d-track" id="carousel3d-${si}">${cards}</div>
                     </div>
                     <div class="carousel-3d-controls">
                         <button class="ctrl-btn" id="prevPlan-${si}">&#8592;</button>
-                        <span class="plan-indicator" id="planName-${si}">${names[0]||''}</span>
+                        <span class="plan-indicator" id="planName-${si}">${names[0] || ''}</span>
                         <button class="ctrl-btn" id="nextPlan-${si}">&#8594;</button>
                     </div>
                     <div class="carousel-3d-dots" id="dots3d-${si}"></div>
@@ -382,51 +382,51 @@ document.addEventListener('DOMContentLoaded', function () {
             // Iniciar cada carrusel
             secciones.forEach((s, si) => iniciarCarrusel3D(si, s.tarjetas.map(t => t.nombre)));
 
-        } catch(e) {
+        } catch (e) {
             console.warn('Error cargando planes:', e);
             secEl.innerHTML = '<p style="text-align:center;color:#555;padding:40px">No se pudieron cargar los planes.</p>';
         }
     }
 
-    window.switchPlanesTab = function(idx) {
-        document.querySelectorAll('.planes-tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
-        document.querySelectorAll('.planes-seccion').forEach((s,i) => {
-            s.classList.toggle('planes-seccion-hidden', i!==idx);
+    window.switchPlanesTab = function (idx) {
+        document.querySelectorAll('.planes-tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        document.querySelectorAll('.planes-seccion').forEach((s, i) => {
+            s.classList.toggle('planes-seccion-hidden', i !== idx);
         });
     };
 
     function iniciarCarrusel3D(si, nombres) {
-        const pista   = document.getElementById('carousel3d-' + si);
+        const pista = document.getElementById('carousel3d-' + si);
         const btnPrev = document.getElementById('prevPlan-' + si);
         const btnNext = document.getElementById('nextPlan-' + si);
-        const nombre  = document.getElementById('planName-' + si);
-        const puntos  = document.getElementById('dots3d-' + si);
+        const nombre = document.getElementById('planName-' + si);
+        const puntos = document.getElementById('dots3d-' + si);
         if (!pista) return;
 
         const tarjetas = Array.from(pista.querySelectorAll('.price-card-3d'));
-        const total    = tarjetas.length;
-        let actual     = 0;
-        let animando   = false;
-        const RADIO    = 560;
+        const total = tarjetas.length;
+        let actual = 0;
+        let animando = false;
+        const RADIO = 560;
 
         function posicionar() {
             const paso = 360 / total;
-            tarjetas.forEach(function(tarjeta, i) {
-                const angulo    = (i - actual) * paso;
-                const rad       = angulo * (Math.PI / 180);
-                const tx        = Math.sin(rad) * RADIO;
-                const tz        = Math.cos(rad) * RADIO - RADIO;
+            tarjetas.forEach(function (tarjeta, i) {
+                const angulo = (i - actual) * paso;
+                const rad = angulo * (Math.PI / 180);
+                const tx = Math.sin(rad) * RADIO;
+                const tz = Math.cos(rad) * RADIO - RADIO;
                 const anguloAbs = Math.abs(((angulo % 360) + 360) % 360);
-                const anguloNorm= anguloAbs > 180 ? 360 - anguloAbs : anguloAbs;
-                const t         = anguloNorm / 180;
-                tarjeta.style.transform = 'translateX('+tx+'px) translateZ('+tz+'px) rotateY('+(-angulo)+'deg)';
-                tarjeta.style.opacity   = 1 - t * 0.7;
-                tarjeta.style.zIndex    = Math.round((1 - t) * 10);
-                tarjeta.style.scale     = 1 - t * 0.42;
+                const anguloNorm = anguloAbs > 180 ? 360 - anguloAbs : anguloAbs;
+                const t = anguloNorm / 180;
+                tarjeta.style.transform = 'translateX(' + tx + 'px) translateZ(' + tz + 'px) rotateY(' + (-angulo) + 'deg)';
+                tarjeta.style.opacity = 1 - t * 0.7;
+                tarjeta.style.zIndex = Math.round((1 - t) * 10);
+                tarjeta.style.scale = 1 - t * 0.42;
                 tarjeta.classList.toggle('is-active', i === actual);
             });
             if (nombre) nombre.textContent = nombres[actual] || '';
-            puntos.querySelectorAll('.dot-3d').forEach(function(punto, i) {
+            puntos.querySelectorAll('.dot-3d').forEach(function (punto, i) {
                 punto.classList.toggle('active', i === actual);
             });
         }
@@ -436,28 +436,28 @@ document.addEventListener('DOMContentLoaded', function () {
             animando = true;
             actual = ((indice % total) + total) % total;
             posicionar();
-            setTimeout(function() { animando = false; }, 820);
+            setTimeout(function () { animando = false; }, 820);
         }
 
         for (let i = 0; i < total; i++) {
             const punto = document.createElement('button');
             punto.className = 'dot-3d' + (i === 0 ? ' active' : '');
-            punto.setAttribute('aria-label', 'Ver plan ' + (nombres[i]||i));
-            punto.addEventListener('click', function() { irA(i); });
+            punto.setAttribute('aria-label', 'Ver plan ' + (nombres[i] || i));
+            punto.addEventListener('click', function () { irA(i); });
             puntos.appendChild(punto);
         }
 
-        if (btnPrev) btnPrev.addEventListener('click', function() { irA(actual - 1); });
-        if (btnNext) btnNext.addEventListener('click', function() { irA(actual + 1); });
+        if (btnPrev) btnPrev.addEventListener('click', function () { irA(actual - 1); });
+        if (btnNext) btnNext.addEventListener('click', function () { irA(actual + 1); });
 
         let touchInicioX = 0;
-        pista.addEventListener('touchstart', function(e) { touchInicioX = e.touches[0].clientX; });
-        pista.addEventListener('touchend', function(e) {
+        pista.addEventListener('touchstart', function (e) { touchInicioX = e.touches[0].clientX; });
+        pista.addEventListener('touchend', function (e) {
             const dif = touchInicioX - e.changedTouches[0].clientX;
             if (Math.abs(dif) > 40) irA(actual + (dif > 0 ? 1 : -1));
         });
-        tarjetas.forEach(function(tarjeta, i) {
-            tarjeta.addEventListener('click', function() { if (i !== actual) irA(i); });
+        tarjetas.forEach(function (tarjeta, i) {
+            tarjeta.addEventListener('click', function () { if (i !== actual) irA(i); });
         });
 
         posicionar();
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cargarPlanesSecciones();
 
- 
+
 
 
     /* ============================================================
@@ -484,9 +484,9 @@ document.addEventListener('DOMContentLoaded', function () {
        correspondiente en el menú como "activo". Esto da feedback
        visual de en qué parte de la página se encuentra el usuario.
     ============================================================ */
-    const secciones   = document.querySelectorAll('main section[id]');
+    const secciones = document.querySelectorAll('main section[id]');
     const linksNavRaw = document.querySelectorAll('nav ul li a[href^="#"]');
-    const linksNav    = Array.from(linksNavRaw);
+    const linksNav = Array.from(linksNavRaw);
 
     if (secciones.length && linksNav.length) {
 
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Crear el elemento de la barra de progreso dinámicamente
     const barraProgreso = document.createElement('div');
-    barraProgreso.id    = 'barra-progreso';
+    barraProgreso.id = 'barra-progreso';
 
     // Estilos inline para que funcione sin necesitar CSS extra
     barraProgreso.style.cssText =
@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', function () {
         // Altura total de la página menos la altura de la ventana
         const alturaScrollable = document.documentElement.scrollHeight
-                               - document.documentElement.clientHeight;
+            - document.documentElement.clientHeight;
 
         // Porcentaje scrolleado (0% arriba, 100% abajo)
         const porcentaje = (window.scrollY / alturaScrollable) * 100;
@@ -596,28 +596,28 @@ document.addEventListener('DOMContentLoaded', function () {
             observadorLazy.observe(img);
         });
     }
-/* ── MENÚ MÓVIL — Hamburger ── */
-const hamburger  = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-const mobileClose = document.getElementById('mobileClose');
-const mobLinks   = document.querySelectorAll('.mob-link');
+    /* ── MENÚ MÓVIL — Hamburger ── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileClose = document.getElementById('mobileClose');
+    const mobLinks = document.querySelectorAll('.mob-link');
 
-if (hamburger && mobileMenu) {
-    hamburger.addEventListener('click', function () {
-        mobileMenu.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    });
-    mobileClose.addEventListener('click', function () {
-        mobileMenu.classList.remove('open');
-        document.body.style.overflow = '';
-    });
-    mobLinks.forEach(function (link) {
-        link.addEventListener('click', function () {
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function () {
+            mobileMenu.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+        mobileClose.addEventListener('click', function () {
             mobileMenu.classList.remove('open');
             document.body.style.overflow = '';
         });
-    });
-}
+        mobLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
 }); // AL ELIMINARLO NO MUESTRA ERROR
 
@@ -637,17 +637,17 @@ window.API_BASE = API_BASE;
 // ── Función principal — se llama al cargar y al pulsar "Reintentar" ──
 async function cargarNoticia() {
     const elLoading = document.getElementById('udLoading');
-    const elCard    = document.getElementById('udCard');
-    const elError   = document.getElementById('udError');
-    const elFecha   = document.getElementById('udFecha');
+    const elCard = document.getElementById('udCard');
+    const elError = document.getElementById('udError');
+    const elFecha = document.getElementById('udFecha');
 
     // Si la sección no existe en esta página, salir sin errores
     if (!elLoading) return;
 
     // Mostrar spinner, ocultar el resto
     elLoading.style.display = 'flex';
-    elCard.style.display    = 'none';
-    elError.style.display   = 'none';
+    elCard.style.display = 'none';
+    elError.style.display = 'none';
 
     // Fecha de hoy en la barra superior
     if (elFecha) {
@@ -659,19 +659,19 @@ async function cargarNoticia() {
 
     try {
         // ── Llamada al endpoint ──────────────────────────────
-        const res  = await fetch(`${API_BASE}/api/noticia`);
+        const res = await fetch(`${API_BASE}/api/noticia`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
         // ── Poblar el DOM con los datos recibidos ───────────
-        document.getElementById('udTitulo').textContent = data.titulo  || 'Sin título';
-        document.getElementById('udTexto').textContent  = data.contenido || '';
+        document.getElementById('udTitulo').textContent = data.titulo || 'Sin título';
+        document.getElementById('udTexto').textContent = data.contenido || '';
 
         // Autor / fecha de publicación
         const autor = document.getElementById('udAuthor');
         if (autor) {
             const pubDate = data.fecha_publicacion
-                ? new Date(data.fecha_publicacion).toLocaleDateString('es-CO', { day:'numeric', month:'short', year:'numeric' })
+                ? new Date(data.fecha_publicacion).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })
                 : '';
             autor.textContent = pubDate
                 ? `Publicado el ${pubDate} · Black Diamond Gym`
@@ -680,10 +680,10 @@ async function cargarNoticia() {
 
         // Imagen opcional
         const imgWrap = document.getElementById('udImgWrap');
-        const img     = document.getElementById('udImg');
+        const img = document.getElementById('udImg');
         if (data.imagen_url && imgWrap && img) {
-            img.src              = data.imagen_url;
-            img.alt              = data.titulo || 'Noticia del día';
+            img.src = data.imagen_url;
+            img.alt = data.titulo || 'Noticia del día';
             imgWrap.style.display = 'block';
             elCard.classList.add('has-image');   // activa layout de 2 columnas
         } else {
@@ -693,12 +693,12 @@ async function cargarNoticia() {
 
         // ── Mostrar la tarjeta con animación ────────────────
         elLoading.style.display = 'none';
-        elCard.style.display    = 'grid';
+        elCard.style.display = 'grid';
 
     } catch (err) {
         console.error('Error al cargar la noticia:', err);
         elLoading.style.display = 'none';
-        elError.style.display   = 'flex';
+        elError.style.display = 'flex';
     }
 }
 
@@ -717,7 +717,7 @@ cargarTextosSitio();
 ================================================================ */
 async function cargarImagenes() {
     try {
-        const res  = await fetch(`${API_BASE}/api/imagenes`);
+        const res = await fetch(`${API_BASE}/api/imagenes`);
         if (!res.ok) return;
         const imgs = await res.json();
         imgs.forEach(({ clave, url }) => {
@@ -726,7 +726,7 @@ async function cargarImagenes() {
                 if (hero) {
                     hero.style.backgroundImage =
                         `linear-gradient(135deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,.6) 100%),url('${url}')`;
-                    hero.style.backgroundSize     = 'cover';
+                    hero.style.backgroundSize = 'cover';
                     hero.style.backgroundPosition = 'center';
                 }
             } else if (clave === 'logo_icono') {
@@ -740,7 +740,7 @@ async function cargarImagenes() {
                 if (el) el.src = url;
             }
         });
-    } catch(e) { console.warn('Imágenes dinámicas:', e.message); }
+    } catch (e) { console.warn('Imágenes dinámicas:', e.message); }
 }
 
 
@@ -748,7 +748,7 @@ async function cargarImagenes() {
    14. GALERÍA DE FOTOS — dinámica desde /api/galeria
 ================================================================ */
 async function cargarGaleria() {
-    const grid    = document.getElementById('photoGrid');
+    const grid = document.getElementById('photoGrid');
     const loading = document.getElementById('photoGridLoading');
     if (!grid) return;
     try {
@@ -780,7 +780,7 @@ async function cargarGaleria() {
                 el.style.transform = 'none';
             });
         }
-    } catch(e) {
+    } catch (e) {
         if (loading) loading.remove();
         console.warn('Galería:', e.message);
     }
@@ -791,7 +791,7 @@ async function cargarGaleria() {
 ================================================================ */
 async function cargarPrecios() {
     try {
-        const res    = await fetch(`${API_BASE}/api/planes`);
+        const res = await fetch(`${API_BASE}/api/planes`);
         if (!res.ok) return;
         const planes = await res.json();
         planes.forEach(({ clave, nombre, descripcion, precio, periodo }) => {
@@ -808,8 +808,8 @@ async function cargarPrecios() {
                 if (card) {
                     card.style.display = 'block';
                     const labelEl = document.getElementById('plan-extra-label');
-                    const nomEl   = document.getElementById('plan-extra-nombre');
-                    const desEl   = document.getElementById('plan-extra-desc');
+                    const nomEl = document.getElementById('plan-extra-nombre');
+                    const desEl = document.getElementById('plan-extra-desc');
                     const priceWrap = document.getElementById('precio-extra-num');
                     if (labelEl) labelEl.textContent = periodo || 'NUEVO PLAN';
                     if (nomEl && nombre) nomEl.textContent = nombre;
@@ -851,7 +851,7 @@ async function cargarPrecios() {
             if (nomEl && nombre) nomEl.textContent = nombre;
             if (desEl && descripcion) desEl.textContent = descripcion;
         });
-    } catch(e) { console.warn('Precios dinámicos:', e.message); }
+    } catch (e) { console.warn('Precios dinámicos:', e.message); }
 }
 
 
@@ -875,7 +875,7 @@ async function getInstagramThumb(url) {
             // Instagram permite la imagen del post via embed thumbnail
             return `https://www.instagram.com/p/${match[1]}/media/?size=m`;
         }
-    } catch(e) { /* noop */ }
+    } catch (e) { /* noop */ }
     return null;
 }
 
@@ -891,15 +891,15 @@ async function getTikTokThumb(url) {
                 return data.thumbnail_url || null;
             }
         }
-    } catch(e) { /* noop */ }
+    } catch (e) { /* noop */ }
     return null;
 }
 
 /* ── Thumbnails de fallback por plataforma ── */
 const PLATFORM_THUMBS = {
     instagram: 'MEDIA/instagram.png',
-    tiktok:    null, // Sin thumbnail confiable → se mantiene el placeholder genérico
-    facebook:  'MEDIA/facebook.png',
+    tiktok: null, // Sin thumbnail confiable → se mantiene el placeholder genérico
+    facebook: 'MEDIA/facebook.png',
 };
 
 /* ── Placeholder SVG mientras carga ── */
@@ -909,7 +909,7 @@ async function cargarVideos() {
     const grid = document.getElementById('videoGrid');
     if (!grid) return;
     try {
-        const res    = await fetch(`${API_BASE}/api/videos`);
+        const res = await fetch(`${API_BASE}/api/videos`);
         if (!res.ok) { grid.innerHTML = ''; return; }
         const videos = await res.json();
         if (!videos.length) {
@@ -938,13 +938,13 @@ async function cargarVideos() {
         // Cargar thumbnails reales de forma asíncrona
         videos.forEach(async (v, i) => {
             let thumb = null;
-if (v.plataforma === 'instagram') {
-    thumb = PLATFORM_THUMBS.instagram;
-} else if (v.plataforma === 'tiktok') {
+            if (v.plataforma === 'instagram') {
+                thumb = PLATFORM_THUMBS.instagram;
+            } else if (v.plataforma === 'tiktok') {
                 thumb = await getTikTokThumb(v.url);
-} else if (v.plataforma === 'facebook') {
-    thumb = PLATFORM_THUMBS.facebook;
-}
+            } else if (v.plataforma === 'facebook') {
+                thumb = PLATFORM_THUMBS.facebook;
+            }
             if (thumb) {
                 const img = document.getElementById(`vthumb-${i}`);
                 if (img) {
@@ -956,7 +956,7 @@ if (v.plataforma === 'instagram') {
             }
         });
 
-    } catch(e) { console.warn('Videos:', e.message); }
+    } catch (e) { console.warn('Videos:', e.message); }
 }
 
 /* ── Abrir modal con embed de la plataforma ── */
@@ -964,12 +964,12 @@ function abrirVideoModal(index) {
     const v = window._videosData?.[index];
     if (!v) return;
 
-    const modal   = document.getElementById('videoModal');
+    const modal = document.getElementById('videoModal');
     const content = document.getElementById('videoModalContent');
     if (!modal || !content) return;
 
     const plat = v.plataforma;
-    const url  = v.url;
+    const url = v.url;
     let embedHTML = '';
 
     if (plat === 'instagram') {
@@ -995,8 +995,8 @@ function abrirVideoModal(index) {
                 style="max-width:340px;display:block;margin:0 auto;border-radius:12px"></iframe>`;
         }
     } else if (plat === 'facebook') {
-    embedHTML = '';
-}
+        embedHTML = '';
+    }
 
     // Si no se pudo generar embed → mostrar botón de fallback
     if (!embedHTML) {
@@ -1042,7 +1042,7 @@ async function cargarCatalogo() {
     const grid = document.getElementById('catalogoGrid');
     if (!grid) return;
     try {
-        const res      = await fetch(`${API_BASE}/api/catalogo`);
+        const res = await fetch(`${API_BASE}/api/catalogo`);
         if (!res.ok) { grid.innerHTML = ''; return; }
         const productos = await res.json();
         if (!productos.length) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Próximamente productos disponibles.</div>'; return; }
@@ -1064,7 +1064,7 @@ async function cargarCatalogo() {
                     ${imgs.length > 1 ? `
                     <button class="cslide-arrow cslide-prev" onclick="cSlide(this,-1)" aria-label="Anterior">&#8592;</button>
                     <button class="cslide-arrow cslide-next" onclick="cSlide(this,1)" aria-label="Siguiente">&#8594;</button>
-                    <div class="cslide-dots">${imgs.map((_,i) => `<span class="csdot${i===0?' active':''}" data-i="${i}"></span>`).join('')}</div>` : ''}
+                    <div class="cslide-dots">${imgs.map((_, i) => `<span class="csdot${i === 0 ? ' active' : ''}" data-i="${i}"></span>`).join('')}</div>` : ''}
                     <div class="catalogo-img-wrap">
                         <div class="cslide-track" data-idx="0">${slides}</div>
                         ${p.categoria ? `<span class="catalogo-badge">${p.categoria}</span>` : ''}
@@ -1082,7 +1082,7 @@ async function cargarCatalogo() {
                 </div>
             </div>`;
         }).join('');
-    } catch(e) { console.warn('Catálogo:', e.message); }
+    } catch (e) { console.warn('Catálogo:', e.message); }
 }
 
 
@@ -1091,32 +1091,32 @@ async function cargarCatalogo() {
 ================================================================ */
 /* ── Actualizar hint de contacto en tiempo real ── */
 function actualizarReqContacto() {
-    const nombre   = (document.getElementById('cf-nombre')?.value  || '').trim();
-    const email    = (document.getElementById('cf-email')?.value   || '').trim();
-    const wa       = (document.getElementById('cf-whatsapp')?.value|| '').trim();
-    const hint     = document.getElementById('cf-contacto-hint');
-    const btn      = document.getElementById('cf-btn');
+    const nombre = (document.getElementById('cf-nombre')?.value || '').trim();
+    const email = (document.getElementById('cf-email')?.value || '').trim();
+    const wa = (document.getElementById('cf-whatsapp')?.value || '').trim();
+    const hint = document.getElementById('cf-contacto-hint');
+    const btn = document.getElementById('cf-btn');
     const waDigits = wa.replace(/\D/g, '');
     const emailValido = email.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const waValido    = waDigits.length >= 10;
+    const waValido = waDigits.length >= 10;
 
-    let hintMsg   = '';
+    let hintMsg = '';
     let hintColor = '#888';
 
     if (!email && !wa) {
-        hintMsg   = '⚡ Ingresa tu correo <strong>o</strong> WhatsApp';
+        hintMsg = '⚡ Ingresa tu correo <strong>o</strong> WhatsApp';
         hintColor = '#e31c25';
     } else if (email && !emailValido && !wa) {
-        hintMsg   = '⚡ Correo inválido — ej: nombre@gmail.com';
+        hintMsg = '⚡ Correo inválido — ej: nombre@gmail.com';
         hintColor = '#e31c25';
     } else if (email && !emailValido && wa && !waValido) {
-        hintMsg   = '⚡ Correo inválido y WhatsApp muy corto';
+        hintMsg = '⚡ Correo inválido y WhatsApp muy corto';
         hintColor = '#e31c25';
     } else if (wa && !waValido && !emailValido) {
-        hintMsg   = '⚡ WhatsApp muy corto (mín. 10 dígitos)';
+        hintMsg = '⚡ WhatsApp muy corto (mín. 10 dígitos)';
         hintColor = '#e31c25';
     } else {
-        hintMsg   = '✅ Contacto válido';
+        hintMsg = '✅ Contacto válido';
         hintColor = '#25d366';
     }
 
@@ -1133,9 +1133,9 @@ async function enviarSolicitud(e) {
     btn.classList.remove('btn-error', 'btn-success', 'btn-loading');
     clearTimeout(btn._errTimer);
 
-    const nombre   = (document.getElementById('cf-nombre')?.value  || '').trim();
-    const email    = (document.getElementById('cf-email')?.value   || '').trim() || null;
-    const whatsapp = (document.getElementById('cf-whatsapp')?.value|| '').trim() || null;
+    const nombre = (document.getElementById('cf-nombre')?.value || '').trim();
+    const email = (document.getElementById('cf-email')?.value || '').trim() || null;
+    const whatsapp = (document.getElementById('cf-whatsapp')?.value || '').trim() || null;
     const waDigits = whatsapp ? whatsapp.replace(/\D/g, '') : '';
 
     // Mostrar error EN el botón y volver a normal en 3.5s
@@ -1155,14 +1155,14 @@ async function enviarSolicitud(e) {
 
     // — Validaciones —
     const emailValido = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const waValido    = whatsapp && waDigits.length >= 10;
+    const waValido = whatsapp && waDigits.length >= 10;
 
     const plan = document.getElementById('cf-plan')?.value || '';
-    if (!nombre)               return btnError('Falta tu nombre');
-    if (!email && !whatsapp)   return btnError('Falta correo o WhatsApp');
+    if (!nombre) return btnError('Falta tu nombre');
+    if (!email && !whatsapp) return btnError('Falta correo o WhatsApp');
     if (email && !emailValido) return btnError('Correo inválido');
     if (whatsapp && !waValido) return btnError('WhatsApp muy corto');
-    if (!plan)                 return btnError('Elige un plan');
+    if (!plan) return btnError('Elige un plan');
 
     // — Estado: cargando —
     btn.textContent = 'ENVIANDO...';
@@ -1178,7 +1178,7 @@ async function enviarSolicitud(e) {
                 email,
                 whatsapp,
                 plan_interes: document.getElementById('cf-plan')?.value || null,
-                mensaje     : (document.getElementById('cf-mensaje')?.value || '').trim() || null,
+                mensaje: (document.getElementById('cf-mensaje')?.value || '').trim() || null,
             })
         });
 
@@ -1186,7 +1186,7 @@ async function enviarSolicitud(e) {
 
         if (!res.ok) {
             let msg = '';
-            try { msg = (await res.json()).error || ''; } catch(_) {}
+            try { msg = (await res.json()).error || ''; } catch (_) { }
             return btnError(msg || `Error ${res.status} — intenta de nuevo`);
         }
 
@@ -1201,7 +1201,7 @@ async function enviarSolicitud(e) {
             btn.textContent = 'QUIERO INFORMACIÓN';
         }, 4000);
 
-    } catch(err) {
+    } catch (err) {
         btn.classList.remove('btn-loading');
         btnError('Sin conexión — intenta de nuevo');
     } finally {
@@ -1216,7 +1216,7 @@ function abrirZoom(el) {
     const img = el.querySelector('img');
     if (!img) return;
     const modal = document.getElementById('zoomModal');
-    const zi    = document.getElementById('zoomImg');
+    const zi = document.getElementById('zoomImg');
     if (!modal || !zi) return;
     zi.src = img.src;
     zi.alt = img.alt;
@@ -1287,25 +1287,25 @@ async function cargarTextosSitio() {
         if (nosPs[0] && t['nos-p1']) nosPs[0].textContent = t['nos-p1'];
         if (nosPs[1] && t['nos-p2']) nosPs[1].textContent = t['nos-p2'];
         [1, 2, 3].forEach(i => {
-            const numEl   = document.getElementById(`stat-num-${i}`);
-            const sufEl   = document.getElementById(`stat-suf-${i}`);
+            const numEl = document.getElementById(`stat-num-${i}`);
+            const sufEl = document.getElementById(`stat-suf-${i}`);
             const labelEl = document.getElementById(`stat-label-${i}`);
             const key = `nos-s${i}`;
             if (numEl && t[key]) {
                 const val = parseInt(t[key]);
                 numEl.dataset.target = val;
-                numEl.textContent    = val;
+                numEl.textContent = val;
             }
-            if (sufEl   && t[key + '-suf']   !== undefined) sufEl.textContent   = t[key + '-suf'];
-            if (labelEl && t[key + '-label'])                labelEl.innerHTML   = t[key + '-label'].replace(/\n/g, '<br>');
+            if (sufEl && t[key + '-suf'] !== undefined) sufEl.textContent = t[key + '-suf'];
+            if (labelEl && t[key + '-label']) labelEl.innerHTML = t[key + '-label'].replace(/\n/g, '<br>');
         });
 
         // ── CARACTERÍSTICAS DE PRECIOS ─────────────────────────
         const featKeys = [
-            'feat-boxeo-1','feat-boxeo-2','feat-boxeo-3','feat-boxeo-4','feat-boxeo-5',
-            'feat-gym-1',  'feat-gym-2',  'feat-gym-3',  'feat-gym-4',  'feat-gym-5',
-            'feat-valera-1','feat-valera-2','feat-valera-3','feat-valera-4','feat-valera-5',
-            'feat-extra-1','feat-extra-2','feat-extra-3','feat-extra-4','feat-extra-5',
+            'feat-boxeo-1', 'feat-boxeo-2', 'feat-boxeo-3', 'feat-boxeo-4', 'feat-boxeo-5',
+            'feat-gym-1', 'feat-gym-2', 'feat-gym-3', 'feat-gym-4', 'feat-gym-5',
+            'feat-valera-1', 'feat-valera-2', 'feat-valera-3', 'feat-valera-4', 'feat-valera-5',
+            'feat-extra-1', 'feat-extra-2', 'feat-extra-3', 'feat-extra-4', 'feat-extra-5',
         ];
         featKeys.forEach(k => {
             const el = document.getElementById(k);
@@ -1313,7 +1313,7 @@ async function cargarTextosSitio() {
         });
 
         // ── COLABORAR ─────────────────────────────────────────
-        ['colab-titulo','colab-desc','colab-btn-wa','colab-btn-form'].forEach(k => {
+        ['colab-titulo', 'colab-desc', 'colab-btn-wa', 'colab-btn-form'].forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
@@ -1331,41 +1331,41 @@ async function cargarTextosSitio() {
         if (ctaP && t['hor-cta-desc']) ctaP.textContent = t['hor-cta-desc'];
 
         // ── SERVICIOS ─────────────────────────────────────────
-        const servClaves = ['serv-titulo','serv-sub','serv1-titulo','serv1-desc','serv1-tag',
-            'serv2-titulo','serv2-desc','serv2-tag','serv3-titulo','serv3-desc','serv3-tag',
-            'serv-amenity1','serv-amenity2'];
+        const servClaves = ['serv-titulo', 'serv-sub', 'serv1-titulo', 'serv1-desc', 'serv1-tag',
+            'serv2-titulo', 'serv2-desc', 'serv2-tag', 'serv3-titulo', 'serv3-desc', 'serv3-tag',
+            'serv-amenity1', 'serv-amenity2'];
         servClaves.forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
         // ── CATEGORÍAS ────────────────────────────────────────
-        const catClaves = ['cat-titulo','cat1-titulo','cat1-item1','cat1-item2','cat1-item3','cat1-desc',
-            'cat2-titulo','cat2-item1','cat2-item2','cat2-item3','cat2-desc',
-            'cat3-titulo','cat3-desc','cat3-btn'];
+        const catClaves = ['cat-titulo', 'cat1-titulo', 'cat1-item1', 'cat1-item2', 'cat1-item3', 'cat1-desc',
+            'cat2-titulo', 'cat2-item1', 'cat2-item2', 'cat2-item3', 'cat2-desc',
+            'cat3-titulo', 'cat3-desc', 'cat3-btn'];
         catClaves.forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
         // ── NOSOTROS extra ────────────────────────────────────
-        ['nos-titulo','nos-est-ano','nos-btn','nos-stat1-suf','nos-stat1-label',
-         'nos-stat2-suf','nos-stat2-label','nos-stat3-suf','nos-stat3-label'].forEach(k => {
-            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k] !== undefined) el.textContent = t[k]; });
-        });
+        ['nos-titulo', 'nos-est-ano', 'nos-btn', 'nos-stat1-suf', 'nos-stat1-label',
+            'nos-stat2-suf', 'nos-stat2-label', 'nos-stat3-suf', 'nos-stat3-label'].forEach(k => {
+                document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k] !== undefined) el.textContent = t[k]; });
+            });
 
         // ── PRECIOS extra ─────────────────────────────────────
-        ['precio-titulo','precio-sub','precio-footer'].forEach(k => {
+        ['precio-titulo', 'precio-sub', 'precio-footer'].forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
         });
 
         // ── GALERÍA y CONTACTO extra ──────────────────────────
-        ['gal-titulo','gal-sub','cont-titulo','cont-sub','cont-form-titulo','cont-form-sub','cont-promo',
-         'cat-dep-titulo','cat-dep-sub','gal-social-txt','gal-social-nombre',
-         'cont-ubicacion-dir','cont-ubicacion-barrio','cont-ubicacion-ciudad','cont-wa-txt',
-         'footer-tagline','footer-dir','hero-eyebrow','hero-btn1','hero-btn2',
-         'nos-stat1-num','nos-stat2-num','nos-stat3-num',
-         'plan-boxeo-label','plan-gym-label','plan-valera-label','plan-dia-titulo','plan-dia-desc'].forEach(k => {
-            document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
-        });
+        ['gal-titulo', 'gal-sub', 'cont-titulo', 'cont-sub', 'cont-form-titulo', 'cont-form-sub', 'cont-promo',
+            'cat-dep-titulo', 'cat-dep-sub', 'gal-social-txt', 'gal-social-nombre',
+            'cont-ubicacion-dir', 'cont-ubicacion-barrio', 'cont-ubicacion-ciudad', 'cont-wa-txt',
+            'footer-tagline', 'footer-dir', 'hero-eyebrow', 'hero-btn1', 'hero-btn2',
+            'nos-stat1-num', 'nos-stat2-num', 'nos-stat3-num',
+            'plan-boxeo-label', 'plan-gym-label', 'plan-valera-label', 'plan-dia-titulo', 'plan-dia-desc'].forEach(k => {
+                document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
+            });
 
         // ── CONTACTO / FOOTER ─────────────────────────────────
         if (t['con-wa']) {
@@ -1382,7 +1382,7 @@ async function cargarTextosSitio() {
 
             // Actualizar textos visibles que muestran el número
             const waLocal = wa.startsWith('57') ? wa.slice(2) : wa;
-            const waFormato = `${waLocal.slice(0,3)} ${waLocal.slice(3,6)} ${waLocal.slice(6,10)}`;
+            const waFormato = `${waLocal.slice(0, 3)} ${waLocal.slice(3, 6)} ${waLocal.slice(6, 10)}`;
             document.querySelectorAll('a[href*="wa.me"]').forEach(a => {
                 if (a.textContent.match(/\d{3}[\s.]\d{3}[\s.]\d{3,4}/)) {
                     a.textContent = waFormato;
@@ -1400,16 +1400,16 @@ async function cargarTextosSitio() {
         const dirEls = document.querySelectorAll('.footer-dir, .contact-dir');
         if (t['con-dir']) dirEls.forEach(el => el.textContent = t['con-dir']);
 
-    } catch(e) { console.warn('Textos dinámicos:', e.message); }
+    } catch (e) { console.warn('Textos dinámicos:', e.message); }
 }/* ================================================================
    MEJORAS VISUALES — Pegar al final de javascript.js
 ================================================================ */
 
 /* Parallax suave en hero */
-(function() {
+(function () {
     var hero = document.querySelector('.hero-section');
     if (!hero || window.innerWidth < 768) return;
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         if (window.scrollY < window.innerHeight) {
             hero.style.backgroundPositionY = 'calc(50% + ' + (window.scrollY * 0.3) + 'px)';
         }
@@ -1417,35 +1417,35 @@ async function cargarTextosSitio() {
 })();
 
 /* Hover 3D en tarjetas */
-(function() {
-    document.querySelectorAll('.service-card, .info-card').forEach(function(card) {
-        card.addEventListener('mousemove', function(e) {
+(function () {
+    document.querySelectorAll('.service-card, .info-card').forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
             var rect = card.getBoundingClientRect();
             var x = (e.clientX - rect.left) / rect.width - 0.5;
             var y = (e.clientY - rect.top) / rect.height - 0.5;
             card.style.transform = 'perspective(600px) rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 6) + 'deg) translateY(-4px)';
         });
-        card.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function () {
             card.style.transform = '';
         });
     });
 })();
 
 /* WA flotante: animacion de entrada */
-(function() {
+(function () {
     var btn = document.querySelector('.float-wa');
     if (!btn) return;
     btn.style.opacity = '0';
     btn.style.transform = 'scale(0)';
     btn.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-    setTimeout(function() {
+    setTimeout(function () {
         btn.style.opacity = '1';
         btn.style.transform = 'scale(1)';
     }, 2000);
 })();
 
 /* ── MODO CLARO / OSCURO ── */
-(function() {
+(function () {
     var btn = document.getElementById('themeToggle');
     if (!btn) return;
     var saved = localStorage.getItem('bdg_theme');
@@ -1453,7 +1453,7 @@ async function cargarTextosSitio() {
         document.body.classList.add('light-mode');
         btn.textContent = '☀️';
     }
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
         var isLight = document.body.classList.toggle('light-mode');
         btn.textContent = isLight ? '☀️' : '🌙';
         localStorage.setItem('bdg_theme', isLight ? 'light' : 'dark');
@@ -1461,33 +1461,33 @@ async function cargarTextosSitio() {
 })();
 
 /* Favicon dinamico desde API */
-(function() {
+(function () {
     var API = window.location.origin;
     fetch(API + '/api/imagenes')
-        .then(function(r) { return r.json(); })
-        .then(function(imgs) {
-            var fav = imgs.find(function(i) { return i.clave === 'favicon'; });
+        .then(function (r) { return r.json(); })
+        .then(function (imgs) {
+            var fav = imgs.find(function (i) { return i.clave === 'favicon'; });
             if (fav && fav.url) {
                 var link = document.getElementById('site-favicon');
                 if (link) link.href = fav.url;
             }
         })
-        .catch(function() {});
+        .catch(function () { });
 })();
 
 /* ── CATÁLOGO SLIDER ── */
 function cSlide(btn, dir) {
-    var outer  = btn.closest('.catalogo-img-outer');
-    var track  = outer.querySelector('.cslide-track');
+    var outer = btn.closest('.catalogo-img-outer');
+    var track = outer.querySelector('.cslide-track');
     var slides = track.querySelectorAll('.cslide');
-    var dots   = outer.querySelectorAll('.csdot');
-    var total  = slides.length;
+    var dots = outer.querySelectorAll('.csdot');
+    var total = slides.length;
     if (total < 2) return;
     var current = parseInt(track.dataset.idx) || 0;
     current = (current + dir + total) % total;
     track.dataset.idx = current;
     track.style.transform = 'translateX(-' + (current * 100) + '%)';
-    dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -1495,11 +1495,11 @@ function cSlide(btn, dir) {
    Activa con: activarModoEdicion(token)
    Disponible desde admin.html via postMessage o URL param
 ════════════════════════════════════════════════════════════ */
-(function() {
+(function () {
     var _editToken = null;
     var _editClave = null;
-    var _editEl    = null;
-    var _toast     = null;
+    var _editEl = null;
+    var _toast = null;
 
     // ── Crear toast ──
     function crearToast() {
@@ -1513,29 +1513,29 @@ function cSlide(btn, dir) {
         crearToast();
         _toast.textContent = msg;
         _toast.style.borderColor = tipo === 'err' ? '#e31c25' : '#25d366';
-        _toast.style.color       = tipo === 'err' ? '#e31c25' : '#25d366';
+        _toast.style.color = tipo === 'err' ? '#e31c25' : '#25d366';
         _toast.classList.add('show');
         setTimeout(() => _toast.classList.remove('show'), 2500);
     }
 
     // ── Activar modo edición ──
-    window.activarModoEdicion = function(token) {
+    window.activarModoEdicion = function (token) {
         _editToken = token;
         document.getElementById('edit-toolbar').style.display = 'block';
         document.body.classList.add('edit-mode');
 
         // Click en elementos editables
-        document.querySelectorAll('[data-editable]').forEach(function(el) {
+        document.querySelectorAll('[data-editable]').forEach(function (el) {
             el.addEventListener('click', onEditClick, true);
         });
     };
 
     // ── Salir modo edición ──
-    window.salirModoEdicion = function() {
+    window.salirModoEdicion = function () {
         _editToken = null;
         document.getElementById('edit-toolbar').style.display = 'none';
         document.body.classList.remove('edit-mode');
-        document.querySelectorAll('[data-editable]').forEach(function(el) {
+        document.querySelectorAll('[data-editable]').forEach(function (el) {
             el.removeEventListener('click', onEditClick, true);
         });
     };
@@ -1544,35 +1544,35 @@ function cSlide(btn, dir) {
     function onEditClick(e) {
         e.preventDefault();
         e.stopPropagation();
-        var el   = this;
+        var el = this;
         var tipo = el.dataset.editable;
         var clave = el.dataset.clave;
 
         if (tipo === 'texto') {
             _editClave = clave;
-            _editEl    = el;
-            var modal  = document.getElementById('edit-text-modal');
-            var area   = document.getElementById('edit-text-area');
+            _editEl = el;
+            var modal = document.getElementById('edit-text-modal');
+            var area = document.getElementById('edit-text-area');
             area.value = el.innerText.trim();
             modal.style.display = 'flex';
         } else if (tipo === 'imagen') {
             _editClave = clave;
-            _editEl    = el;
+            _editEl = el;
             var inp = document.getElementById('edit-file-input');
-            inp.onchange = function() { subirImagenEdit(inp.files[0]); };
+            inp.onchange = function () { subirImagenEdit(inp.files[0]); };
             inp.value = '';
             inp.click();
         }
     }
 
     // ── Cerrar modal texto ──
-    window.cerrarEditModal = function() {
+    window.cerrarEditModal = function () {
         document.getElementById('edit-text-modal').style.display = 'none';
         _editClave = null; _editEl = null;
     };
 
     // ── Guardar texto ──
-    window.guardarTextoEdit = function() {
+    window.guardarTextoEdit = function () {
         var valor = document.getElementById('edit-text-area').value.trim();
         if (!valor || !_editClave || !_editToken) return;
         var payload = {};
@@ -1581,12 +1581,12 @@ function cSlide(btn, dir) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
             body: JSON.stringify(payload)
-        }).then(function(r) { return r.json(); }).then(function(d) {
+        }).then(function (r) { return r.json(); }).then(function (d) {
             if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
             if (_editEl) _editEl.innerText = valor;
             cerrarEditModal();
             mostrarEditToast('✅ Texto guardado');
-        }).catch(function() { mostrarEditToast('❌ Error al guardar', 'err'); });
+        }).catch(function () { mostrarEditToast('❌ Error al guardar', 'err'); });
     };
 
     // ── Subir imagen ──
@@ -1599,52 +1599,52 @@ function cSlide(btn, dir) {
             method: 'PUT',
             headers: { 'Authorization': 'Bearer ' + _editToken },
             body: fd
-        }).then(function(r) { return r.json(); }).then(function(d) {
+        }).then(function (r) { return r.json(); }).then(function (d) {
             if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
             if (_editEl) _editEl.src = d.url;
             mostrarEditToast('✅ Imagen actualizada');
-        }).catch(function() { mostrarEditToast('❌ Error al subir', 'err'); });
+        }).catch(function () { mostrarEditToast('❌ Error al subir', 'err'); });
     }
 
     // ── Galería editor ──
-    window.abrirGaleriaEditor = function() {
+    window.abrirGaleriaEditor = function () {
         var modal = document.getElementById('edit-galeria-modal');
         modal.style.display = 'flex';
         cargarGaleriaEditor();
     };
 
-    window.cerrarGaleriaEditor = function() {
+    window.cerrarGaleriaEditor = function () {
         document.getElementById('edit-galeria-modal').style.display = 'none';
     };
 
     function cargarGaleriaEditor() {
         var grid = document.getElementById('edit-galeria-grid');
         grid.innerHTML = '<p style="color:#333;font-size:.8rem">Cargando...</p>';
-        fetch(window.API_BASE + '/api/galeria').then(function(r) { return r.json(); }).then(function(fotos) {
+        fetch(window.API_BASE + '/api/galeria').then(function (r) { return r.json(); }).then(function (fotos) {
             if (!fotos.length) { grid.innerHTML = '<p style="color:#333;font-size:.8rem">Sin fotos aún.</p>'; return; }
-            grid.innerHTML = fotos.map(function(f) {
+            grid.innerHTML = fotos.map(function (f) {
                 return '<div class="edit-galeria-item">' +
-                    '<img src="' + f.url + '" alt="' + (f.titulo||'') + '" loading="lazy">' +
+                    '<img src="' + f.url + '" alt="' + (f.titulo || '') + '" loading="lazy">' +
                     '<button class="edit-galeria-del" onclick="eliminarFotoEditor(' + f.id + ')">✕</button>' +
-                '</div>';
+                    '</div>';
             }).join('');
-        }).catch(function() { grid.innerHTML = '<p style="color:#e31c25">Error al cargar</p>'; });
+        }).catch(function () { grid.innerHTML = '<p style="color:#e31c25">Error al cargar</p>'; });
     }
 
-    window.eliminarFotoEditor = function(id) {
+    window.eliminarFotoEditor = function (id) {
         if (!_editToken) return;
         if (!confirm('¿Eliminar esta foto?')) return;
         fetch(window.API_BASE + '/api/galeria/' + id, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + _editToken }
-        }).then(function() {
+        }).then(function () {
             mostrarEditToast('✅ Foto eliminada');
             cargarGaleriaEditor();
             cargarGaleria && cargarGaleria();
         });
     };
 
-    window.subirFotoGaleria = function(input) {
+    window.subirFotoGaleria = function (input) {
         var file = input.files[0];
         if (!file || !_editToken) return;
         mostrarEditToast('⏳ Subiendo foto...');
@@ -1655,16 +1655,16 @@ function cSlide(btn, dir) {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + _editToken },
             body: fd
-        }).then(function(r) { return r.json(); }).then(function(d) {
+        }).then(function (r) { return r.json(); }).then(function (d) {
             if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
             mostrarEditToast('✅ Foto añadida');
             cargarGaleriaEditor();
             cargarGaleria && cargarGaleria();
-        }).catch(function() { mostrarEditToast('❌ Error al subir', 'err'); });
+        }).catch(function () { mostrarEditToast('❌ Error al subir', 'err'); });
     };
 
     // ── Recibir token desde admin vía postMessage ──
-    window.addEventListener('message', function(e) {
+    window.addEventListener('message', function (e) {
         if (e.data && e.data.tipo === 'bdg-edit-mode' && e.data.token) {
             window.activarModoEdicion(e.data.token);
         }
@@ -1673,8 +1673,8 @@ function cSlide(btn, dir) {
     // ── Activar si viene en sessionStorage (desde admin) ──
     var storedToken = sessionStorage.getItem('bdg_edit_token');
     if (storedToken) {
-        window.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() { window.activarModoEdicion(storedToken); }, 800);
+        window.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () { window.activarModoEdicion(storedToken); }, 800);
         });
     }
 })();
