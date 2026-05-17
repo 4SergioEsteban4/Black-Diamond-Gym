@@ -758,40 +758,6 @@
     <!-- FLOATING WA -->
     <a href="https://wa.me/573133737590" target="_blank" class="float-wa float-wa-red" aria-label="WhatsApp">💬</a>
 
-    <!-- Cargar cafetería -->
-    <script>
-    (async function cargarCafeteriaPublic() {
-        const grid = document.getElementById('cafeteriaGrid');
-        if (!grid) return;
-        const CAT_ICONS = { Bebidas:'🥤', Batidos:'🥛', Snacks:'🍌', Comidas:'🍱', Suplementos:'💊', Otros:'📦' };
-        try {
-            const r = await fetch('/api/cafeteria');
-            const items = r.ok ? await r.json() : [];
-            if (!items.length) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Sin ítems en el menú aún.</div>'; return; }
-            grid.innerHTML = items.map(i => `
-                <div class="catalogo-card">
-                    <div class="catalogo-img-wrap">
-                        ${i.imagen_url
-                            ? `<img src="${i.imagen_url}" alt="${i.nombre}" style="width:100%;height:100%;object-fit:cover">`
-                            : `<div class="catalogo-no-img">${CAT_ICONS[i.categoria]||'☕'}</div>`
-                        }
-                        ${!i.disponible ? '<div class="catalogo-badge" style="background:#333">AGOTADO</div>' : ''}
-                    </div>
-                    <div class="catalogo-body">
-                        <span class="catalogo-cat">${CAT_ICONS[i.categoria]||'📦'} ${i.categoria||'Cafetería'}</span>
-                        <p class="catalogo-nombre">${i.nombre}</p>
-                        ${i.descripcion ? `<p class="catalogo-desc">${i.descripcion}</p>` : ''}
-                        <div class="catalogo-footer">
-                            <span class="catalogo-precio">$${Number(i.precio).toLocaleString('es-CO')}</span>
-                            <span class="catalogo-stock">${i.disponible ? '✅ Disponible' : '❌ Agotado'}</span>
-                        </div>
-                        <a href="https://wa.me/573133737590?text=Hola,%20quisiera%20pedir:%20${encodeURIComponent(i.nombre)}" target="_blank" class="catalogo-btn">Pedir por WhatsApp</a>
-                    </div>
-                </div>`).join('');
-        } catch(e) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">No disponible en este momento.</div>'; }
-    })();
-    </script>
-
     <!-- Generar QR de /unete -->
     <script>
         (function () {

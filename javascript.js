@@ -709,6 +709,7 @@ cargarGaleria();
 cargarPrecios();
 cargarVideos();
 cargarCatalogo();
+cargarCafeteria();
 cargarTextosSitio();
 
 
@@ -737,7 +738,15 @@ async function cargarImagenes() {
                 });
             } else {
                 const el = document.getElementById(`img-${clave}`);
-                if (el) el.src = url;
+                if (!el) return;
+                // Si es un div con background (cat-img-bg), usar backgroundImage
+                if (el.tagName === 'DIV') {
+                    el.style.backgroundImage = `url('${url}')`;
+                    el.style.backgroundSize = 'cover';
+                    el.style.backgroundPosition = 'center center';
+                } else {
+                    el.src = url;
+                }
             }
         });
     } catch (e) { console.warn('Imágenes dinámicas:', e.message); }
@@ -1083,6 +1092,52 @@ async function cargarCatalogo() {
             </div>`;
         }).join('');
     } catch (e) { console.warn('Catálogo:', e.message); }
+}
+
+
+/* ================================================================
+   CAFETERÍA — carga pública desde /api/cafeteria
+================================================================ */
+async function cargarCafeteria() {
+    const grid = document.getElementById('cafeteriaGrid');
+    if (!grid) return;
+    const CAT_ICONS = { Bebidas:'🥤', Batidos:'🥛', Snacks:'🍌', Comidas:'🍱', Suplementos:'💊', Otros:'📦' };
+    try {
+        const res = await fetch(`${API_BASE}/api/cafeteria`);
+        if (!res.ok) { grid.innerHTML = ''; return; }
+        const items = await res.json();
+        if (!items.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#333;font-size:.85rem">Menú próximamente disponible.</div>';
+            return;
+        }
+        grid.innerHTML = items.map(i => {
+            const icono = CAT_ICONS[i.categoria] || '☕';
+            const precio = i.precio > 0 ? '$' + Number(i.precio).toLocaleString('es-CO') : 'CONSULTAR';
+            return `
+            <div class="catalogo-card sr-target">
+                <div class="catalogo-img-outer">
+                    <div class="catalogo-img-wrap">
+                        ${i.imagen_url
+                            ? `<div class="cslide-track" data-idx="0"><div class="cslide"><img src="${i.imagen_url}" alt="${i.nombre}" loading="lazy"></div></div>`
+                            : `<div class="catalogo-no-img" style="font-size:3.5rem">${icono}</div>`
+                        }
+                        ${!i.disponible ? '<span class="catalogo-badge" style="background:#444">AGOTADO</span>' : ''}
+                        ${i.categoria ? `<span class="catalogo-badge" style="${i.disponible?'':'display:none'}">${icono} ${i.categoria}</span>` : ''}
+                    </div>
+                </div>
+                <div class="catalogo-body">
+                    <span class="catalogo-cat">${icono} ${i.categoria || 'Cafetería'}</span>
+                    <h3 class="catalogo-nombre">${i.nombre}</h3>
+                    <p class="catalogo-desc">${i.descripcion || ''}</p>
+                    <div class="catalogo-footer">
+                        <span class="catalogo-precio">${precio}</span>
+                        <span class="catalogo-stock">${i.disponible ? '✅ Disponible' : '❌ Agotado'}</span>
+                    </div>
+                    <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20quisiera%20pedir:%20${encodeURIComponent(i.nombre)}" target="_blank" class="catalogo-btn">PEDIR AHORA</a>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { console.warn('Cafetería:', e.message); }
 }
 
 
