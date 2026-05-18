@@ -656,8 +656,8 @@ nav {
 /* Cat card images */
 .cat-img-wrap {
     position: relative;
-    width: calc(100% + 64px);
-    margin: -40px -32px 20px -32px;
+    width: 100%;
+    margin: -40px 0 20px 0;
     height: 180px;
     overflow: hidden;
     cursor: zoom-in;
