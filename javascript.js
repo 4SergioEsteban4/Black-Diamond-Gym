@@ -320,20 +320,26 @@ document.addEventListener('DOMContentLoaded', function () {
        PLAplanesTabNES — 3 carruseles 3D dinámicos desde API
     ============================================================ */
     async function cargarPlanesSecciones() {
-        const tabsEl  = document.getElementById('planesTabs');
-        const secEl   = document.getElementById('planesSecciones');
-        const tabsEl2 = document.getElementById('planesTabs2');
-        const secEl2  = document.getElementById('planesSecciones2');
-        if (!secEl && !secEl2) return;
+        const tabsEl = document.getElementById('planesTabs');
+        const secEl = document.getElementById('planesSecciones');
+        if (!secEl) return;
 
         try {
             const r = await fetch(API_BASE + '/api/planes-secciones');
             if (!r.ok) throw new Error('Sin datos');
             const secciones = await r.json();
-            if (!secciones.length) return;
+            if (!secciones.length) { secEl.innerHTML = ''; tabsEl.innerHTML = ''; return; }
 
-            function buildCards(s) {
-                return s.tarjetas.map(t => {
+            // Construir tabs
+            tabsEl.innerHTML = secciones.map((s, i) =>
+                `<button class="planes-tab-btn${i === 0 ? ' active' : ''}" onclick="switchPlanesTab(${i})" data-sec="${s.id}">
+                    ${s.nombre}
+                </button>`
+            ).join('');
+
+            // Construir carruseles
+            secEl.innerHTML = secciones.map((s, si) => {
+                const cards = s.tarjetas.map(t => {
                     const precio = '$' + Number(t.precio).toLocaleString('es-CO');
                     const feats = (t.caracteristicas || '').split('\n').filter(Boolean);
                     const colorCls = t.color === 'red' ? 'card-red' : t.color === 'white' ? 'card-white' : 'card-dark';
@@ -349,43 +355,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="price-tag">${precio}<span><small>${t.periodo || '/mes'}</small></span></div>
                         <ul class="features-3d">
                             ${feats.map(f => {
-                                const isNo = f.startsWith('-');
-                                const texto = isNo ? f.slice(1).trim() : f.trim();
-                                return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
-                            }).join('')}
+                        const isNo = f.startsWith('-');
+                        const texto = isNo ? f.slice(1).trim() : f.trim();
+                        return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
+                    }).join('')}
                         </ul>
                         <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color === 'red' ? 'outline-white' : 'red'}">QUIERO ESTE PLAN</a>
                     </div>`;
                 }).join('');
-            }
 
-            function renderInstance(tabs, sec, sfx) {
-                if (!tabs || !sec) return;
-                tabs.innerHTML = secciones.map((s, i) =>
-                    `<button class="planes-tab-btn${i === 0 ? ' active' : ''}" onclick="switchPlanesTab(${i},'${sfx}')">
-                        ${s.icono || ''} ${s.nombre}
-                    </button>`
-                ).join('');
-                sec.innerHTML = secciones.map((s, si) => {
-                    const names = s.tarjetas.map(t => t.nombre);
-                    return `
-                    <div class="planes-seccion${si === 0 ? '' : ' planes-seccion-hidden'}" data-sec-idx="${si}">
-                        <div class="carousel-3d-scene">
-                            <div class="carousel-3d-track" id="carousel3d${sfx}-${si}">${buildCards(s)}</div>
-                        </div>
-                        <div class="carousel-3d-controls">
-                            <button class="ctrl-btn" id="prevPlan${sfx}-${si}">&#8592;</button>
-                            <span class="plan-indicator" id="planName${sfx}-${si}">${names[0] || ''}</span>
-                            <button class="ctrl-btn" id="nextPlan${sfx}-${si}">&#8594;</button>
-                        </div>
-                        <div class="carousel-3d-dots" id="dots3d${sfx}-${si}"></div>
-                    </div>`;
-                }).join('');
-                secciones.forEach((s, si) => iniciarCarrusel3D(si, s.tarjetas.map(t => t.nombre), sfx));
-            }
-
-            renderInstance(tabsEl, secEl, '');
-            renderInstance(tabsEl2, secEl2, '2');
+                const names = s.tarjetas.map(t => t.nombre);
                 return `
                 <div class="planes-seccion${si === 0 ? '' : ' planes-seccion-hidden'}" data-sec-idx="${si}">
                     <div class="carousel-3d-scene">
@@ -398,27 +377,30 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <div class="carousel-3d-dots" id="dots3d-${si}"></div>
                 </div>`;
+            }).join('');
+
+            // Iniciar cada carrusel
+            secciones.forEach((s, si) => iniciarCarrusel3D(si, s.tarjetas.map(t => t.nombre)));
+
         } catch (e) {
             console.warn('Error cargando planes:', e);
-            if (secEl) secEl.innerHTML = '<p style="text-align:center;color:#555;padding:40px">No se pudieron cargar los planes.</p>';
+            secEl.innerHTML = '<p style="text-align:center;color:#555;padding:40px">No se pudieron cargar los planes.</p>';
         }
     }
 
-    window.switchPlanesTab = function (idx, suffix) {
-        suffix = suffix || '';
-        const tabsEl = document.getElementById('planesTabs' + suffix);
-        const secEl  = document.getElementById('planesSecciones' + suffix);
-        if (tabsEl) tabsEl.querySelectorAll('.planes-tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-        if (secEl)  secEl.querySelectorAll('.planes-seccion').forEach((s, i) => s.classList.toggle('planes-seccion-hidden', i !== idx));
+    window.switchPlanesTab = function (idx) {
+        document.querySelectorAll('.planes-tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        document.querySelectorAll('.planes-seccion').forEach((s, i) => {
+            s.classList.toggle('planes-seccion-hidden', i !== idx);
+        });
     };
 
-    function iniciarCarrusel3D(si, nombres, suffix) {
-        suffix = suffix || '';
-        const pista   = document.getElementById('carousel3d' + suffix + '-' + si);
-        const btnPrev = document.getElementById('prevPlan' + suffix + '-' + si);
-        const btnNext = document.getElementById('nextPlan' + suffix + '-' + si);
-        const nombre  = document.getElementById('planName' + suffix + '-' + si);
-        const puntos  = document.getElementById('dots3d' + suffix + '-' + si);
+    function iniciarCarrusel3D(si, nombres) {
+        const pista = document.getElementById('carousel3d-' + si);
+        const btnPrev = document.getElementById('prevPlan-' + si);
+        const btnNext = document.getElementById('nextPlan-' + si);
+        const nombre = document.getElementById('planName-' + si);
+        const puntos = document.getElementById('dots3d-' + si);
         if (!pista) return;
 
         const tarjetas = Array.from(pista.querySelectorAll('.price-card-3d'));
