@@ -3144,10 +3144,10 @@ body.edit-mode .photo-card:hover { outline-color: #e31c25; }
     text-decoration: none;
     text-align: center;
     transition: transform .2s, box-shadow .2s;
-    box-shadow: 0 4px 16px rgba(37,211,102,.3);
+    box-shadow: 0 4px 16px rgba(227,28,37,.3);
     white-space: nowrap;
 }
-.btn-colab-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,.45); }
+.btn-colab-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(227,28,37,.5); }
 .btn-colab-form {
     background: transparent;
     color: #555;
