@@ -558,16 +558,16 @@ nav {
 
 .servicios-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 1300px;
     margin: 0 auto 50px;
 }
 
 .servicio-card {
     background: var(--dark2);
     border-radius: var(--radius);
-    padding: 40px 32px;
+    padding: 36px 28px;
     border-bottom: 3px solid #222;
     transition: transform var(--trans), border-color var(--trans), background var(--trans);
     text-align: left;
@@ -579,13 +579,12 @@ nav {
     background: #161616;
 }
 
-
-
 .servicio-icon-wrap { margin-bottom: 20px; }
 .servicio-imagen { width: 64px; height: 56px; object-fit: contain; }
+.servicio-emoji { font-size: 2.8rem; display: block; }
 
-.servicio-card h3 { font-size: 1.7rem; margin-bottom: 12px; }
-.servicio-card p  { color: #bbb; font-size: .9rem; text-transform: none; margin-bottom: 18px; }
+.servicio-card h3 { font-size: 1.55rem; margin-bottom: 12px; }
+.servicio-card p  { color: #bbb; font-size: .88rem; text-transform: none; margin-bottom: 18px; }
 
 .card-tag {
     display: inline-block;
@@ -982,12 +981,72 @@ nav {
     overflow: hidden;
     border-radius: var(--radius);
     border: 2px solid rgba(227,28,37,0.5);
-    box-shadow:
-        0 0 0 5px rgba(227,28,37,0.08),
-        0 20px 60px rgba(0,0,0,0.4),
-        0 4px 20px rgba(227,28,37,0.12);
+    box-shadow: 0 0 0 5px rgba(227,28,37,0.08), 0 20px 60px rgba(0,0,0,0.4), 0 4px 20px rgba(227,28,37,0.12);
     animation: marco-pulse 3s ease-in-out infinite;
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
 }
+
+/* Embed de planes dentro de horarios */
+.schedule-planes-embed {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 32px 28px 24px;
+    overflow: hidden;
+}
+.spe-header { margin-bottom: 16px; }
+.spe-title {
+    font-family: var(--font-h);
+    font-size: 2rem;
+    letter-spacing: 3px;
+    color: var(--white);
+    margin: 4px 0 0;
+}
+.spe-tabs {
+    margin-bottom: 16px !important;
+    justify-content: flex-start !important;
+}
+.spe-tabs .planes-tab-btn {
+    font-size: .85rem !important;
+    padding: 8px 18px !important;
+}
+
+/* Carrusel mini dentro del embed */
+.schedule-planes-embed .carousel-3d-scene {
+    height: 320px !important;
+    margin: 10px 0 8px !important;
+    perspective: 900px !important;
+}
+.schedule-planes-embed .carousel-3d-track {
+    width: 220px !important;
+    height: 280px !important;
+}
+.schedule-planes-embed .price-card-3d {
+    width: 200px !important;
+    height: 260px !important;
+    left: 10px !important; top: 10px !important;
+}
+.schedule-planes-embed .card-top { padding: 16px 16px 0 !important; }
+.schedule-planes-embed .price-tag { font-size: 1.8rem !important; }
+.schedule-planes-embed .features-3d { padding: 0 16px !important; font-size: .72rem !important; }
+.schedule-planes-embed .btn-plan { margin: 0 16px 16px !important; width: calc(100% - 32px) !important; font-size: .75rem !important; padding: 10px !important; }
+.schedule-planes-embed .carousel-3d-controls { margin-top: 4px; }
+
+.spe-ver-mas {
+    display: block;
+    text-align: center;
+    font-size: .7rem;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-top: auto;
+    padding-top: 12px;
+    transition: color .2s;
+}
+.spe-ver-mas:hover { color: #ff5a5a; }
 @keyframes marco-pulse {
     0%, 100% { box-shadow: 0 0 0 5px rgba(227,28,37,0.08), 0 20px 60px rgba(0,0,0,0.4), 0 4px 20px rgba(227,28,37,0.12); }
     50%       { box-shadow: 0 0 0 8px rgba(227,28,37,0.14), 0 20px 60px rgba(0,0,0,0.4), 0 4px 28px rgba(227,28,37,0.22); }
