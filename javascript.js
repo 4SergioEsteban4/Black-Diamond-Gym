@@ -1400,8 +1400,12 @@ async function cargarTextosSitio() {
         if (ctaP && t['hor-cta-desc']) ctaP.textContent = t['hor-cta-desc'];
 
         // ── SERVICIOS ─────────────────────────────────────────
-        const servClaves = ['serv-titulo', 'serv-sub', 'serv1-titulo', 'serv1-desc', 'serv1-tag',
-            'serv2-titulo', 'serv2-desc', 'serv2-tag', 'serv3-titulo', 'serv3-desc', 'serv3-tag',
+        const servClaves = ['serv-titulo', 'serv-sub',
+            'serv1-titulo', 'serv1-desc', 'serv1-tag',
+            'serv2-titulo', 'serv2-desc', 'serv2-tag',
+            'serv3-titulo', 'serv3-desc', 'serv3-tag',
+            'serv4-titulo', 'serv4-desc', 'serv4-tag',
+            'serv5-titulo', 'serv5-desc', 'serv5-tag',
             'serv-amenity1', 'serv-amenity2'];
         servClaves.forEach(k => {
             document.querySelectorAll(`[data-clave="${k}"]`).forEach(el => { if (t[k]) el.textContent = t[k]; });
@@ -1428,7 +1432,8 @@ async function cargarTextosSitio() {
 
         // ── GALERÍA y CONTACTO extra ──────────────────────────
         ['gal-titulo', 'gal-sub', 'cont-titulo', 'cont-sub', 'cont-form-titulo', 'cont-form-sub', 'cont-promo',
-            'cat-dep-titulo', 'cat-dep-sub', 'gal-social-txt', 'gal-social-nombre',
+            'cat-dep-titulo', 'cat-dep-sub', 'cafe-titulo', 'cafe-sub',
+            'gal-social-txt', 'gal-social-nombre',
             'cont-ubicacion-dir', 'cont-ubicacion-barrio', 'cont-ubicacion-ciudad', 'cont-wa-txt',
             'footer-tagline', 'footer-dir', 'hero-eyebrow', 'hero-btn1', 'hero-btn2',
             'nos-stat1-num', 'nos-stat2-num', 'nos-stat3-num',
