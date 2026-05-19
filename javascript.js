@@ -348,16 +348,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         ${t.imagen_url ? `<img class="card-bg-img" src="${t.imagen_url}" alt="">` : ''}
                         ${t.destacado ? '<div class="popular-badge">MÁS POPULAR</div>' : ''}
                         <div class="card-top">
-                            <span class="plan-label">${t.etiqueta || ''}</span>
-                            <h3>${t.nombre}</h3>
-                            ${t.descripcion ? `<p class="plan-desc">${t.descripcion}</p>` : ''}
+                            <span class="plan-label" data-editable="plan-campo" data-plan-id="${t.id}" data-campo="etiqueta">${t.etiqueta || ''}</span>
+                            <h3 data-editable="plan-campo" data-plan-id="${t.id}" data-campo="nombre">${t.nombre}</h3>
+                            ${t.descripcion ? `<p class="plan-desc" data-editable="plan-campo" data-plan-id="${t.id}" data-campo="descripcion">${t.descripcion}</p>` : ''}
                         </div>
-                        <div class="price-tag">${precio}<span><small>${t.periodo || '/mes'}</small></span></div>
+                        <div class="price-tag" data-editable="plan-precio" data-plan-id="${t.id}">${precio}<span><small data-editable="plan-campo" data-plan-id="${t.id}" data-campo="periodo">${t.periodo || '/mes'}</small></span></div>
                         <ul class="features-3d">
-                            ${feats.map(f => {
+                            ${feats.map((f, fi) => {
                         const isNo = f.startsWith('-');
                         const texto = isNo ? f.slice(1).trim() : f.trim();
-                        return `<li${isNo ? ' class="feat-no"' : ''}>${texto}</li>`;
+                        return `<li${isNo ? ' class="feat-no"' : ''} data-editable="plan-feat" data-plan-id="${t.id}" data-feat-idx="${fi}">${texto}</li>`;
                     }).join('')}
                         </ul>
                         <a href="https://wa.me/${window._waNumber || '573133737590'}?text=Hola,%20me%20interesa%20el%20plan%20${encodeURIComponent(t.nombre)}" target="_blank" class="btn-plan ${t.color === 'red' ? 'outline-white' : 'red'}">QUIERO ESTE PLAN</a>
@@ -1364,14 +1364,16 @@ async function cargarTextosSitio() {
             const numEl = document.getElementById(`stat-num-${i}`);
             const sufEl = document.getElementById(`stat-suf-${i}`);
             const labelEl = document.getElementById(`stat-label-${i}`);
-            const key = `nos-s${i}`;
-            if (numEl && t[key]) {
-                const val = parseInt(t[key]);
+            const numKey = `nos-stat${i}-num`;
+            const sufKey = `nos-stat${i}-suf`;
+            const labelKey = `nos-stat${i}-label`;
+            if (numEl && t[numKey]) {
+                const val = parseInt(t[numKey]);
                 numEl.dataset.target = val;
                 numEl.textContent = val;
             }
-            if (sufEl && t[key + '-suf'] !== undefined) sufEl.textContent = t[key + '-suf'];
-            if (labelEl && t[key + '-label']) labelEl.innerHTML = t[key + '-label'].replace(/\n/g, '<br>');
+            if (sufEl && t[sufKey] !== undefined) sufEl.textContent = t[sufKey];
+            if (labelEl && t[labelKey]) labelEl.innerHTML = t[labelKey].replace(/\n/g, '<br>');
         });
 
         // ── CARACTERÍSTICAS DE PRECIOS ─────────────────────────
@@ -1603,10 +1605,8 @@ function cSlide(btn, dir) {
         document.getElementById('edit-toolbar').style.display = 'block';
         document.body.classList.add('edit-mode');
 
-        // Click en elementos editables
-        document.querySelectorAll('[data-editable]').forEach(function (el) {
-            el.addEventListener('click', onEditClick, true);
-        });
+        // Delegación de eventos — cubre elementos estáticos Y dinámicos (tarjetas de planes, etc.)
+        document.addEventListener('click', _delegatedEditClick, true);
     };
 
     // ── Salir modo edición ──
@@ -1614,16 +1614,15 @@ function cSlide(btn, dir) {
         _editToken = null;
         document.getElementById('edit-toolbar').style.display = 'none';
         document.body.classList.remove('edit-mode');
-        document.querySelectorAll('[data-editable]').forEach(function (el) {
-            el.removeEventListener('click', onEditClick, true);
-        });
+        document.removeEventListener('click', _delegatedEditClick, true);
     };
 
-    // ── Click en elemento editable ──
-    function onEditClick(e) {
+    // ── Handler delegado ──
+    function _delegatedEditClick(e) {
+        var el = e.target.closest('[data-editable]');
+        if (!el) return;
         e.preventDefault();
         e.stopPropagation();
-        var el = this;
         var tipo = el.dataset.editable;
         var clave = el.dataset.clave;
 
@@ -1641,6 +1640,29 @@ function cSlide(btn, dir) {
             inp.onchange = function () { subirImagenEdit(inp.files[0]); };
             inp.value = '';
             inp.click();
+        } else if (tipo === 'plan-campo' || tipo === 'plan-precio') {
+            // Editar campo de tarjeta de plan (nombre, descripcion, etiqueta, periodo, precio)
+            var planId = el.dataset.planId;
+            var campo = tipo === 'plan-precio' ? 'precio' : el.dataset.campo;
+            _editEl = el;
+            _editClave = '__plan__' + planId + '__' + campo;
+            var modal2 = document.getElementById('edit-text-modal');
+            var area2 = document.getElementById('edit-text-area');
+            area2.value = el.innerText.trim().replace(/\$/g, '').replace(/[.,]/g, function(c) {
+                return tipo === 'plan-precio' ? '' : c;
+            });
+            if (tipo === 'plan-precio') area2.value = String(el.innerText.trim().replace(/[^0-9]/g, ''));
+            modal2.style.display = 'flex';
+        } else if (tipo === 'plan-feat') {
+            // Editar característica de tarjeta de plan
+            var planId2 = el.dataset.planId;
+            var featIdx = el.dataset.featIdx;
+            _editEl = el;
+            _editClave = '__planfeat__' + planId2 + '__' + featIdx;
+            var modal3 = document.getElementById('edit-text-modal');
+            var area3 = document.getElementById('edit-text-area');
+            area3.value = el.innerText.trim();
+            modal3.style.display = 'flex';
         }
     }
 
@@ -1654,6 +1676,79 @@ function cSlide(btn, dir) {
     window.guardarTextoEdit = function () {
         var valor = document.getElementById('edit-text-area').value.trim();
         if (!valor || !_editClave || !_editToken) return;
+
+        // Edición de campo de plan (nombre, descripcion, etiqueta, periodo, precio)
+        if (_editClave.startsWith('__plan__')) {
+            var parts = _editClave.split('__').filter(Boolean); // ['plan', planId, campo]
+            var planId = parts[1];
+            var campo = parts[2];
+            // Traer tarjeta completa primero para no pisar otros campos
+            fetch(window.API_BASE + '/api/planes-secciones/admin', {
+                headers: { 'Authorization': 'Bearer ' + _editToken }
+            }).then(function(r) { return r.json(); }).then(function(secciones) {
+                var tarjeta = null;
+                secciones.forEach(function(s) { s.tarjetas.forEach(function(t) { if (String(t.id) === String(planId)) tarjeta = t; }); });
+                if (!tarjeta) { mostrarEditToast('Plan no encontrado', 'err'); return; }
+                var body = {
+                    nombre: tarjeta.nombre,
+                    etiqueta: tarjeta.etiqueta || '',
+                    descripcion: tarjeta.descripcion || '',
+                    precio: tarjeta.precio,
+                    periodo: tarjeta.periodo || '/mes',
+                    color: tarjeta.color || 'default',
+                    destacado: tarjeta.destacado,
+                    caracteristicas: tarjeta.caracteristicas || '',
+                    orden: tarjeta.orden || 0,
+                    activo: tarjeta.activo !== false
+                };
+                body[campo] = campo === 'precio' ? parseInt(valor.replace(/\D/g, '')) : valor;
+                return fetch(window.API_BASE + '/api/planes-tarjetas/' + planId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
+                    body: JSON.stringify(body)
+                });
+            }).then(function(r) { if (r) return r.json(); }).then(function(d) {
+                if (!d) return;
+                if (d.error) { mostrarEditToast('Error: ' + d.error, 'err'); return; }
+                if (_editEl) _editEl.innerText = campo === 'precio'
+                    ? '$' + parseInt(valor.replace(/\D/g, '')).toLocaleString('es-CO')
+                    : valor;
+                cerrarEditModal();
+                mostrarEditToast('Plan actualizado');
+            }).catch(function() { mostrarEditToast('Error al guardar', 'err'); });
+            return;
+        }
+
+        // Edición de característica de plan
+        if (_editClave.startsWith('__planfeat__')) {
+            var parts2 = _editClave.split('__').filter(Boolean); // ['planfeat', planId, featIdx]
+            var planId2 = parts2[1];
+            var featIdx = parseInt(parts2[2]);
+            // Obtener tarjeta actual, modificar la línea y guardar características completas
+            fetch(window.API_BASE + '/api/planes-secciones/admin', {
+                headers: { 'Authorization': 'Bearer ' + _editToken }
+            }).then(function(r) { return r.json(); }).then(function(secciones) {
+                var tarjeta = null;
+                secciones.forEach(function(s) { s.tarjetas.forEach(function(t) { if (String(t.id) === String(planId2)) tarjeta = t; }); });
+                if (!tarjeta) { mostrarEditToast('Plan no encontrado', 'err'); return; }
+                var feats = (tarjeta.caracteristicas || '').split('\n');
+                feats[featIdx] = valor;
+                return fetch(window.API_BASE + '/api/planes-tarjetas/' + planId2, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
+                    body: JSON.stringify({ caracteristicas: feats.join('\n') })
+                });
+            }).then(function(r) { if (r) return r.json(); }).then(function(d) {
+                if (!d) return;
+                if (d.error) { mostrarEditToast('Error: ' + d.error, 'err'); return; }
+                if (_editEl) _editEl.innerText = valor;
+                cerrarEditModal();
+                mostrarEditToast('Caracteristica actualizada');
+            }).catch(function() { mostrarEditToast('Error al guardar', 'err'); });
+            return;
+        }
+
+        // Edición de texto normal (textos_sitio)
         var payload = {};
         payload[_editClave] = valor;
         fetch(window.API_BASE + '/api/textos', {
@@ -1661,11 +1756,11 @@ function cSlide(btn, dir) {
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
             body: JSON.stringify(payload)
         }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
+            if (d.error) { mostrarEditToast('Error: ' + d.error, 'err'); return; }
             if (_editEl) _editEl.innerText = valor;
             cerrarEditModal();
-            mostrarEditToast('✅ Texto guardado');
-        }).catch(function () { mostrarEditToast('❌ Error al guardar', 'err'); });
+            mostrarEditToast('Texto guardado');
+        }).catch(function () { mostrarEditToast('Error al guardar', 'err'); });
     };
 
     // ── Subir imagen ──
