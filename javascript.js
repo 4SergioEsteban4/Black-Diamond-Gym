@@ -1665,22 +1665,28 @@ function cSlide(btn, dir) {
         }).catch(function () { mostrarEditToast('❌ Error al guardar', 'err'); });
     };
 
-    // ── Subir imagen ──
-    function subirImagenEdit(file) {
-        if (!file || !_editClave || !_editToken) return;
-        mostrarEditToast('⏳ Subiendo imagen...');
-        var fd = new FormData();
-        fd.append('imagen', file);
-        fetch(window.API_BASE + '/api/imagenes/' + _editClave, {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + _editToken },
-            body: fd
-        }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
-            if (_editEl) _editEl.src = d.url;
-            mostrarEditToast('✅ Imagen actualizada');
-        }).catch(function () { mostrarEditToast('❌ Error al subir', 'err'); });
-    }
+function subirImagenEdit(file) {
+    if (!file || !_editClave || !_editToken) return;
+    mostrarEditToast('⏳ Subiendo imagen...');
+    var fd = new FormData();
+    fd.append('imagen', file);
+    fetch(window.API_BASE + '/api/imagenes/' + _editClave, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + _editToken },
+        body: fd
+    }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d.error) { mostrarEditToast('❌ ' + d.error, 'err'); return; }
+        if (_editEl) {
+            _editEl.src = d.url;
+            _editEl.style.display = '';      // ← re-mostrar si estaba oculto por onerror
+            var emoji = _editEl.nextElementSibling;
+            if (emoji && emoji.classList.contains('servicio-emoji')) {
+                emoji.style.display = 'none'; // ← ocultar el emoji
+            }
+        }
+        mostrarEditToast('✅ Imagen actualizada');
+    }).catch(function () { mostrarEditToast('❌ Error al subir', 'err'); });
+}
 
     // ── Galería editor ──
     window.abrirGaleriaEditor = function () {
