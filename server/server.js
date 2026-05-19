@@ -951,6 +951,9 @@ app.delete('/api/cafeteria/:id', auth, async (req, res) => {
 app.get('/unete', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'unete.html'));
 });
+app.get('/cafeteria', (req, res) => {
+  res.sendFile(path.join(__dirname, '../cafeteria.html'));
+});
 
 /* ── 404 ────────────────────────────────────────────────────── */
 app.use((req, res) => {
