@@ -237,8 +237,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const valorFinal = parseInt(elemento.dataset.target, 10);
         const duracion = 1800; // ms
         const inicio = performance.now();
+        // Marcar que este elemento está siendo animado con este valor
+        elemento._animTarget = valorFinal;
 
         function paso(ahora) {
+            // Si data-target fue actualizado externamente (ej: BD), abortar esta animación
+            if (parseInt(elemento.dataset.target, 10) !== valorFinal) return;
             const transcurrido = ahora - inicio;
             const progreso = Math.min(transcurrido / duracion, 1);
             // Easing ease-out cubic
@@ -250,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         requestAnimationFrame(paso);
     }
+    window._animarContador = animarContador;
 
 
     /* ============================================================
@@ -1371,6 +1376,8 @@ async function cargarTextosSitio() {
                 const val = parseInt(t[numKey]);
                 numEl.dataset.target = val;
                 numEl.textContent = val;
+                // Relanzar la animación con el valor correcto de BD
+                if (window._animarContador) window._animarContador(numEl);
             }
             if (sufEl && t[sufKey] !== undefined) sufEl.textContent = t[sufKey];
             if (labelEl && t[labelKey]) labelEl.innerHTML = t[labelKey].replace(/\n/g, '<br>');
@@ -1733,10 +1740,22 @@ function cSlide(btn, dir) {
                 if (!tarjeta) { mostrarEditToast('Plan no encontrado', 'err'); return; }
                 var feats = (tarjeta.caracteristicas || '').split('\n');
                 feats[featIdx] = valor;
+                var bodyFeat = {
+                    nombre: tarjeta.nombre,
+                    etiqueta: tarjeta.etiqueta || '',
+                    descripcion: tarjeta.descripcion || '',
+                    precio: tarjeta.precio,
+                    periodo: tarjeta.periodo || '/mes',
+                    color: tarjeta.color || 'default',
+                    destacado: tarjeta.destacado,
+                    caracteristicas: feats.join('\n'),
+                    orden: tarjeta.orden || 0,
+                    activo: tarjeta.activo !== false
+                };
                 return fetch(window.API_BASE + '/api/planes-tarjetas/' + planId2, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
-                    body: JSON.stringify({ caracteristicas: feats.join('\n') })
+                    body: JSON.stringify(bodyFeat)
                 });
             }).then(function(r) { if (r) return r.json(); }).then(function(d) {
                 if (!d) return;
