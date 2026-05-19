@@ -736,9 +736,6 @@ async function cargarImagenes() {
                 ['img-logo_icono', 'img-logo_icono_footer'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.src = url;
-el.style.display = '';
-const next = el.nextElementSibling;
-if (next) next.style.display = 'none';
                 });
             } else {
                 const el = document.getElementById(`img-${clave}`);
@@ -750,6 +747,9 @@ if (next) next.style.display = 'none';
                     el.style.backgroundPosition = 'center center';
                 } else {
                     el.src = url;
+el.style.display = '';
+const next = el.nextElementSibling;
+if (next) next.style.display = 'none';
                 }
             }
         });
