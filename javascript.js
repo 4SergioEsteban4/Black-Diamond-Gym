@@ -703,13 +703,15 @@ async function cargarNoticia() {
 }
 
 // Ejecutar al cargar la página
-cargarNoticia();
-cargarImagenes();
-cargarGaleria();
-cargarPrecios();
-cargarVideos();
-cargarCatalogo();
-cargarTextosSitio();
+document.addEventListener('DOMContentLoaded', function() {
+    cargarNoticia();
+    cargarImagenes();
+    cargarGaleria();
+    cargarPrecios();
+    cargarVideos();
+    cargarCatalogo();
+    cargarTextosSitio();
+});
 
 
 /* ================================================================
