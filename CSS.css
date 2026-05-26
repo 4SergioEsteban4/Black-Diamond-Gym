@@ -1037,7 +1037,6 @@ nav {
     transform: translateY(-2px);
     box-shadow: 0 8px 28px rgba(227,28,37,0.55);
 }
-.btn-wa-overlay:hover { background: #1da851; transform: scale(1.04); }
 
 /* ── Tabs de secciones de planes ── */
 .planes-tabs {
