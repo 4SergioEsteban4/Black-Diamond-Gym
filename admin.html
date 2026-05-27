@@ -2254,7 +2254,15 @@
         const API = 'https://black-diamond-gym-5d2h.onrender.com';
         let token = localStorage.getItem('bdg_token') || null;
 
-        window.addEventListener('DOMContentLoaded', () => { if (token) mostrarPanel(); });
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (token) {
+                try {
+                    const r = await fetch(`${API}/api/admin/verify`, { headers: { Authorization: 'Bearer ' + token } });
+                    if (r.ok) { mostrarPanel(); }
+                    else { localStorage.removeItem('bdg_token'); localStorage.removeItem('bdg_nombre'); token = null; }
+                } catch(e) { localStorage.removeItem('bdg_token'); token = null; }
+            }
+        });
 
         /* ── LOGIN ── */
         async function hacerLogin() {

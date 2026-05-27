@@ -158,6 +158,11 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
     } catch(e){ res.status(500).json({ error:e.message }); }
 });
 
+
+app.get('/api/admin/verify', autenticar, (req, res) => {
+    res.json({ ok: true, usuario: req.usuario });
+});
+
 /* ================================================================
    NOTICIAS
 ================================================================ */
