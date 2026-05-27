@@ -1014,6 +1014,10 @@
                     style="font-size:.68rem;letter-spacing:1.5px;color:#e31c25;text-transform:uppercase;font-weight:700;padding:6px 14px;border:1px solid rgba(227,28,37,.3);border-radius:20px;transition:.2s;white-space:nowrap;background:rgba(227,28,37,.08);cursor:pointer"
                     onmouseover="this.style.background='rgba(227,28,37,.18)'"
                     onmouseout="this.style.background='rgba(227,28,37,.08)'">✏️ Editor visual</button>
+                <button onclick="abrirEditorUnete()"
+                    style="font-size:.68rem;letter-spacing:1.5px;color:#e31c25;text-transform:uppercase;font-weight:700;padding:6px 14px;border:1px solid rgba(227,28,37,.3);border-radius:20px;transition:.2s;white-space:nowrap;background:rgba(227,28,37,.08);cursor:pointer"
+                    onmouseover="this.style.background='rgba(227,28,37,.18)'"
+                    onmouseout="this.style.background='rgba(227,28,37,.08)'">✏️ Editor /unete</button>
                 <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
             </div>
             <div class="tabs">
@@ -2305,6 +2309,12 @@
             sessionStorage.setItem('bdg_edit_token', token);
             window.open('/', '_blank');
             toast('✅ Abriendo editor visual en nueva pestaña', 'ok');
+        }
+
+        function abrirEditorUnete() {
+            sessionStorage.setItem('bdg_edit_token', token);
+            window.open('/unete.html', '_blank');
+            toast('✅ Abriendo editor de /unete en nueva pestaña', 'ok');
         }
 
         /* ════════════ DASHBOARD + SOLICITUDES ════════════ */

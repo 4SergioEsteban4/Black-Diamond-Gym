@@ -142,14 +142,18 @@
         <div class="u-left">
             <div class="u-badge">
                 <div class="u-badge-dot"></div>
-                <span class="u-badge-txt">🥊 Bosa · Bogotá D.C.</span>
+                <span class="u-badge-txt" data-editable="texto" data-clave="unete-badge">🥊 Bosa · Bogotá D.C.</span>
             </div>
-            <h1 class="u-title">FORJA TU<br><span class="line-red">CAMPEÓN</span><br>INTERIOR</h1>
-            <p class="u-desc">¿Listo para dar el primer paso? Déjanos tus datos y uno de nuestros instructores te contacta. Sin excusas.</p>
+            <h1 class="u-title">
+                <span data-editable="texto" data-clave="unete-titulo-l1">FORJA TU</span><br>
+                <span class="line-red" data-editable="texto" data-clave="unete-titulo-acento">CAMPEÓN</span><br>
+                <span data-editable="texto" data-clave="unete-titulo-l3">INTERIOR</span>
+            </h1>
+            <p class="u-desc" data-editable="texto" data-clave="unete-desc">¿Listo para dar el primer paso? Déjanos tus datos y uno de nuestros instructores te contacta. Sin excusas.</p>
             <div class="u-stats">
-                <div class="u-stat"><div class="u-stat-num" id="stat-anos">5+</div><div class="u-stat-label">Años</div></div>
-                <div class="u-stat"><div class="u-stat-num" id="stat-disc">3</div><div class="u-stat-label">Disciplinas</div></div>
-                <div class="u-stat"><div class="u-stat-num" id="stat-cats">3</div><div class="u-stat-label">Categorías</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-anos" data-editable="texto" data-clave="unete-anos">5+</div><div class="u-stat-label" data-editable="texto" data-clave="unete-anos-label">Años</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-disc" data-editable="texto" data-clave="unete-disciplinas">3</div><div class="u-stat-label" data-editable="texto" data-clave="unete-disc-label">Disciplinas</div></div>
+                <div class="u-stat"><div class="u-stat-num" id="stat-cats" data-editable="texto" data-clave="unete-categorias">3</div><div class="u-stat-label" data-editable="texto" data-clave="unete-cats-label">Categorías</div></div>
             </div>
             <p class="u-planes-label">Selecciona tu plan</p>
             <div class="u-planes" id="u-planes">
@@ -173,8 +177,8 @@
 
         <div class="u-form-wrap">
             <div id="u-form-content">
-                <h2 class="u-form-title">¡ÚNETE AHORA!</h2>
-                <p class="u-form-sub">Te contactamos en <span>menos de 24 horas</span></p>
+                <h2 class="u-form-title" data-editable="texto" data-clave="unete-form-titulo">¡ÚNETE AHORA!</h2>
+                <p class="u-form-sub" data-editable="texto" data-clave="unete-form-sub">Te contactamos en <span>menos de 24 horas</span></p>
                 <div class="u-field-row">
                     <div class="u-field"><label>Nombre *</label><input type="text" id="u-nombre" placeholder="Tu nombre"></div>
                     <div class="u-field"><label>WhatsApp</label><input type="tel" id="u-wa" placeholder="3001234567"></div>
@@ -204,17 +208,18 @@
         </div>
     </main>
 
-    <footer class="u-footer">© 2026 Black Diamond Gym · Boxing Center · Bosa, Bogotá D.C.</footer>
+    <footer class="u-footer"><span data-editable="texto" data-clave="unete-footer">© 2026 Black Diamond Gym · Boxing Center · Bosa, Bogotá D.C.</span></footer>
 
     <script>
         const API = window.location.origin;
         fetch(API + '/api/imagenes').then(r=>r.json()).then(imgs=>{const fav=imgs.find(i=>i.clave==='favicon');if(fav&&fav.url)document.getElementById('site-favicon').href=fav.url;}).catch(()=>{});
 
-        // Cargar stats dinámicos desde textos_sitio
+        // Cargar todos los textos editables desde textos_sitio
         fetch(API + '/api/textos').then(r=>r.json()).then(t=>{
-            if(t['unete-anos'])         document.getElementById('stat-anos').textContent    = t['unete-anos'];
-            if(t['unete-disciplinas'])  document.getElementById('stat-disc').textContent    = t['unete-disciplinas'];
-            if(t['unete-categorias'])   document.getElementById('stat-cats').textContent    = t['unete-categorias'];
+            document.querySelectorAll('[data-editable="texto"][data-clave]').forEach(el => {
+                const v = t[el.dataset.clave];
+                if (v) el.textContent = v;
+            });
         }).catch(()=>{});
 
         function seleccionarPlan(el, nombre) {
@@ -257,6 +262,105 @@
             el.style.animation='shake .4s ease';
             setTimeout(()=>el.style.animation='',500);
         }
+
+        /* ══════════════════════════════════════════
+           EDITOR VISUAL — Únete
+        ══════════════════════════════════════════ */
+        (function() {
+            const _editToken = sessionStorage.getItem('bdg_edit_token');
+            if (!_editToken) return; // Solo activo si viene del admin
+
+            // Estilos del editor
+            const style = document.createElement('style');
+            style.textContent = `
+                .edit-bar-unete { position:fixed; top:0; left:0; right:0; z-index:9999; background:#1a0a0a; border-bottom:2px solid #e31c25;
+                    display:flex; align-items:center; gap:12px; padding:8px 20px; font-family:'Montserrat',sans-serif; font-size:.75rem; }
+                .edit-bar-unete .eb-title { color:#e31c25; font-weight:700; letter-spacing:2px; margin-right:auto; }
+                .edit-bar-unete .eb-badge { background:rgba(227,28,37,.15); color:#e31c25; border:1px solid rgba(227,28,37,.3);
+                    padding:4px 12px; border-radius:20px; font-size:.65rem; letter-spacing:1px; }
+                .edit-bar-unete .eb-btn { background:#e31c25; color:#fff; border:none; padding:6px 16px; border-radius:6px;
+                    cursor:pointer; font-size:.7rem; letter-spacing:1px; font-family:inherit; }
+                .edit-bar-unete .eb-btn:hover { background:#ff2d37; }
+                [data-editable].editable-hover { outline:2px dashed rgba(227,28,37,.5); outline-offset:3px; cursor:pointer; transition:outline .15s; }
+                [data-editable].editable-hover:hover { outline:2px solid #e31c25; background:rgba(227,28,37,.05); }
+                .edit-modal-unete { position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; }
+                .edit-modal-box { background:#111; border:1px solid #e31c25; border-radius:16px; padding:28px; width:440px; max-width:90vw; }
+                .edit-modal-box h4 { color:#e31c25; font-size:.8rem; letter-spacing:2px; margin-bottom:14px; font-family:'Montserrat',sans-serif; }
+                .edit-modal-box textarea { width:100%; background:#0a0a0a; border:1px solid #333; color:#fff; padding:12px;
+                    border-radius:8px; font-family:'Montserrat',sans-serif; font-size:.85rem; min-height:80px; resize:vertical; outline:none; }
+                .edit-modal-box textarea:focus { border-color:#e31c25; }
+                .edit-modal-actions { display:flex; gap:10px; margin-top:14px; justify-content:flex-end; }
+                .edit-modal-actions button { padding:8px 20px; border-radius:8px; border:none; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:.75rem; letter-spacing:1px; }
+                .eb-save { background:#e31c25; color:#fff; }
+                .eb-cancel { background:#222; color:#aaa; }
+                .eb-toast-u { position:fixed; bottom:24px; right:24px; z-index:20000; background:#1a1a1a; border:1px solid #e31c25;
+                    color:#fff; padding:12px 20px; border-radius:10px; font-family:'Montserrat',sans-serif; font-size:.8rem;
+                    animation:fadeInUp .3s ease; }
+                @keyframes fadeInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+            `;
+            document.head.appendChild(style);
+
+            // Barra superior
+            const bar = document.createElement('div');
+            bar.className = 'edit-bar-unete';
+            bar.innerHTML = `
+                <span class="eb-title">✏️ EDITOR VISUAL</span>
+                <span class="eb-badge">Página /unete</span>
+                <button class="eb-btn" onclick="window.close()">← Volver al Admin</button>
+            `;
+            document.body.prepend(bar);
+            document.body.style.paddingTop = '44px';
+
+            // Activar elementos editables
+            document.querySelectorAll('[data-editable="texto"]').forEach(el => {
+                el.classList.add('editable-hover');
+                el.addEventListener('click', e => {
+                    e.preventDefault(); e.stopPropagation();
+                    abrirModal(el);
+                });
+            });
+
+            function toastU(msg) {
+                const t = document.createElement('div');
+                t.className = 'eb-toast-u';
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 2800);
+            }
+
+            function abrirModal(el) {
+                const clave = el.dataset.clave;
+                const modal = document.createElement('div');
+                modal.className = 'edit-modal-unete';
+                modal.innerHTML = `
+                    <div class="edit-modal-box">
+                        <h4>EDITANDO: ${clave.toUpperCase()}</h4>
+                        <textarea id="em-input">${el.textContent.trim()}</textarea>
+                        <div class="edit-modal-actions">
+                            <button class="eb-cancel" id="em-cancel">CANCELAR</button>
+                            <button class="eb-save" id="em-save">GUARDAR</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.getElementById('em-cancel').onclick = () => modal.remove();
+                document.getElementById('em-save').onclick = async () => {
+                    const valor = document.getElementById('em-input').value.trim();
+                    if (!valor) return;
+                    try {
+                        const r = await fetch(API + '/api/textos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _editToken },
+                            body: JSON.stringify({ clave, valor })
+                        });
+                        if (!r.ok) throw new Error();
+                        el.textContent = valor;
+                        modal.remove();
+                        toastU('✅ Guardado');
+                    } catch { toastU('❌ Error al guardar'); }
+                };
+            }
+        })();
     </script>
 </body>
 </html>
