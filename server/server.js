@@ -159,7 +159,7 @@ app.post('/api/admin/login', loginLimiter, async (req, res) => {
 });
 
 
-app.get('/api/admin/verify', autenticar, (req, res) => {
+app.get('/api/admin/verify', auth, (req, res) => {
     res.json({ ok: true, usuario: req.usuario });
 });
 
