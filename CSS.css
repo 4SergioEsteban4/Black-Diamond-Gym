@@ -978,6 +978,7 @@ nav {
 
 .schedule-right {
     flex: 1;
+    min-height: 500px;  
     position: relative;
     overflow: hidden;
     border-radius: var(--radius);
